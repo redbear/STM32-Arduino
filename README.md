@@ -37,16 +37,20 @@ https://redbearlab.github.io/arduino/package_redbear_index.json
 
 Step 3:
 
-From the menu, Tools > Board, select RedBear Duo under RedBear IoT Boards.
+From the menu, Tools > Board, select "Boards Manager" and install the RedBear Duo to the IDE.
 
 Step 4:
 
-Select the Port under Tools menu.
+From the menu, Tools > Board, select RedBear Duo under RedBear IoT Boards.
 
 Step 5:
 
-From the menu, File > Examples, select the example "Duo Blink" and upload to the board.
+Select the Port under Tools menu.
 
 Step 6:
+
+From the menu, File > Examples, select the example "Duo Blink" and upload to the board.
+
+Step 7:
 
 The LED on the board is blinking.
