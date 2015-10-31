@@ -5,6 +5,10 @@ Allows to use the Arduino IDE to develop STM32 MCU firmware. Currently, it suppo
 
 The RedBear IoT kit has two boards, the RedBear Duo and the RBLink. The RBLink is for loading firmware to the Duo and provides interface for Seeed Studio Grove System components.
 
+For more details for the Duo and the RBLink, read this:
+
+https://github.com/Cheong2K/WICED-SDK
+
 # Update Firmware
 
 1. Stack the Duo on top of the RBLink.
