@@ -19,7 +19,7 @@ The RedBear IoT kit has two boards, the RedBear Duo and the RBLink. The RBLink i
  
 # Install Driver (only for Windows)
 
-Connect the Duo to your Windows PC and install the driver from the "driver/windows" folder.
+Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
 
 # Setup Arduino IDE
 
