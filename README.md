@@ -41,6 +41,12 @@ From the menu, Tools > Board, select "Boards Manager" and install the RedBear Du
 
 Step 4:
 
+Connect the Duo to your computer through the USB port of the Duo.
+
+*** Note that, it is not the RBLink's USB port if you are going to use the RBLink for using Grove System components.
+
+Step 5:
+
 From the menu, Tools > Board, select RedBear Duo under RedBear IoT Boards.
 
 Step 5:
