@@ -23,7 +23,14 @@ https://github.com/Cheong2K/WICED-SDK
  
 # Install Driver (only for Windows)
 
+1. USB CDC
 Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
+
+2. RBLink
+
+Based on ST-Link:
+
+http://www.st.com/web/en/catalog/tools/PF260219
 
 # Setup Arduino IDE
 
