@@ -7,7 +7,9 @@ The RedBear IoT kit has two boards, the RedBear Duo and the RBLink. The RBLink i
 
 # Update Firmware
 
+Step 1:
 
+Use the "RBDuo_Unlock.bin" to unlock the board using the RBLink, drag and drop the bin to the RBL drive after connect it to your computer via the USB port of the RBLink.
 
 # Installation
 
