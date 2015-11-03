@@ -72,3 +72,10 @@ From the menu, File > Examples, select the example "Duo Blink" and upload to the
 Step 7:
 
 The LED on the board is blinking.
+
+# Known Issues
+
+1. There are two examples require to associate with an AP or a router in order to function, but if the board fail to join any, it will continue to attempt and will no longer be able to upload any sketch.
+
+Workaround: Flash the default firmware (RBDuo_ES2-Arduino.bin) using the RBLink to the board to reset it to the default state at this moment.
+
