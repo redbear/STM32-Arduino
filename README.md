@@ -15,7 +15,7 @@ https://github.com/Cheong2K/WICED-SDK
 
 # Update Firmware
 
-![image](images/mode_rblink.png)
+![image](images/mode_rblink.jpg)
 
 1. Stack the Duo on top of the RBLink.
 
@@ -59,13 +59,13 @@ From the menu, Tools > Board, select "Boards Manager" and install the RedBear Du
 
 Step 4:
 
-![image](images/mode_standalone.png)
+![image](images/mode_standalone.jpg)
 
 Connect the Duo to your computer through the USB port of the Duo.
 
 *** Note that, it is not the RBLink's USB port if you are going to use the RBLink for using Grove System components, the follow shows the setup (connected to Grove RGB LED):
 
-![image](images/mode_grove.png)
+![image](images/mode_grove.jpg)
 
 Step 5:
 
