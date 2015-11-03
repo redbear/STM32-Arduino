@@ -63,7 +63,7 @@ Step 4:
 
 Connect the Duo to your computer through the USB port of the Duo.
 
-*** Note that, it is not the RBLink's USB port if you are going to use the RBLink for using Grove System components, the follow shows the setup (connected to Grove RGB LED):
+*** Note that, it is not the RBLink's USB port if you are going to use the RBLink for Grove System components, the follow shows the setup (connected to Grove RGB LED):
 
 ![image](images/mode_grove.png)
 
