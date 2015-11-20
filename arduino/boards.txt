@@ -1,0 +1,28 @@
+
+RedBear_Duo.name=RedBear Duo
+
+RedBear_Duo.upload.tool=avrdude
+RedBear_Duo.upload.protocol=avr109
+RedBear_Duo.upload.maximum_size=196608
+RedBear_Duo.upload.maximum_data_size=2560
+RedBear_Duo.upload.speed=19200
+RedBear_Duo.upload.disable_flushing=false
+RedBear_Duo.upload.use_1200bps_touch=false
+RedBear_Duo.upload.wait_for_upload_port=false
+
+RedBear_Duo.build.mcu=cortex-m3
+RedBear_Duo.build.f_cpu=120000000
+RedBear_Duo.build.usb_product="Arduino RBL"
+RedBear_Duo.build.board = RedBear_Duo
+RedBear_Duo.build.core=RedBear_Duo
+RedBear_Duo.build.variant=RedBear_Duo
+RedBear_Duo.build.extra_flags=-mthumb
+RedBear_Duo.build.ldscript=linker_scripts/gcc/user_part.ld
+RedBear_Duo.build.ld_include1="-L{runtime.platform.path}/variants/RedBear_Duo/linker_scripts/gcc" 
+RedBear_Duo.build.ld_include2="-L{runtime.platform.path}/variants/RedBear_Duo/linker_scripts/linker"
+RedBear_Duo.build.ld_include3="-L{runtime.platform.path}/variants/RedBear_Duo/linker_scripts/linker/stm32f2xx"
+RedBear_Duo.build.variant_system_include1="-I{build.system.path}/CMSIS/CMSIS/Include" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/A_user/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/E_rt-dynalib/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/F_wiring/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/shared/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/shared/STM32/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_StdPeriph_Driver/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/MCU/STM32F2xx/SPARK_Firmware_Driver/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_USB_Device_Driver/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_USB_OTG_Driver/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/H_platform/MCU/STM32F2xx/CMSIS/Device/ST/Include" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/I_modules/photon/user-part/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/I_modules/shared/stm32f2xx/inc"
+RedBear_Duo.build.variant_system_include2="-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_define" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_hal/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_hal/shared" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_hal/src/stm32f2xx" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_hal/src/stm32" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_hal/src/duo" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_services/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_system/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_communication/src" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_dynalib/inc" "-I{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib"
+
+##############################################################
+
