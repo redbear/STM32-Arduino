@@ -89,3 +89,6 @@ The LED on the board is blinking.
 
 Workaround: Flash the default firmware (RBDuo_ES2-Arduino.bin) using the RBLink to the board to reset it to the default state at this moment.
 
+2. Arduino IDE 1.6.6 incompatible at this moment.
+
+3. BLE API is in progress.
