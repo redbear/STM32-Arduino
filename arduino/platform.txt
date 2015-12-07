@@ -5,7 +5,7 @@
 name=RedBear IoT Boards
 
 # Compile tool path
-compiler.path={runtime.tools.arm-none-eabi-gcc.path}/bin/
+compiler.path={runtime.tools.arm-none-eabi-gcc-4.9-2015-q3.path}/bin/
 #compiler.path={runtime.platform.path}/tools/arm-none-eabi/bin/
 
 # Compile s files options
@@ -48,16 +48,16 @@ compiler.size.cmd=arm-none-eabi-size
 recipe.s.o.pattern="{compiler.path}{compiler.s.cmd}" {compiler.s.flags} "{source_file}" -o "{object_file}"
 
 ## Compile c files
-recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {includes} {build.variant_system_include1} {build.variant_system_include2} "{source_file}" -o "{object_file}"
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile c++ files
-recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {includes} {build.variant_system_include1} {build.variant_system_include2} "{source_file}" -o "{object_file}"
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{object_file}"
 
 ## Create archives
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} "{build.path}/libcore.a" "{object_file}"
 
 ## Combine gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.define} -g3 -gdwarf-2 -Os -mcpu=cortex-m3 -mthumb -DINCLUDE_PLATFORM=1 -fno-builtin -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE -DSYSTEM_VERSION_STRING=0.1.1 -DRELEASE_BUILD -Werror {build.variant_system_include1} {build.variant_system_include2} -I. -MMD -MP -MF "{build.path}/{build.project_name}.elf.d" -ffunction-sections -fdata-sections -Wall -Wno-switch -Wno-error=deprecated-declarations -fmessage-length=0 -fno-strict-aliasing -DSPARK=1 -DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -DMODULAR_FIRMWARE=1 -DMODULE_VERSION=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_DEPENDENCY=4,2,1 {object_files} --output "{build.path}/{build.project_name}.elf" -Wl,--whole-archive "{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib/STM32F2xx_Peripheral_Libraries.a" -Wl,--no-whole-archive -nostartfiles -Xlinker --gc-sections {build.ld_include2} {build.ld_include3} -L{build.path} "-L{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib" -Wl,--whole-archive -lcore -lhal-dynalib -lservices-dynalib -lsystem-dynalib -lrt-dynalib -lwiring -lcommunication-dynalib -lplatform -lwiring_globals -Wl,--no-whole-archive -lnosys {build.ld_include1} -L. -T{build.variant.path}/{build.ldscript} -Wl,--defsym,USER_FIRMWARE_IMAGE_SIZE=0x40000 -Wl,--defsym,USER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -Wl,-Map,{build.path}/{build.project_name}.map -lstdc++_nano -lm -Wl,--start-group -lgcc -lg_nano -lc_nano -Wl,--end-group -Wl,--start-group -lgcc -lc_nano -Wl,--end-group
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.define} -g3 -gdwarf-2 -Os -mcpu=cortex-m3 -mthumb -DINCLUDE_PLATFORM=1 -fno-builtin -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE -DSYSTEM_VERSION_STRING=0.1.1 -DRELEASE_BUILD -Werror {build.variant_base_include} {build.variant_extra_include} -I. -MMD -MP -MF "{build.path}/{build.project_name}.elf.d" -ffunction-sections -fdata-sections -Wall -Wno-switch -Wno-error=deprecated-declarations -fmessage-length=0 -fno-strict-aliasing -DSPARK=1 -DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -DMODULAR_FIRMWARE=1 -DMODULE_VERSION=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_DEPENDENCY=4,2,1 {object_files} --output "{build.path}/{build.project_name}.elf" -Wl,--whole-archive "{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib/STM32F2xx_Peripheral_Libraries.a" -Wl,--no-whole-archive -nostartfiles -Xlinker --gc-sections {build.ld_include2} {build.ld_include3} -L{build.path} "-L{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib" -Wl,--whole-archive -lcore -lhal-dynalib -lservices-dynalib -lsystem-dynalib -lrt-dynalib -lwiring -lcommunication-dynalib -lplatform -lwiring_globals -Wl,--no-whole-archive -lnosys {build.ld_include1} -L. -T{build.variant.path}/{build.ldscript} -Wl,--defsym,USER_FIRMWARE_IMAGE_SIZE=0x40000 -Wl,--defsym,USER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -Wl,-Map,{build.path}/{build.project_name}.map -lstdc++_nano -lm -Wl,--start-group -lgcc -lg_nano -lc_nano -Wl,--end-group -Wl,--start-group -lgcc -lc_nano -Wl,--end-group
 
 ## Create bin
 recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2bin.cmd}" {compiler.elf2bin.flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
@@ -74,13 +74,20 @@ recipe.output.save_file={build.project_name}.{build.variant}.hex
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
 recipe.size.regex=\.text\s+([0-9]+).*
 
+## Preprocessor
+preproc.includes.flags=-w -x c++ -M -MG -MP
+recipe.preproc.includes="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {preproc.includes.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}"
+
+preproc.macros.flags=-w -x c++ -E -CC
+recipe.preproc.macros="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {preproc.macros.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}"
+
 # RBL_nRF51822 Uploader tools
 # ----------------------
 
-tools.avrdude.cmd.path={runtime.ide.path}/hardware/tools/avr/bin/avrdude
+tools.avrdude.cmd.path={runtime.tools.avrdude.path}/bin/avrdude
 tools.avrdude.config.path={runtime.platform.path}/avrdude_conf/avrdude.conf 
 
-tools.avrdude.cmd.path.linux={runtime.ide.path}/hardware/tools/avr/bin/avrdude
+tools.avrdude.cmd.path.linux={runtime.tools.avrdude.path}/bin/avrdude
 tools.avrdude.config.path.linux={runtime.platform.path}/avrdude_conf/avrdude.conf
 
 tools.avrdude.upload.params.verbose=-v -v -v -v
