@@ -10,7 +10,9 @@ TCPServer server = TCPServer(80);
 TCPClient client;
 
 int led1 = D7;
- 
+
+boolean endsWith(char* inString, char* compString);
+
 void setup()
 {
     char addr[16];
