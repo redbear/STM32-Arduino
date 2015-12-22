@@ -8,17 +8,25 @@ name=RedBear IoT Boards
 compiler.path={runtime.tools.arm-none-eabi-gcc-4.9-2015-q3.path}/bin/
 #compiler.path={runtime.platform.path}/tools/arm-none-eabi/bin/
 
+# Compile define  
+compiler.device.define=-DSTM32_DEVICE -DSTM32F2XX -DPLATFORM_THREADING=1 -DPLATFORM_ID=88 -DPLATFORM_NAME=duo -DUSBD_VID_SPARK=0x2B04 -DUSBD_PID_DFU=0xD058 -DUSBD_PID_CDC=0xC058  
+compiler.baudrate.define=-DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -DSTART_AVRDUDE_FLASHER_SERIAL_SPEED=19200
+compiler.platform.define=-DRELEASE_BUILD -DINCLUDE_PLATFORM=1 -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE
+compiler.image.define=-DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000
+compiler.system_version.define=-DSYSTEM_VERSION_STRING=0.2.0
+compiler.module.define=-DMODULAR_FIRMWARE=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_VERSION=2 -DMODULE_DEPENDENCY=4,2,2
+
 # Compile s files options
 compiler.s.cmd=arm-none-eabi-as
 compiler.s.flags=-c -g -x assembler-with-cpp -mthumb 
 
 # Compile c files options
 compiler.c.cmd=arm-none-eabi-gcc
-compiler.c.flags=-c -g3 -gdwarf-2 -Os -w -std=gnu99 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-rtti -mcpu=cortex-m3 -Dprintf=iprintf -DSTM32_DEVICE -DSTM32F2XX -DPLATFORM_THREADING=1 -DPLATFORM_ID=88 -DPLATFORM_NAME=duo -DUSBD_VID_SPARK=0x2B04 -DUSBD_PID_DFU=0xD058 -DUSBD_PID_CDC=0xC058 -DINCLUDE_PLATFORM=1 -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE -DSYSTEM_VERSION_STRING=0.1.1 -DRELEASE_BUILD -DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -DSTART_AVRDUDE_FLASHER_SERIAL_SPEED=19200 -DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -DMODULAR_FIRMWARE=1 -DMODULE_VERSION=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_DEPENDENCY=4,2,1 
+compiler.c.flags=-c -g3 -gdwarf-2 -Os -w -std=gnu99 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-rtti -mcpu=cortex-m3 -Dprintf=iprintf  
 
 # Compile cpp files options
 compiler.cpp.cmd=arm-none-eabi-g++
-compiler.cpp.flags=-c -g3 -gdwarf-2 -Os -w -std=gnu++11 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-rtti -mcpu=cortex-m3 -Dprintf=iprintf -DSTM32_DEVICE -DSTM32F2XX -DPLATFORM_THREADING=1 -DPLATFORM_ID=88 -DPLATFORM_NAME=duo -DUSBD_VID_SPARK=0x2B04 -DUSBD_PID_DFU=0xD058 -DUSBD_PID_CDC=0xC058 -DINCLUDE_PLATFORM=1 -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE -DSYSTEM_VERSION_STRING=0.1.1 -DRELEASE_BUILD -DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -DSTART_AVRDUDE_FLASHER_SERIAL_SPEED=19200 -DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -DMODULAR_FIRMWARE=1 -DMODULE_VERSION=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_DEPENDENCY=4,2,1 
+compiler.cpp.flags=-c -g3 -gdwarf-2 -Os -w -std=gnu++11 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-rtti -mcpu=cortex-m3 -Dprintf=iprintf
 
 # Create archives options
 compiler.ar.cmd=arm-none-eabi-ar
@@ -27,7 +35,6 @@ compiler.ar.flags=rcs
 # Combine to create elf file options
 compiler.c.elf.cmd=arm-none-eabi-g++
 compiler.c.elf.flags=-Os -Wl,--gc-sections  
-compiler.c.elf.define=-DSTM32_DEVICE -DSTM32F2XX -DPLATFORM_THREADING=1 -DPLATFORM_ID=88 -DPLATFORM_NAME=duo -DUSBD_VID_SPARK=0x2B04 -DUSBD_PID_DFU=0xD058 -DUSBD_PID_CDC=0xC058
 
 # Create bin file options
 compiler.elf2bin.cmd=arm-none-eabi-objcopy
@@ -48,16 +55,16 @@ compiler.size.cmd=arm-none-eabi-size
 recipe.s.o.pattern="{compiler.path}{compiler.s.cmd}" {compiler.s.flags} "{source_file}" -o "{object_file}"
 
 ## Compile c files
-recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{object_file}"
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} {compiler.device.define} {compiler.baudrate.define} {compiler.platform.define} {compiler.image.define} {compiler.system_version.define} {compiler.module.define} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile c++ files
-recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{object_file}"
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {compiler.device.define} {compiler.baudrate.define} {compiler.platform.define} {compiler.image.define} {compiler.system_version.define} {compiler.module.define} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -D{software}={runtime.ide.version} {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{object_file}"
 
 ## Create archives
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} "{build.path}/libcore.a" "{object_file}"
 
 ## Combine gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.define} -g3 -gdwarf-2 -Os -mcpu=cortex-m3 -mthumb -DINCLUDE_PLATFORM=1 -fno-builtin -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE -DSYSTEM_VERSION_STRING=0.1.1 -DRELEASE_BUILD -Werror {build.variant_base_include} {build.variant_extra_include} -I. -MMD -MP -MF "{build.path}/{build.project_name}.elf.d" -ffunction-sections -fdata-sections -Wall -Wno-switch -Wno-error=deprecated-declarations -fmessage-length=0 -fno-strict-aliasing -DSPARK=1 -DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -DMODULAR_FIRMWARE=1 -DMODULE_VERSION=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_DEPENDENCY=4,2,1 {object_files} --output "{build.path}/{build.project_name}.elf" -Wl,--whole-archive "{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib/STM32F2xx_Peripheral_Libraries.a" -Wl,--no-whole-archive -nostartfiles -Xlinker --gc-sections {build.ld_include2} {build.ld_include3} -L{build.path} "-L{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib" -Wl,--whole-archive -lcore -lhal-dynalib -lservices-dynalib -lsystem-dynalib -lrt-dynalib -lwiring -lcommunication-dynalib -lplatform -lwiring_globals -Wl,--no-whole-archive -lnosys {build.ld_include1} -L. -T{build.variant.path}/{build.ldscript} -Wl,--defsym,USER_FIRMWARE_IMAGE_SIZE=0x40000 -Wl,--defsym,USER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -Wl,-Map,{build.path}/{build.project_name}.map -lstdc++_nano -lm -Wl,--start-group -lgcc -lg_nano -lc_nano -Wl,--end-group -Wl,--start-group -lgcc -lc_nano -Wl,--end-group
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.device.define} -g3 -gdwarf-2 -Os -mcpu={build.mcu} -mthumb -fno-builtin {compiler.platform.define} {compiler.system_version.define} -Werror {build.variant_base_include} {build.variant_extra_include} -I. -MMD -MP -MF "{build.path}/{build.project_name}.elf.d" -ffunction-sections -fdata-sections -Wall -Wno-switch -Wno-error=deprecated-declarations -fmessage-length=0 -fno-strict-aliasing -DSPARK=1 {compiler.baudrate.define} -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc {compiler.image.define} {compiler.module.define} {object_files} --output "{build.path}/{build.project_name}.elf" -Wl,--whole-archive "{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib/STM32F2xx_Peripheral_Libraries.a" -Wl,--no-whole-archive -nostartfiles -Xlinker --gc-sections {build.ld_include2} {build.ld_include3} -L{build.path} "-L{runtime.platform.path}/cores/RedBear_Duo/redbear_sdk/X_lib" -Wl,--whole-archive -lcore -lhal-dynalib -lservices-dynalib -lsystem-dynalib -lrt-dynalib -lwiring -lcommunication-dynalib -lplatform -lwiring_globals -Wl,--no-whole-archive -lnosys {build.ld_include1} -L. -T{build.variant.path}/{build.ldscript} -Wl,--defsym,USER_FIRMWARE_IMAGE_SIZE=0x40000 -Wl,--defsym,USER_FIRMWARE_IMAGE_LOCATION=0x80C0000 -Wl,-Map,{build.path}/{build.project_name}.map -lstdc++_nano -lm -Wl,--start-group -lgcc -lg_nano -lc_nano -Wl,--end-group -Wl,--start-group -lgcc -lc_nano -Wl,--end-group
 
 ## Create bin
 recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2bin.cmd}" {compiler.elf2bin.flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
