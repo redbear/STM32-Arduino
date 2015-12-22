@@ -40,6 +40,8 @@ SYSTEM_MODE(MANUAL);
 
 #define BLUE_LED    7
 
+void printWifiStatus();
+
 void setup() {
   Serial.begin(115200);      // initialize serial communication
   pinMode(BLUE_LED, OUTPUT);      // set the LED pin mode

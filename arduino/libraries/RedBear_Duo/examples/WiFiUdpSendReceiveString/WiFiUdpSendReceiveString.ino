@@ -40,6 +40,7 @@ UDP Udp;
 //SYSTEM_MODE(AUTOMATIC);
 SYSTEM_MODE(MANUAL);
 
+void printWifiStatus();
 
 void setup() {
   //Initialize serial and wait for port to open:

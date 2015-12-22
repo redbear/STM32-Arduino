@@ -44,6 +44,9 @@ byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing pack
 // A UDP instance to let us send and receive packets over UDP
 UDP Udp;
 
+unsigned long sendNTPpacket(IPAddress& address);
+void printWifiStatus();
+
 void setup()
 {
   // Open serial communications and wait for port to open:

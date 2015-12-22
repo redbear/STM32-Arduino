@@ -37,6 +37,8 @@ TCPServer server(23);
 
 boolean alreadyConnected = false; // whether or not the client was connected previously
 
+void printWifiStatus();
+
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);

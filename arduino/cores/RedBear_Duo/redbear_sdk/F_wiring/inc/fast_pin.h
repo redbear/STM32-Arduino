@@ -25,8 +25,8 @@
 extern "C" {
 #endif
 
-#include "pinmap_impl.h"
 #include "pinmap_hal.h"
+#include "pinmap_impl.h"
 
 /* Disabling USE_BIT_BAND since bitbanding is much slower! as per comment
  * by @pkourany on PR: https://github.com/spark/firmware/pull/556 */

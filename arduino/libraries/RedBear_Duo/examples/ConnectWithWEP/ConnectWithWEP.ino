@@ -41,6 +41,9 @@ char password[] = "password";
 //SYSTEM_MODE(AUTOMATIC);
 SYSTEM_MODE(MANUAL);
 
+void printCurrentNet();
+void printWifiData();
+
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);

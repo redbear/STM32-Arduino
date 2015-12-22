@@ -76,7 +76,7 @@
 
 #define Wiring_Wire1 1
 #define Wiring_Wire3 1 /* System PMIC and Fuel Guage I2C3 */
-#define Wiring_SoftPowerOff 1
+#define Wiring_SetupButtonUX 1
 #endif
 
 #if PLATFORM_ID==88      // duo
@@ -84,6 +84,7 @@
 #define Wiring_IPv6 1
 #define Wiring_SPI1 1
 #define Wiring_Serial2 1
+#define Wiring_Serial6 1
 #endif
 
 #ifndef Wiring_SPI1
@@ -126,8 +127,8 @@
 #define Wiring_Serial5 0
 #endif
 
-#ifndef Wiring_SoftPowerOff
-#define Wiring_SoftPowerOff 0
+#ifndef Wiring_SetupButtonUX
+#define Wiring_SetupButtonUX 0
 #endif
 
 #endif	/* SPARK_WIRING_PLATFORM_H */

@@ -27,6 +27,9 @@ char ssid[] = "Duo";
 //SYSTEM_MODE(AUTOMATIC);
 SYSTEM_MODE(MANUAL);
 
+void printWifiData();
+void printCurrentNet();
+
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
@@ -104,7 +107,6 @@ void printWifiData() {
 
 void printCurrentNet() {
   WiFiAccessPoint ap;
-  ap.ssid = WiFi.SSID;
   
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");

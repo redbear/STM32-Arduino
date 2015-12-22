@@ -41,6 +41,8 @@ TCPServer server = TCPServer(80);
 
 #define BLUE_LED  7
 
+boolean endsWith(char* inString, char* compString);
+void printWifiStatus();
 
 void setup() {
   Serial.begin(115200);      // initialize serial communication

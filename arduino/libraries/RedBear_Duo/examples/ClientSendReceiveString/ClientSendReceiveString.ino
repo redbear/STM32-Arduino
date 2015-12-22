@@ -29,6 +29,8 @@ uint16_t port = 9999;     // port number of the server
 IPAddress server(192, 168, 0, 0);   // IP Address of the server
 TCPClient client;
 
+void printWifiStatus();
+
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);

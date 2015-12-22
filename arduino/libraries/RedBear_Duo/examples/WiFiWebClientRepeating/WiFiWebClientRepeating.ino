@@ -41,6 +41,9 @@ char server[] = "www.baidu.com";    // name address for Google (using DNS)
 unsigned long lastConnectionTime = 0;            // last time you connected to the server, in milliseconds
 const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
 
+void httpRequest();
+void printWifiStatus();
+
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);

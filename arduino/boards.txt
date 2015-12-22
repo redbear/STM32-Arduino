@@ -7,8 +7,8 @@ RedBear_Duo.upload.maximum_size=196608
 RedBear_Duo.upload.maximum_data_size=2560
 RedBear_Duo.upload.speed=19200
 RedBear_Duo.upload.disable_flushing=true
-RedBear_Duo.upload.use_1200bps_touch=false
-RedBear_Duo.upload.wait_for_upload_port=false
+RedBear_Duo.upload.use_1200bps_touch=true
+RedBear_Duo.upload.wait_for_upload_port=true
 
 RedBear_Duo.build.mcu=cortex-m3
 RedBear_Duo.build.f_cpu=120000000
@@ -17,12 +17,12 @@ RedBear_Duo.build.board = RedBear_Duo
 RedBear_Duo.build.core=RedBear_Duo
 RedBear_Duo.build.variant=RedBear_Duo
 RedBear_Duo.build.extra_flags=-mthumb
-RedBear_Duo.build.ldscript=linker_scripts/gcc/user_part.ld
+RedBear_Duo.build.ldscript=linker_scripts/gcc/linker.ld
 RedBear_Duo.build.ld_include1="-L{runtime.platform.path}/variants/RedBear_Duo/linker_scripts/gcc" 
 RedBear_Duo.build.ld_include2="-L{runtime.platform.path}/variants/RedBear_Duo/linker_scripts/linker"
 RedBear_Duo.build.ld_include3="-L{runtime.platform.path}/variants/RedBear_Duo/linker_scripts/linker/stm32f2xx"
-RedBear_Duo.build.variant_base_include="-I{build.system.path}/CMSIS/CMSIS/Include" "-I{build.core.path}/redbear_sdk" "-I{build.core.path}/redbear_sdk/A_user/inc" "-I{build.core.path}/redbear_sdk/E_rt-dynalib/inc" "-I{build.core.path}/redbear_sdk/F_wiring/inc" "-I{build.core.path}/redbear_sdk/H_platform/shared/inc" "-I{build.core.path}/redbear_sdk/H_platform/shared/STM32/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_StdPeriph_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/SPARK_Firmware_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_USB_Device_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_USB_OTG_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/CMSIS/Device/ST/Include" "-I{build.core.path}/redbear_sdk/I_modules/photon/user-part/inc" "-I{build.core.path}/redbear_sdk/I_modules/shared/stm32f2xx/inc"
-RedBear_Duo.build.variant_extra_include="-I{build.core.path}/redbear_sdk/X_define" "-I{build.core.path}/redbear_sdk/X_hal/inc" "-I{build.core.path}/redbear_sdk/X_hal/shared" "-I{build.core.path}/redbear_sdk/X_hal/src/stm32f2xx" "-I{build.core.path}/redbear_sdk/X_hal/src/stm32" "-I{build.core.path}/redbear_sdk/X_hal/src/duo" "-I{build.core.path}/redbear_sdk/X_services/inc" "-I{build.core.path}/redbear_sdk/X_system/inc" "-I{build.core.path}/redbear_sdk/X_communication/src" "-I{build.core.path}/redbear_sdk/X_dynalib/inc" "-I{build.core.path}/redbear_sdk/X_lib"
+RedBear_Duo.build.variant_base_include="-I{build.system.path}/CMSIS/CMSIS/Include" "-I{build.core.path}/redbear_sdk" "-I{build.core.path}/redbear_sdk/A_user/inc" "-I{build.core.path}/redbear_sdk/E_rt-dynalib/inc" "-I{build.core.path}/redbear_sdk/F_wiring/inc" "-I{build.core.path}/redbear_sdk/H_platform/shared/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/shared/STM32/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_StdPeriph_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/SPARK_Firmware_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_USB_Device_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/STM32_USB_OTG_Driver/inc" "-I{build.core.path}/redbear_sdk/H_platform/MCU/STM32F2xx/CMSIS/Device/ST/Include" "-I{build.core.path}/redbear_sdk/I_modules/duo/user-part/inc" "-I{build.core.path}/redbear_sdk/I_modules/shared/stm32f2xx/inc"
+RedBear_Duo.build.variant_extra_include="-I{build.core.path}/redbear_sdk/X_define" "-I{build.core.path}/redbear_sdk/X_hal/inc" "-I{build.core.path}/redbear_sdk/X_hal/shared" "-I{build.core.path}/redbear_sdk/X_hal/src/stm32f2xx" "-I{build.core.path}/redbear_sdk/X_hal/src/stm32" "-I{build.core.path}/redbear_sdk/X_hal/src/duo" "-I{build.core.path}/redbear_sdk/X_hal/src/duo/include" "-I{build.core.path}/redbear_sdk/X_services/inc" "-I{build.core.path}/redbear_sdk/X_system/inc" "-I{build.core.path}/redbear_sdk/X_communication/src" "-I{build.core.path}/redbear_sdk/X_dynalib/inc" "-I{build.core.path}/redbear_sdk/X_lib"
 
 ##############################################################
 
