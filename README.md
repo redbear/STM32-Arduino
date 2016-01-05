@@ -1,49 +1,49 @@
 
 # STM32-Arduino
 
-Allows to use the Arduino IDE to develop STM32 MCU firmware. Currently, it supports the RedBear Duo (STM32F205).
+Allows Arduino fans to use the Arduino IDE to develop STM32 MCU firmware. Currently, it supports the RedBear Duo (STM32F205) IoT development kit.
 
-The RedBear IoT kit has two boards, the RedBear Duo and the RBLink. The RBLink is for loading firmware to the Duo and provides interface for Seeed Studio Grove System components.
+The kit contains two boards, the RedBear Duo and the RBLink.
+
+The Duo is a small and powerful IoT development board that has an ARM Cortex-M3 MCU runs at 120 MHz with 1 MB Flash (256 KB for Arduino sketch) and 128 KB SRAM, it comes with Broadcom's BCM43438 connectivity chip so that the Duo has WiFi (802.11n / 2.4 GHz) and Bluetooth features at the same time, the board only requires a single antenna.
+
+The RBLink is for loading/debugging firmwares to the Duo and provides interface for Seeed Studio Grove System modules.
+
+You do not really need the RBLink if you are not going to development firmware using Broadcom's WICED SDK.
 
 ![image](images/RBDuo.png)
 
 ![image](images/RBLink.png)
 
-For more details for the Duo and the RBLink, read this:
+# Requirements
 
-https://github.com/Cheong2K/WICED-SDK
+1. Basic Arduino knowledge
+2. RedBear Duo development board
+3. Arduino IDE (1.6.7)
+4. Arduino board support package (0.2.1)
+5. Duo Firmware (0.2.1-beta)
+
+# Install Driver (only for Windows)
+
+USB CDC
+
+Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
 
 # Update Firmware
 
-![image](images/mode_rblink.jpg)
+![image](images/mode_standalone.jpg)
 
-1. Stack the Duo on top of the RBLink.
+1. Connect the Duo to your PC via the USB port.
 
-2. Use the "RBDuo_Unlock.bin" to unlock the board using the RBLink, drag and drop the bin to the RBLink drive after connect it to your computer via the USB port of the RBLink.
-
-3. The green light will flash very fast.
-
-4. Drag and drop the RBDuo_ES2-Arduino.bin to the RBLink.
-
-5. Remove the Duo from the RBLink.
- 
-# Install Driver (only for Windows)
-
-1. USB CDC
-
- Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
-
-2. RBLink
-
-Based on ST-Link:
-
- http://www.st.com/web/en/catalog/tools/PF260219
+2. Continue with the page for the instructions:
+	
+	https://github.com/redbear/STM32-Arduino/tree/master/firmware
 
 # Setup Arduino IDE
 
 Step 1:
 
-Download the Arduino IDE, tested with 1.6.5 (OSX and Windows only, Linux should also work).
+Download the Arduino IDE, tested with 1.6.7 on OSX and Windows only but Linux should also work.
 
 https://www.arduino.cc/en/Main/Software
 
@@ -55,15 +55,13 @@ https://redbearlab.github.io/arduino/package_redbear_index.json
 
 Step 3:
 
-From the menu, Tools > Board, select "Boards Manager" and install the RedBear Duo to the IDE.
+From the menu, Tools > Board, select "Boards Manager" and install the RedBear Duo board support package to the IDE.
 
 Step 4:
 
-![image](images/mode_standalone.jpg)
-
 Connect the Duo to your computer through the USB port of the Duo.
 
-*** Note that, it is not the RBLink's USB port if you are going to use the RBLink for Grove System components, the follow shows the setup (connected to Grove RGB LED):
+*** Note that, it is not the RBLink's USB port if you are going to use the RBLink for Grove System components, the following photo shows the setup (connected to Grove RGB LED):
 
 ![image](images/mode_grove.jpg)
 
@@ -71,24 +69,18 @@ Step 5:
 
 From the menu, Tools > Board, select RedBear Duo under RedBear IoT Boards.
 
-Step 5:
-
-Select the Port under Tools menu.
-
 Step 6:
 
-From the menu, File > Examples, select the example "Duo Blink" and upload to the board.
+Select the Port under the Tools menu.
 
 Step 7:
+
+From the menu, File > Examples > RedBear_Duo, select the example "Duo_Blink" and upload to the board.
+
+Step 8:
 
 The LED on the board is blinking.
 
 # Known Issues
 
-1. There are two examples require to associate with an AP or a router in order to function, but if the board fail to join any, it will continue to attempt and will no longer be able to upload any sketch.
-
-Workaround: Flash the default firmware (RBDuo_ES2-Arduino.bin) using the RBLink to the board to reset it to the default state at this moment.
-
-2. Arduino IDE 1.6.6 incompatible at this moment.
-
-3. BLE API is in progress.
+1. BLE API is in progress.
