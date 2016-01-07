@@ -11,9 +11,9 @@ The RBLink is for loading/debugging firmwares to the Duo and provides interface 
 
 You do not really need the RBLink if you are not going to development firmware using Broadcom's WICED SDK.
 
-![image](images/RBDuo.png)
+![image](images/RBDuo_Pinout.jpg)
 
-![image](images/RBLink.png)
+![image](images/RBLink_Pinout.jpg)
 
 # Requirements
 
