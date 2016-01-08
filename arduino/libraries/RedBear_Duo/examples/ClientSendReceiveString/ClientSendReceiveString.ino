@@ -1,11 +1,13 @@
 /*
 
- This example demonstrates using the duo as a wifi client (TCP)
+ This example demonstrates using the cc3200 as a wifi client (TCP)
  The client will connect to the TCP server.
  
  Write something in the serial console to send it to the server.
  Anything the server sends back will be printed in the serial console
 
+ modified for Duo Board
+ 
  created 3 July 2014
  by Noah Luskey
  modified 1 DEC 2015

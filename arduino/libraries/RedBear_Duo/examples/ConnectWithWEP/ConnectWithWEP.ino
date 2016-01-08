@@ -14,8 +14,10 @@
  D0D0DEADF00DABBADEAFBEADED will work because it's 26 characters,
  all in the 0-9, A-F range.
 
- Circuit:
- * DUO WiFi Board 
+  Circuit:
+ * Origin for CC3200 WiFi LaunchPad or CC3100 WiFi BoosterPack
+   with TM4C or MSP430 LaunchPad
+ * Modified for DUO Board
  
  
  created 13 July 2010

@@ -10,7 +10,9 @@
 
 
  Circuit:
- * DUO WiFi Board 
+ * Origin for CC3200 LaunchPad or 
+   F5529/TivaC LaunchPad with CC3000/CC3100 BoosterPack
+ * Modified for DUO Board   
  
  created 18 Dec 2009
  by David A. Mellis

@@ -1,15 +1,9 @@
-
 /*
   WiFi UDP Send and Receive String
 
- This sketch wait an UDP packet on localPort using the DUO WiFi Board 
+ This sketch wait an UDP packet on localPort using the CC3200 launchpad
  When a packet is received an Acknowledge packet is sent to the client on port remotePort
 
-
- Circuit:
- * DUO WiFi Board 
- 
- 
   created 30 December 2012
  by dlf (Metodo2 srl)
  

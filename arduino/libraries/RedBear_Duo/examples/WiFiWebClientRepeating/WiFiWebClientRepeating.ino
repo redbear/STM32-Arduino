@@ -4,7 +4,9 @@
  This sketch connects to a a web server and makes a request
 
  Circuit:
- * DUO WiFi Board 
+ * Origin for CC3200 WiFi LaunchPad or CC3100 WiFi BoosterPack
+   with TM4C or MSP430 LaunchPad
+ * Modified for DUO Board
  
  
  created 23 April 2012

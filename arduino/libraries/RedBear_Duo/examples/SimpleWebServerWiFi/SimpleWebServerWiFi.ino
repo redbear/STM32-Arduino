@@ -14,7 +14,9 @@
  WEP or WPA, change the Wifi.begin() call accordingly.
 
  Circuit:
-  * DUO WiFi Board 
+ * Origin for CC3200 WiFi LaunchPad or CC3100 WiFi BoosterPack
+   with TM4C or MSP430 LaunchPad
+ * Modified for DUO Board
 
  created 25 Nov 2012
  by Tom Igoe

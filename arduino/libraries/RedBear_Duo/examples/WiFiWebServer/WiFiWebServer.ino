@@ -8,8 +8,8 @@
  WEP or WPA, change the Wifi.begin() call accordingly.
 
   Circuit:
-  * DUO WiFi Board
- * Analog inputs attached to pins A0 through A7 (optional)
+  * Origin for WiFi shield attached Modified for DUO WiFi Board
+  * Analog inputs attached to pins A0 through A7 (optional)
 
  created 13 July 2010
  by dlf (Metodo2 srl)

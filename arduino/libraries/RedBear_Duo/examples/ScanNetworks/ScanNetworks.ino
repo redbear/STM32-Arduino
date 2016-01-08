@@ -5,7 +5,9 @@
  connect to any network, so no encryption scheme is specified.
  
  Circuit:
-  * DUO WiFi Board 
+ * Origin for CC3200 WiFi LaunchPad or CC3100 WiFi BoosterPack
+   with TM4C or MSP430 LaunchPad
+ * Modified for DUO Board
  
  created 1 DEC 2015
  by Jackson Lv

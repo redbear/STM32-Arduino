@@ -9,7 +9,8 @@
  WEP or WPA, change the Wifi.begin() call accordingly.
 
   Circuit:
- * DUO WiFi Board 
+ * Origin for WiFi shield attached
+ * Modified forDUO WiFi Board 
  
  created 13 July 2010
  by dlf (Metodo2 srl)
