@@ -1,14 +1,16 @@
-
 #include "Arduino.h"
+#include "MDNS.h"
 
 SYSTEM_MODE(MANUAL);
 
 TCPServer server = TCPServer(80);
 TCPClient client;
+MDNS mdns;
 
 int led1 = D7;
 
 boolean endsWith(char* inString, char* compString);
+void mdns_init();
 
 //
 //a way to check if one array ends with another array
@@ -27,6 +29,29 @@ boolean endsWith(char* inString, char* compString) {
     }
   }
   return true;
+}
+
+void mdns_init()
+{
+    bool success = mdns.setHostname("duo");
+     
+    if (success) {
+        success = mdns.setService("tcp", "duocontrol", 80, "RedBear WiFi Controller");
+        Serial.println("setService");
+    }
+
+    if (success) {
+        success = mdns.begin();
+        Serial.println("mdns.begin");
+    }
+    
+    if (success) {
+        Spark.publish("mdns/setup", "success");
+        Serial.println("mdns/setup success");
+    } else {
+        Spark.publish("mdns/setup", "error");
+        Serial.println("mdns/setup error");
+    }
 }
 
 void setup()
@@ -69,10 +94,12 @@ void setup()
     Serial.println(" ");
 
     server.begin();
+    mdns_init();
 }
 
 void loop()
 {
+    mdns.processQueries();
     int i = 0;
 
     if (client.connected())
