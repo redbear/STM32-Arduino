@@ -83,4 +83,6 @@ The LED on the board is blinking.
 
 # Known Issues
 
-1. BLE API is in progress.
+1. BLE API is in progress, if you want to try, put it to the folder document/arduino/library
+
+https://github.com/redbear/btstack/tree/duo-arduino/port/duo-arduino
