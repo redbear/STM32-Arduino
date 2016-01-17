@@ -34,7 +34,7 @@ extern "C" {
 #include <stdbool.h>
 #include "static_assert.h"
 
-#if PLATFORM_ID>=4 && PLATFORM_ID<=8
+#if (PLATFORM_ID>=4 && PLATFORM_ID<=8) || (PLATFORM_ID==88)
 #define HAL_IPv6 1
 #else
 #define HAL_IPv6 0
@@ -48,6 +48,9 @@ typedef struct __attribute__((__packed__)) _HAL_IPAddress_t  {
     };
     uint8_t v;              // 4 for Ipv4, 6 for Ipv6
 } HAL_IPAddress;
+
+#define HAL_IPV4_SET(paddress, value)  (paddress->v = 4); (paddress->ipv4 = value)
+
 STATIC_ASSERT(HAL_IPAddress_size, sizeof(HAL_IPAddress)==17);
 #else
 typedef struct __attribute__((__packed__)) _HAL_IPAddress_t {
@@ -56,6 +59,8 @@ typedef struct __attribute__((__packed__)) _HAL_IPAddress_t {
     };
 } HAL_IPAddress;
 STATIC_ASSERT(HAL_IPAddress_size, sizeof(HAL_IPAddress)==4);
+#define HAL_IPV4_SET(paddress, value)  (paddress->ipv4 = value)
+
 #endif
 
 inline bool is_ipv4(const HAL_IPAddress* address)

@@ -30,11 +30,13 @@ extern "C" {
 
 #define SYSTEM_VERSION_v011  0x00010100
 #define SYSTEM_VERSION_v020  0x00020000
+#define SYSTEM_VERSION_v021  0x00020100
 
-#define SYSTEM_VERSION  SYSTEM_VERSION_v020
+#define SYSTEM_VERSION  SYSTEM_VERSION_v021
 
 #define SYSTEM_VERSION_011
 #define SYSTEM_VERSION_020
+#define SYSTEM_VERSION_021
 
 typedef struct __attribute__((packed)) SystemVersionInfo
 {
