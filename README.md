@@ -20,8 +20,8 @@ You do not really need the RBLink if you are not going to development firmware u
 1. Basic Arduino knowledge
 2. RedBear Duo development board
 3. Arduino IDE (1.6.7)
-4. Arduino board support package (0.2.1)
-5. Duo Firmware (0.2.1-beta)
+4. Arduino board support package (0.2.2)
+5. Duo Firmware (0.2.1)
 
 # Install Driver (only for Windows)
 
