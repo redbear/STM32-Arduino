@@ -2,7 +2,7 @@
 
 ## Current Version
 
-0.2.1
+v0.2.2
 
-(For the Duo firmware - 0.2.1-beta 2, see firmware folder for details.)
+(For the Duo firmware - 0.2.1, see firmware folder for details.)
 
