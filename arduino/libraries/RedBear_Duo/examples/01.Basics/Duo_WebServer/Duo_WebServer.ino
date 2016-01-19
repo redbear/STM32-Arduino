@@ -62,6 +62,17 @@ void setup()
     delay(5000);
 
     Serial.println("Arduino sketch started.\n");
+    
+    device_name_t dev_name;
+    HAL_Device_Name(&dev_name);
+
+    Serial.print("Device name: ");
+    for(uint8_t i=0; i< dev_name.length; i++)
+    {
+      Serial.write(dev_name.value[i]);
+    }
+    Serial.println("\n");
+    
     Serial.println("Note: If your Duo hasn't stored a valid WiFi profile, it will enter the listening mode for provisioning first.\n");
 
     WiFi.on();
