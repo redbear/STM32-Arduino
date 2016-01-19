@@ -193,6 +193,11 @@ public:
  	uint16_t addGATTCharacteristic(UUID * uuid, uint16_t flags, const char * text);
  	uint16_t addGATTCharacteristic(UUID * uuid, uint16_t flags, uint8_t * data, uint16_t data_len);
  	uint16_t addGATTCharacteristicDynamic(UUID * uuid, uint16_t flags, uint16_t characteristic_id);
+    uint16_t addGATTCharacteristicDynamic(UUID * uuid, uint16_t flags, uint8_t * data, uint16_t data_len, uint16_t characteristic_id);
+    
+    void addGATTService(uint16_t uuid);
+    uint16_t addGATTCharacteristic(uint16_t uuid, uint16_t flags, uint8_t * data, uint16_t data_len);
+    uint16_t addGATTCharacteristicDynamic(uint16_t uuid, uint16_t flags, uint8_t * data, uint16_t data_len, uint16_t characteristic_id);
 };
 
 extern BTstackManager BTstack;
