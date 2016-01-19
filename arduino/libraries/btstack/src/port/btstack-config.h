@@ -14,10 +14,10 @@
 
 #define HAVE_EHCILL
 
-//#define HAVE_HCI_DUMP
-#define ENABLE_LOG_INFO
-#define ENABLE_LOG_ERROR
-#define ENABLE_LOG_DEBUG
+// #define HAVE_HCI_DUMP
+// #define ENABLE_LOG_INFO
+// #define ENABLE_LOG_ERROR
+// #define ENABLE_LOG_DEBUG
 
 #define HCI_ACL_PAYLOAD_SIZE 52
 
@@ -43,6 +43,6 @@
 #define MAX_NO_WHITELIST_ENTRIES 1
 #define MAX_NO_SM_LOOKUP_ENTRIES 3
 #define MAX_NO_SERVICE_RECORD_ITEMS 1
-#define MAX_ATT_DB_SIZE 200
+#define MAX_ATT_DB_SIZE 500
 
 #endif

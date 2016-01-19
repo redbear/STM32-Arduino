@@ -815,6 +815,17 @@ void BTstackManager::setGATTCharacteristicRead(uint16_t (*cb)(uint16_t character
 void BTstackManager::setGATTCharacteristicWrite(int (*cb)(uint16_t characteristic_id, uint8_t *buffer, uint16_t buffer_size)){
     gattWriteCallback = cb;
 }
+
+void BTstackManager::addGATTService(uint16_t uuid){
+    att_db_util_add_service_uuid16(uuid);
+}
+uint16_t BTstackManager::addGATTCharacteristic(uint16_t uuid, uint16_t flags, uint8_t * data, uint16_t data_len){
+    return att_db_util_add_characteristic_uuid16(uuid, flags, data, data_len);
+}
+uint16_t BTstackManager::addGATTCharacteristicDynamic(uint16_t uuid, uint16_t flags, uint8_t * data, uint16_t data_len, uint16_t characteristic_id){
+    return att_db_util_add_characteristic_uuid16(uuid, flags | ATT_PROPERTY_DYNAMIC, data, data_len);
+}
+
 void BTstackManager::addGATTService(UUID * uuid){
     att_db_util_add_service_uuid128((uint8_t*)uuid->getUuid());
 }
@@ -826,6 +837,9 @@ uint16_t BTstackManager::addGATTCharacteristic(UUID * uuid, uint16_t flags, uint
 }
 uint16_t BTstackManager::addGATTCharacteristicDynamic(UUID * uuid, uint16_t flags, uint16_t characteristic_id){
     return att_db_util_add_characteristic_uuid128((uint8_t*)uuid->getUuid(), flags | ATT_PROPERTY_DYNAMIC, NULL, 0);
+}
+uint16_t BTstackManager::addGATTCharacteristicDynamic(UUID * uuid, uint16_t flags, uint8_t * data, uint16_t data_len, uint16_t characteristic_id){
+    return att_db_util_add_characteristic_uuid128((uint8_t*)uuid->getUuid(), flags | ATT_PROPERTY_DYNAMIC, data, data_len);
 }
 void BTstackManager::setAdvData(uint16_t adv_data_len, const uint8_t * adv_data){
     gap_advertisements_set_data(adv_data_len, (uint8_t*) adv_data);

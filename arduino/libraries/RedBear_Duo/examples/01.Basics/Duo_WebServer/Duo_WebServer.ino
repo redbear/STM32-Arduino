@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "MDNS.h"
 
-// SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(MANUAL);
 
 TCPServer server = TCPServer(80);
 TCPClient client;
@@ -36,7 +36,7 @@ void mdns_init()
     bool success = mdns.setHostname("duo");
      
     if (success) {
-        success = mdns.setService("tcp", "duosample", 80, "DuoSampleWeb");
+        success = mdns.setService("tcp", "duosample", 80, "Duo Example Web");
         Serial.println("setService");
     }
 

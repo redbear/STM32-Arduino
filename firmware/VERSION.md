@@ -2,7 +2,7 @@
 
 ## Current Version
 
-0.2.1 beta 2
+0.2.1
 
 
 
