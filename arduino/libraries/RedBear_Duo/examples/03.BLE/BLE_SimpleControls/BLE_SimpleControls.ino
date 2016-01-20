@@ -2,14 +2,15 @@
 #include <btstack_api.h>
 #include "Arduino.h"
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
-#define DIGITAL_OUT_PIN            D7
-#define DIGITAL_IN_PIN             D3
-#define PWM_PIN                    D1
-#define ANALOG_IN_PIN              A0
-#define SERVO_PIN                  D2
+#define DIGITAL_OUT_PIN            D2
+#define LED_PIN                    D7
+#define DIGITAL_IN_PIN             A4
+#define PWM_PIN                    D3
+#define ANALOG_IN_PIN              A5
+#define SERVO_PIN                  D4
 #define CHECK_STATUS_TIME          200
 
 #define DEVICE_NAME                "BLE_SimpleControls"
@@ -89,9 +90,15 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size){
         if (characteristic1_data[0] == 0x01)  // Command is to control digital out pin
         {
             if (characteristic1_data[1] == 0x01)
+            {
                 digitalWrite(DIGITAL_OUT_PIN, HIGH);
+                digitalWrite(LED_PIN, HIGH);
+            }
             else
+            {
                 digitalWrite(DIGITAL_OUT_PIN, LOW);
+                digitalWrite(LED_PIN, LOW);
+            }
         }
         else if (characteristic1_data[0] == 0xA0) // Command is to enable analog in reading
         {
@@ -114,6 +121,7 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size){
             myservo.write(0);
             analogWrite(PWM_PIN, 0);
             digitalWrite(DIGITAL_OUT_PIN, LOW);
+            digitalWrite(LED_PIN, LOW);
             old_state = LOW;
         }        
     }
@@ -202,6 +210,7 @@ void setup() {
     Serial.println("Start advertising");
 
     pinMode(DIGITAL_OUT_PIN, OUTPUT);
+    pinMode(LED_PIN, OUTPUT);
     pinMode(DIGITAL_IN_PIN, INPUT_PULLUP);
     pinMode(PWM_PIN, OUTPUT);
 
