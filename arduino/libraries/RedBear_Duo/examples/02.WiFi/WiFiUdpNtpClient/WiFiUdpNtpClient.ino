@@ -30,8 +30,8 @@ char ssid[] = "Duo";
 // your network password
 char password[] = "password";
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 unsigned int localPort = 2390;      // local port to listen for UDP packets
 

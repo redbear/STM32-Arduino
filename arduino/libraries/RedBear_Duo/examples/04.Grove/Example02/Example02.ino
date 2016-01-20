@@ -4,6 +4,10 @@
 #include "application.h"
 #include "TM1637.h"
 
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+
+
 // name the pins
 #define ROTARYPIN A0
 #define CLK D4

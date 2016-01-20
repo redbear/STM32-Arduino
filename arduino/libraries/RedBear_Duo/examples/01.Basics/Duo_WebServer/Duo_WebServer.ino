@@ -1,7 +1,8 @@
 #include "Arduino.h"
 #include "MDNS.h"
 
-//SYSTEM_MODE(MANUAL);
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+//SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 TCPServer server = TCPServer(80);
 TCPClient client;

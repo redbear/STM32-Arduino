@@ -2,8 +2,8 @@
 #include <btstack_api.h>
 #include "Arduino.h"
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 #define DEVICE_NAME                "BLE_Peripheral"
 

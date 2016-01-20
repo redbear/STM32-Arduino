@@ -5,6 +5,9 @@
 #include <math.h>
 #include "TM1637.h"
 
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+
 void dispNum(int num);
 
 // name the pins

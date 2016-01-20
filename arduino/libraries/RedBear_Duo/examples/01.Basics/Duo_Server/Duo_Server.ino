@@ -13,8 +13,8 @@
 //#define AP "Your_AP"
 //#define PIN "Your_PIN_I_Do_Not_Know"
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 // Server Port
 TCPServer server = TCPServer(8888);

@@ -40,8 +40,8 @@ char server[] = "www.google.com";    // name address for Google (using DNS)
 // that you want to connect to (port 80 is default for HTTP):
 TCPClient client;
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 void printWifiStatus();
 

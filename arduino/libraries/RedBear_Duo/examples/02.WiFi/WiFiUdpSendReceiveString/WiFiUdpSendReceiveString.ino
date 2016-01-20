@@ -31,8 +31,8 @@ char  ReplyBuffer[] = "acknowledged";       // a string to send back
 
 UDP Udp;
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 void printWifiStatus();
 

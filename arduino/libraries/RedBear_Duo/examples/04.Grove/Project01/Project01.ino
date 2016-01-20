@@ -6,6 +6,9 @@
 #include "MMA7660.h"
 #include "ChainableLED.h"
 
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+
 // name the pins
 #define BUTTONPIN D2
 #define MOTORPIN A4

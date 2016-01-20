@@ -35,8 +35,8 @@ int keyIndex = 0;
 TCPServer server(80);
 
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 #define BLUE_LED    7
 

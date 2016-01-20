@@ -18,8 +18,8 @@
 #include "spark_wiring_wifi.h"
 #include "spark_wiring_client.h"
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 void printEncryptionType(int thisType);
 void printMacAddress();

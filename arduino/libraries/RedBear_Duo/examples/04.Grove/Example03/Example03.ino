@@ -5,6 +5,10 @@
 #include "MMA7660.h"
 #include "ChainableLED.h"
 
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+
+
 MMA7660 accelemeter;
 #define NUM_LEDS  1
 ChainableLED leds(D4, D5, NUM_LEDS);

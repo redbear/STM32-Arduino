@@ -33,8 +33,8 @@ char password[] = "password";
 // Initialize the Wifi client library
 TCPClient client;
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 // server address:
 char server[] = "www.baidu.com";    // name address for Google (using DNS)

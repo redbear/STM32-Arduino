@@ -24,8 +24,8 @@ char ssid[] = "duo";
 // your network password
 char password[] = "password";
 
-//SYSTEM_MODE(AUTOMATIC);
-SYSTEM_MODE(MANUAL);
+//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(MANUAL);//do not connect to cloud
 
 uint16_t port = 9999;     // port number of the server
 IPAddress server(192, 168, 0, 0);   // IP Address of the server
