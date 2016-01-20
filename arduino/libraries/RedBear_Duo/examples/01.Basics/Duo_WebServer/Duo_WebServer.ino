@@ -1,6 +1,9 @@
 #include "Arduino.h"
 #include "MDNS.h"
 
+#define DEVICE_ID_ADDR (0x1FFF7A10)
+#define DEVICE_ID_LEN  12
+
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 //SYSTEM_MODE(MANUAL);//do not connect to cloud
 
@@ -64,13 +67,23 @@ void setup()
 
     Serial.println("Arduino sketch started.\n");
     
-    device_name_t dev_name;
-    HAL_Device_Name(&dev_name);
+    local_name_t local_name;
+    HAL_Local_Name(&local_name);
 
-    Serial.print("Device name: ");
-    for(uint8_t i=0; i< dev_name.length; i++)
+    Serial.print("Local Name: ");
+    for(uint8_t i=0; i<local_name.length; i++)
     {
-      Serial.write(dev_name.value[i]);
+      Serial.write(local_name.value[i]);
+    }
+    Serial.println("\n");
+
+    uint8_t dev_id[DEVICE_ID_LEN];
+    memcpy(dev_id, (char*)DEVICE_ID_ADDR, DEVICE_ID_LEN);
+
+    Serial.print("Device ID: ");
+    for(uint8_t i=0; i<DEVICE_ID_LEN; i++)
+    {
+      Serial.print(dev_id[i], HEX);
     }
     Serial.println("\n");
     
