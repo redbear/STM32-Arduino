@@ -5,15 +5,15 @@
 extern "C" {
 #endif
 
-#define MAX_DEVICE_NAME_SIZE 20
+#define MAX_LOCAL_NAME_SIZE 20
 
 typedef struct
 {
     uint8_t length;
-    uint8_t value[ MAX_DEVICE_NAME_SIZE ];
-} device_name_t;
+    uint8_t value[ MAX_LOCAL_NAME_SIZE ];
+} local_name_t;
 
-void HAL_Device_Name(device_name_t *dev_name);
+void HAL_Local_Name(local_name_t *local_name);
 
 #ifdef __cplusplus
 }

@@ -29,10 +29,10 @@
 #ifdef DYNALIB_EXPORT
 #include "core_hal.h"
 #include "deviceid_hal.h"
+#include "syshealth_hal.h"
 #if PLATFORM_ID == 88
 #include "device_name.h"
 #endif
-#include "syshealth_hal.h"
 #endif
 
 // WARNING
@@ -58,7 +58,7 @@ DYNALIB_FN(hal_core,HAL_Core_Execute_Standby_Mode)
 DYNALIB_FN(hal_core,HAL_Core_Compute_CRC32)
 DYNALIB_FN(hal_core,HAL_device_ID)
 #if PLATFORM_ID == 88
-DYNALIB_FN(hal_core,HAL_Device_Name)
+DYNALIB_FN(hal_core,HAL_Local_Name)
 #endif
 
 DYNALIB_FN(hal_core,HAL_Get_Sys_Health)
