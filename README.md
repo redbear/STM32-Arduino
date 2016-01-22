@@ -17,11 +17,13 @@ You do not really need the RBLink if you are not going to development firmware u
 
 # Requirements
 
-1. Basic Arduino knowledge
-2. RedBear Duo development board
-3. Arduino IDE (1.6.7)
-4. Arduino board support package (0.2.2)
-5. Duo Firmware (0.2.1)
+1. Basic [Arduino](http://www.arduino.cc) knowledge
+2. RedBear [Duo](http://www.redbear.cc/duo) development board
+3. Understand the [Duo system architecture](https://github.com/redbear/Duo)
+4. Go through the Duo [Getting Started Guide](https://github.com/redbear/Duo/blob/master/docs/getting_started.md)
+5. Arduino IDE (1.6.7)
+6. Arduino board support package (0.2.2)
+7. Duo Firmware (0.2.1)
 
 # Install Driver (only for Windows)
 
@@ -79,10 +81,6 @@ From the menu, File > Examples > RedBear_Duo, select the example "Duo_Blink" and
 
 Step 8:
 
-The LED on the board is blinking.
+The blue LED (D7) on the board is blinking.
 
-# Known Issues
 
-1. BLE API is in progress, if you want to try, put it to the folder document/arduino/library
-
-https://github.com/redbear/btstack/tree/duo-arduino/port/duo-arduino

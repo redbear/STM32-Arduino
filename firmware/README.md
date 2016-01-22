@@ -1,20 +1,14 @@
-# Firmware Update
+# Firmware Management
 
 
 ## Install DFU-UTIL
 
-http://dfu-util.sourceforge.net/
-
-For Windows and Linux, download the binary package.
-
-For OSX, use the command line to install:
-
-$ brew install dfu-util
+* [DFU Installation Guide](https://github.com/redbear/Duo/blob/master/docs/dfu.md).
 
 
 ## Updating firmware
 
-Press and hold the SETUP button on the Duo and then press reset button, when the RGB LED shows Yellow and flashing, release the SETUP button.
+Press and hold the SETUP button on the Duo and then press reset button, when the RGB LED shows yellow and flashing, release the SETUP button.
 
 From the command line:
 
