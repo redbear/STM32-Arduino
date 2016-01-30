@@ -13,8 +13,8 @@ compiler.device.define=-DSTM32_DEVICE -DSTM32F2XX -DPLATFORM_THREADING=1 -DPLATF
 compiler.baudrate.define=-DSTART_DFU_FLASHER_SERIAL_SPEED=14400 -DSTART_YMODEM_FLASHER_SERIAL_SPEED=28800 -DSTART_AVRDUDE_FLASHER_SERIAL_SPEED=19200
 compiler.platform.define=-DRELEASE_BUILD -DINCLUDE_PLATFORM=1 -DUSE_STDPERIPH_DRIVER -DDFU_BUILD_ENABLE
 compiler.image.define=-DUSER_FIRMWARE_IMAGE_SIZE=0x40000 -DUSER_FIRMWARE_IMAGE_LOCATION=0x80C0000
-compiler.system_version.define=-DSYSTEM_VERSION_STRING=0.2.1
-compiler.module.define=-DMODULAR_FIRMWARE=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_VERSION=3 -DMODULE_DEPENDENCY=4,2,3
+compiler.system_version.define=-DSYSTEM_VERSION_STRING=0.2.2
+compiler.module.define=-DMODULAR_FIRMWARE=1 -DMODULE_FUNCTION=5 -DMODULE_INDEX=1 -DMODULE_VERSION=4 -DMODULE_DEPENDENCY=4,2,4
 
 # Compile s files options
 compiler.s.cmd=arm-none-eabi-as
@@ -22,11 +22,11 @@ compiler.s.flags=-c -g -x assembler-with-cpp -mthumb
 
 # Compile c files options
 compiler.c.cmd=arm-none-eabi-gcc
-compiler.c.flags=-c -g3 -gdwarf-2 -Os -w -std=gnu99 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-rtti -mcpu=cortex-m3 -Dprintf=iprintf  
+compiler.c.flags=-c -g3 -gdwarf-2 -Os -mcpu=cortex-m3 -w -std=gnu99 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-exceptions -fno-rtti
 
 # Compile cpp files options
 compiler.cpp.cmd=arm-none-eabi-g++
-compiler.cpp.flags=-c -g3 -gdwarf-2 -Os -w -std=gnu++11 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-rtti -mcpu=cortex-m3 -Dprintf=iprintf
+compiler.cpp.flags=-c -g3 -gdwarf-2 -Os -mcpu=cortex-m3 -w -std=gnu++11 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-exceptions -fno-rtti
 
 # Create archives options
 compiler.ar.cmd=arm-none-eabi-ar

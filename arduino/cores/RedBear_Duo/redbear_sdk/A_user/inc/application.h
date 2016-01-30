@@ -66,6 +66,7 @@
 
 #if PLATFORM_ID==88
 #include "spark_wiring_hciserial.h"
+#include "spark_wiring_btstack.h"
 #endif
 
 // this was being implicitly pulled in by some of the other headers

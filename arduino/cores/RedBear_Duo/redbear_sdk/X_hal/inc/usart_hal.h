@@ -50,7 +50,7 @@ typedef struct Ring_Buffer
 
 typedef enum HAL_USART_Serial {
   HAL_USART_SERIAL1 = 0,    //maps to USART_TX_RX
-  HAL_USART_SERIAL2 = 1     //maps to USART_RGBG_RGBB
+  HAL_USART_SERIAL2 = 1     //maps to USART_A1_A0 if Duo, else map to USART_RGBG_RGBB
 #if PLATFORM_ID == 10 // Electron
   ,HAL_USART_SERIAL3 = 2    //maps to USART_TXD_UC_RXD_UC
   ,HAL_USART_SERIAL4 = 3    //maps to USART_C3_C2
@@ -72,6 +72,7 @@ void HAL_USART_Init(HAL_USART_Serial serial, Ring_Buffer *rx_buffer, Ring_Buffer
 void HAL_USART_Begin(HAL_USART_Serial serial, uint32_t baud);
 void HAL_USART_End(HAL_USART_Serial serial);
 uint32_t HAL_USART_Write_Data(HAL_USART_Serial serial, uint8_t data);
+int32_t HAL_USART_Available_Data_For_Write(HAL_USART_Serial serial);
 int32_t HAL_USART_Available_Data(HAL_USART_Serial serial);
 int32_t HAL_USART_Read_Data(HAL_USART_Serial serial);
 int32_t HAL_USART_Peek_Data(HAL_USART_Serial serial);
