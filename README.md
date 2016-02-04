@@ -17,6 +17,7 @@ Note: unless you want to contribute to the Duo board support package, you do nee
 
 ![image](images/RBLink_Pinout.jpg)
 
+
 # Requirements
 
 1. Basic [Arduino](http://www.arduino.cc) knowledge
@@ -27,11 +28,13 @@ Note: unless you want to contribute to the Duo board support package, you do nee
 6. Arduino board support package (0.2.3)
 7. Duo Firmware (0.2.2)
 
+
 # Install Driver (only for Windows)
 
 USB CDC
 
 Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
+
 
 # Update Firmware
 
@@ -42,6 +45,7 @@ Connect the Duo to your Windows PC using the USB port and install the driver fro
 2. Continue with [this page](https://github.com/redbear/STM32-Arduino/tree/master/firmware) for the instructions:
 	
 	https://github.com/redbear/STM32-Arduino/tree/master/firmware
+
 
 # Setup Arduino IDE
 
@@ -85,4 +89,8 @@ Step 8:
 
 The blue LED (D7) on the board is blinking.
 
+
+# BLE Status
+
+For Board Package v0.2.3, there are only a few BLE examples, we will add more as soon as possible including BLE Central role examples.
 
