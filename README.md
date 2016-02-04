@@ -11,6 +11,8 @@ The RBLink is for loading/debugging firmwares to the Duo and provides interface 
 
 You do not really need the RBLink if you are not going to development firmware using Broadcom's WICED SDK.
 
+Note: unless you want to contribute to the Duo board support package, you do need to touch the folder 'arduino' because you will use the Arduino Boards Manager to add it to the Arduino IDE. 
+
 ![image](images/RBDuo_Pinout.jpg)
 
 ![image](images/RBLink_Pinout.jpg)
@@ -22,8 +24,8 @@ You do not really need the RBLink if you are not going to development firmware u
 3. Understand the [Duo system architecture](https://github.com/redbear/Duo)
 4. Go through the Duo [Getting Started Guide](https://github.com/redbear/Duo/blob/master/docs/getting_started.md)
 5. Arduino IDE (1.6.7)
-6. Arduino board support package (0.2.2)
-7. Duo Firmware (0.2.1)
+6. Arduino board support package (0.2.3)
+7. Duo Firmware (0.2.2)
 
 # Install Driver (only for Windows)
 
@@ -37,7 +39,7 @@ Connect the Duo to your Windows PC using the USB port and install the driver fro
 
 1. Connect the Duo to your PC via the USB port.
 
-2. Continue with the page for the instructions:
+2. Continue with [this page](https://github.com/redbear/STM32-Arduino/tree/master/firmware) for the instructions:
 	
 	https://github.com/redbear/STM32-Arduino/tree/master/firmware
 
