@@ -3,13 +3,13 @@
 
 Allows Arduino fans to use the Arduino IDE to develop STM32 MCU firmware. Currently, it supports the RedBear Duo (STM32F205) IoT development kit.
 
-The kit contains two boards, the RedBear Duo and the RBLink.
+The Duo IoT development kit contains two boards, the Duo and the RBLink.
 
 The Duo is a small and powerful IoT development board that has an ARM Cortex-M3 MCU runs at 120 MHz with 1 MB Flash (256 KB for Arduino sketch) and 128 KB SRAM, it comes with Broadcom's BCM43438 connectivity chip so that the Duo has WiFi (802.11n / 2.4 GHz) and Bluetooth features at the same time, the board only requires a single antenna.
 
-The RBLink is for loading/debugging firmwares to the Duo and provides interface for Seeed Studio Grove System modules.
+The RBLink provides interfaces for Seeed Studio Grove System modules.
 
-You do not really need the RBLink if you are not going to development firmware using Broadcom's WICED SDK.
+You do not really need the RBLink if you are not going to develop firmware using Broadcom's WICED SDK.
 
 Note: unless you want to contribute to the Duo board support package, you do need to touch the folder 'arduino' because you will use the Arduino Boards Manager to add it to the Arduino IDE. 
 
@@ -93,4 +93,10 @@ The blue LED (D7) on the board is blinking.
 # BLE Status
 
 For Board Package v0.2.3, there are only a few BLE examples, we will add more as soon as possible including BLE Central role examples.
+
+
+# Known Issues
+
+Sketches compiled (.bin) cannot be uploaded using DFU-UTIL, since there is no CRC32 added at the end, if you need to deploy the bin file to others without the source of your sketch, use the crc.sh in the utils folder to add CRC-32 checksum, this will be fixed in board package v0.2.4, hopefully.
+
 

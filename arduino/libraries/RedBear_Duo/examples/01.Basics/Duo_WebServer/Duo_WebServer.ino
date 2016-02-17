@@ -83,7 +83,13 @@ void setup()
     Serial.print("Device ID: ");
     for(uint8_t i=0; i<DEVICE_ID_LEN; i++)
     {
-      Serial.print(dev_id[i], HEX);
+      uint8_t c;
+      c = (dev_id[i]>>4) + 48;
+      if(c>57) c += 39;
+      Serial.write(c);
+      c = (dev_id[i]&0x0F) + 48;
+      if(c>57) c += 39;
+      Serial.write(c);
     }
     Serial.println("\n");
     
