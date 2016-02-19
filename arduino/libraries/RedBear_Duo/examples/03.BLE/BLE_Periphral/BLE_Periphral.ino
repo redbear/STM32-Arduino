@@ -1,7 +1,8 @@
-
-#include "Arduino.h"
-
-SYSTEM_MODE(MANUAL);
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 #define DEVICE_NAME                "BLE_Peripheral"
 

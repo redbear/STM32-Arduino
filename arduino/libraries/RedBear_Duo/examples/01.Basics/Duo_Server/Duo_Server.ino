@@ -1,7 +1,3 @@
-
-#include "Arduino.h"
-
-
 /* 
  *  This is a simple TCP server, telnet to this sketch with an IP 
  *  assigned.
@@ -10,11 +6,14 @@
  */
  
 // Modified the following for your AP/Router.
-//#define AP "Your_AP"
-//#define PIN "Your_PIN_I_Do_Not_Know"
+//#define AP "duo"
+//#define PIN "password"
 
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 // Server Port
 TCPServer server = TCPServer(8888);

@@ -1,11 +1,13 @@
-#include "Arduino.h"
 #include "MDNS.h"
 
 #define DEVICE_ID_ADDR (0x1FFF7A10)
 #define DEVICE_ID_LEN  12
 
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
-//SYSTEM_MODE(MANUAL);//do not connect to cloud
+#endif
 
 TCPServer server = TCPServer(80);
 TCPClient client;

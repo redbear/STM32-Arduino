@@ -25,9 +25,6 @@
  modified 1 DEC 2015
  by Jackson Lv
  */
-#include "Arduino.h"
-#include "spark_wiring_wifi.h"
-#include "spark_wiring_client.h"
 
 // your network name also called SSID
 char ssid[] = "Duo";
@@ -35,8 +32,11 @@ char ssid[] = "Duo";
 char password[] = "password";
 
 
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 
 TCPServer server = TCPServer(80);
@@ -69,10 +69,13 @@ void setup() {
   Serial.println("\nYou're connected to the network");
   Serial.println("Waiting for an ip address");
   
-  while (WiFi.localIP() == INADDR_NONE) {
-    // print dots while we wait for an ip addresss
-    Serial.print(".");
-    delay(300);
+  IPAddress localIP = WiFi.localIP();
+
+  while (localIP[0] == 0)
+  {
+      localIP = WiFi.localIP();
+      Serial.println("waiting for an IP address");
+      delay(1000);
   }
 
   Serial.println("\nIP Address obtained");

@@ -15,9 +15,6 @@
 
  */
 
-#include "Arduino.h"
-#include "spark_wiring_wifi.h"
-#include "spark_wiring_client.h"
 
 // your network name also called SSID
 char ssid[] = "Duo";
@@ -31,8 +28,11 @@ char  ReplyBuffer[] = "acknowledged";       // a string to send back
 
 UDP Udp;
 
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 void printWifiStatus();
 

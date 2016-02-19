@@ -20,23 +20,20 @@
 
  */
 
-#include "Arduino.h"
-#include "spark_wiring_wifi.h"
-#include "spark_wiring_client.h"
-
-
 // your network name also called SSID
-char ssid[] = "Duo";
+char ssid[] = "AP-02_2.4G";
 // your network password
-char password[] = "password";
+char password[] = "0098019777";
 // your network key Index number (needed only for WEP)
 int keyIndex = 0;
 
 TCPServer server(80);
 
-
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 #define BLUE_LED    7
 
@@ -63,10 +60,13 @@ void setup() {
   Serial.println("\nYou're connected to the network");
   Serial.println("Waiting for an ip address");
   
-  while (WiFi.localIP() == INADDR_NONE) {
-    // print dots while we wait for an ip addresss
-    Serial.print(".");
-    delay(300);
+  IPAddress localIP = WiFi.localIP();
+
+  while (localIP[0] == 0)
+  {
+      localIP = WiFi.localIP();
+      Serial.println("waiting for an IP address");
+      delay(1000);
   }
 
   // you're connected now, so print out the status  

@@ -5,8 +5,11 @@
 #include <math.h>
 #include "TM1637.h"
 
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 void dispNum(unsigned int num);
 

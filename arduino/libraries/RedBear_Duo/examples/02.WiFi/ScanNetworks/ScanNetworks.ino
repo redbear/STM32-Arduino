@@ -14,12 +14,11 @@
  */
 
 
-#include "Arduino.h"
-#include "spark_wiring_wifi.h"
-#include "spark_wiring_client.h"
-
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 void printEncryptionType(int thisType);
 void printMacAddress();

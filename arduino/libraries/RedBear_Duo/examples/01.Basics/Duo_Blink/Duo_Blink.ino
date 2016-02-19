@@ -1,10 +1,11 @@
-
-
 int led1 = D0;
 int led2 = D7; 
 
-//SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 void setup() {
 
