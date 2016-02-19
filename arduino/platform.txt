@@ -70,12 +70,15 @@ recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.device.
 recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2bin.cmd}" {compiler.elf2bin.flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
 
 ## Create hex
-recipe.objcopy.hex1.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags1} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}_raw.hex"  
-recipe.objcopy.hex2.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags2} "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.hex" 
+#recipe.objcopy.hex1.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags1} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}_raw.hex"  
+#recipe.objcopy.hex2.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags2} "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.hex" 
+
+## Add CRC32
+recipe.hooks.postbuild.0.pattern={runtime.platform.path}/tools/crc32/{runtime.os}/sh {runtime.platform.path}/tools/crc32/{runtime.os}/crc32.sh "{build.path}/{build.project_name}.bin" {runtime.platform.path}/tools/crc32/{runtime.os} {compiler.path}
 
 ## Save hex
 recipe.output.tmp_file={build.project_name}.bin
-recipe.output.save_file={build.project_name}.{build.variant}.bin
+recipe.output.save_file={build.project_name}.bin 
 
 ## Compute size
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
@@ -99,7 +102,7 @@ tools.avrdude.config.path.linux={runtime.platform.path}/avrdude_conf/avrdude.con
 
 tools.avrdude.upload.params.verbose=-v -v -v -v
 tools.avrdude.upload.params.quiet=-q -q
-tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose} -p{build.mcu} -c{upload.protocol} -P{serial.port} -b{upload.speed} -D "-Uflash:w:{build.path}/{build.project_name}.hex:i"
+tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose} -p{build.mcu} -c{upload.protocol} -P{serial.port} -b{upload.speed} -D "-Uflash:w:{build.path}/{build.project_name}.bin.hex:i"
 
 
 
