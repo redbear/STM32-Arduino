@@ -76,34 +76,37 @@ void MMA7660::setSampleRate(uint8_t rate)
 /*          so as to calculate the acceleration.            */
 void MMA7660::getXYZ(int8_t *x,int8_t *y,int8_t *z)
 {
-    unsigned char val[3];
-    int count = 0;
-    int timeout = 0;
-    
-    val[0] = val[1] = val[2] = 64;
-    while(Wire.available() > 0)
-    {
-        Wire.read();
-        delay(1);
-        if(timeout++ > 100) break;
-    }
-        
-    Wire.requestFrom(MMA7660_ADDR,3);
-    while(Wire.available())  
-    {
-        if(count < 3)
-        {
-            while ( val[count] > 63 )  // reload the damn thing it is bad
-            {
-              val[count] = Wire.read();
-            }
-        }
-        count++;
-    }
-    *x = ((char)(val[0]<<2))/4;
-    *y = ((char)(val[1]<<2))/4;
-    *z = ((char)(val[2]<<2))/4;
+signed char val[3];
+int8_t xx, yy, zz;
+int count;
+bool error;
+//val[0] = val[1] = val[2] = 64;
+
+do {
+error = false;
+count = 0;
+while(Wire.available() > 0)
+Wire.read();
+Wire.requestFrom(MMA7660_ADDR,3);
+while(Wire.available()) {
+if(count < 3) {
+val[count] = Wire.read(); 
+if (0x40 & val[count] == 0x40) { // alert bit is set, data is garbage and we have to start over.
+error = true;
+break;
 }
+}
+count++;
+}
+} while (error);
+xx = ((char)(val[0]<< 2));
+yy = ((char)(val[1]<< 2));
+zz = ((char)(val[2]<< 2));
+*x = xx / 4;
+*y = yy / 4;
+*z = zz / 4;
+}
+
 
 void MMA7660::getAcceleration(float *ax,float *ay,float *az)
 {
