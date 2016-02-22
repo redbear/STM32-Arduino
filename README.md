@@ -36,6 +36,17 @@ USB CDC
 Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
 
 
+# Update udev Rules (only for Linux)
+
+For Linux (e.g. Ubuntu 14.04) users: ModemManager will try to use the Duo as a modem and this causes the upload process fail using Arduino IDE. To allow Arduino IDE to upload correctly, you need to fix it by modify the UDEV rule, write a simple UDEV rule to ignore it from being handled by modem manager.
+
+	$ sudo /etc/udev/rules.d/77-mm-usb-device-blacklist.rules
+	
+Simply add this single line:
+
+	ATTR{idVendor}=="2b04", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+
 # Update Firmware
 
 ![image](images/mode_standalone.jpg)
