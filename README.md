@@ -46,6 +46,11 @@ Simply add this single line:
 
 	ATTR{idVendor}=="2b04", ENV{ID_MM_DEVICE_IGNORE}="1"
 
+# Install lsb-core (only for Linux)
+
+On Linux, if you cannot compile sketches (the IDE cannot find gcc or g++):
+
+	$ sudo apt-get install lsb-core
 
 # Update Firmware
 
