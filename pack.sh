@@ -1,14 +1,17 @@
 #!/bin/sh
 
-board_man_ver=0.2.4
+sudo chmod +x arduino/tools/crc32/linux/crc32.sh
+sudo chmod +x arduino/tools/crc32/linux/sh
+sudo chmod +x arduino/tools/crc32/macosx/crc32.sh
+sudo chmod +x arduino/tools/crc32/macosx/sh  
 
-board_pack_name=duo_board_v$board_man_ver
+board_pack_name=duo_board_v$1
 
-mkdir $board_man_ver
+mkdir $1
 
-cp -a arduino/ $board_man_ver/
+cp -a arduino/ $1/
 
-tar -zcvf  $board_pack_name.tar.gz $board_man_ver
+tar -zcvf  $board_pack_name.tar.gz $1
 
-rm -r $board_man_ver
+rm -r $1
 
