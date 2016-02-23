@@ -29,10 +29,11 @@
 // automatically includes it..
 #include <avr/pgmspace.h>
 
-#include "module_define.h"
+//#include "module_define.h"
+#include "platforms.h"
 #include "application.h"
-#include "pinmap_hal.h"
-#include "spark_wiring.h"
-#include "spark_wiring_tcpclient.h"
+//#include "pinmap_hal.h"
+//#include "spark_wiring.h"
+//#include "spark_wiring_tcpclient.h"
 
 #endif 
