@@ -2,7 +2,7 @@
 
 board_man_ver=0.2.4
 
-board_pack_name=duo_board_v024
+board_pack_name=duo_board_v$board_man_ver
 
 mkdir $board_man_ver
 
