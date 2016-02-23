@@ -1,11 +1,14 @@
 #!/bin/sh
 
+board_man_ver=0.2.4
 
-mkdir 0.2.4
+board_pack_name=duo_board_v024
 
-cp -a arduino/ 0.2.4/
+mkdir $board_man_ver
 
-tar -zcvf  duo_board_v024-beta.tar.gz 0.2.4
+cp -a arduino/ $board_man_ver/
 
-rm -r 0.2.4
+tar -zcvf  $board_pack_name.tar.gz $board_man_ver
+
+rm -r $board_man_ver
 
