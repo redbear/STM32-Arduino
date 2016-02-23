@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.2.4 Beta
+v0.2.4
 
 * For the Duo firmware v0.2.2, see [firmware](firmware) folder for details.
 * Fixes the Windows username bug.

@@ -25,7 +25,7 @@ Note: unless you want to contribute to the Duo board support package, you do nee
 3. Understand the [Duo system architecture](https://github.com/redbear/Duo)
 4. Go through the Duo [Getting Started Guide](https://github.com/redbear/Duo/blob/master/docs/getting_started.md)
 5. Arduino IDE (1.6.7)
-6. Arduino board support package (0.2.3)
+6. Arduino board support package (0.2.4)
 7. Duo Firmware (0.2.2)
 
 
@@ -46,11 +46,13 @@ Simply add this single line:
 
 	ATTR{idVendor}=="2b04", ENV{ID_MM_DEVICE_IGNORE}="1"
 
+
 # Install lsb-core (only for Linux)
 
 On Linux, if you cannot compile sketches (the IDE cannot find gcc or g++):
 
 	$ sudo apt-get install lsb-core
+
 
 # Update Firmware
 
