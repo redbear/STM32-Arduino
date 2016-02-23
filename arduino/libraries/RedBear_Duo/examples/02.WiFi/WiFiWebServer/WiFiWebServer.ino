@@ -21,9 +21,9 @@
  */
 
 // your network name also called SSID
-char ssid[] = "AP-02_2.4G";
+char ssid[] = "Duo";
 // your network password
-char password[] = "0098019777";
+char password[] = "password";
 // your network key Index number (needed only for WEP)
 int keyIndex = 0;
 
