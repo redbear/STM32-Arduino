@@ -38,6 +38,7 @@ typedef struct hal_timer{
     void (*process)(struct hal_timer *ts);
 }hal_timer_source_t;
 
+/**@brief BLE status */
 typedef enum BLEStatus {
     BLE_STATUS_OK,
     BLE_STATUS_DONE,    // e.g. for service or characteristic discovery done
