@@ -30,7 +30,7 @@ static uint8_t characteristic1_data[CHARACTERISTIC1_MAX_LEN]={0x01};
 static uint8_t characteristic2_data[CHARACTERISTIC2_MAX_LEN]={0x00};
 static uint8_t characteristic3_data[CHARACTERISTIC2_MAX_LEN]={0x03};
 
-static hal_timer_source_t characteristic2;
+static btstack_timer_source_t characteristic2;
 
 static advParams_t adv_params;
 static uint8_t adv_data[]={0x02,0x01,0x1A, 0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71};
@@ -119,7 +119,7 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size)
     return 0;
 }
 
-static void  characteristic2_notify(struct hal_timer *ts)
+static void  characteristic2_notify(btstack_timer_source_t *ts)
 {
     Serial.println("characteristic2_notify");
 
@@ -144,17 +144,17 @@ void setup()
     ble.onDataWriteCallback(gattWriteCallback);
 
     ble.addService(0x1800);
-    ble.addCharacteristic(0x2A00, PROPERTY_READ|PROPERTY_WRITE, (uint8_t*)DEVICE_NAME, sizeof(DEVICE_NAME));
-    ble.addCharacteristic(0x2A01, PROPERTY_READ, appearance, sizeof(appearance));
-    ble.addCharacteristic(0x2A04, PROPERTY_READ, conn_param, sizeof(conn_param));
+    ble.addCharacteristic(0x2A00, ATT_PROPERTY_READ|ATT_PROPERTY_WRITE, (uint8_t*)DEVICE_NAME, sizeof(DEVICE_NAME));
+    ble.addCharacteristic(0x2A01, ATT_PROPERTY_READ, appearance, sizeof(appearance));
+    ble.addCharacteristic(0x2A04, ATT_PROPERTY_READ, conn_param, sizeof(conn_param));
     ble.addService(0x1801);
-    ble.addCharacteristic(0x2A05, PROPERTY_INDICATE, change, sizeof(change));
+    ble.addCharacteristic(0x2A05, ATT_PROPERTY_INDICATE, change, sizeof(change));
 
     ble.addService(service1_uuid);
-    character1_handle = ble.addCharacteristicDynamic(char1_uuid, PROPERTY_NOTIFY|PROPERTY_WRITE_WITHOUT_RESPONSE, characteristic1_data, CHARACTERISTIC1_MAX_LEN);
-    character2_handle = ble.addCharacteristicDynamic(char2_uuid, PROPERTY_READ|PROPERTY_NOTIFY, characteristic2_data, CHARACTERISTIC2_MAX_LEN);
+    character1_handle = ble.addCharacteristicDynamic(char1_uuid, ATT_PROPERTY_NOTIFY|ATT_PROPERTY_WRITE_WITHOUT_RESPONSE, characteristic1_data, CHARACTERISTIC1_MAX_LEN);
+    character2_handle = ble.addCharacteristicDynamic(char2_uuid, ATT_PROPERTY_READ|ATT_PROPERTY_NOTIFY, characteristic2_data, CHARACTERISTIC2_MAX_LEN);
     ble.addService(service2_uuid);
-    character3_handle = ble.addCharacteristic(char3_uuid, PROPERTY_READ, characteristic3_data, CHARACTERISTIC3_MAX_LEN);
+    character3_handle = ble.addCharacteristic(char3_uuid, ATT_PROPERTY_READ, characteristic3_data, CHARACTERISTIC3_MAX_LEN);
     
     adv_params.adv_int_min = 0x0030;
     adv_params.adv_int_max = 0x0030;

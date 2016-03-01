@@ -17,7 +17,7 @@ void setup()
     Serial.begin(115200);
     delay(5000);
     Serial.println("IBeacon demo.");
-    ble.debugLogger(true);
+    //ble.debugLogger(true);
     ble.init();
     
     adv_params.adv_int_min = 0x00a0;

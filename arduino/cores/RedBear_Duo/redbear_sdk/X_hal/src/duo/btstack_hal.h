@@ -6,37 +6,10 @@
 extern "C" {
 #endif
 
-// MARK: Attribute Property Flags
-#define PROPERTY_BROADCAST                  0x01
-#define PROPERTY_READ                       0x02
-#define PROPERTY_WRITE_WITHOUT_RESPONSE     0x04
-#define PROPERTY_WRITE                      0x08
-#define PROPERTY_NOTIFY                     0x10
-#define PROPERTY_INDICATE                   0x20
-#define PROPERTY_AUTHENTICATED_SIGNED_WRITE 0x40
-#define PROPERTY_EXTENDED_PROPERTIES        0x80
-
-// MARK: Attribute Property Flag, BTstack extension
-// value is asked from client
-#define PROPERTY_DYNAMIC                    0x100
-// 128 bit UUID used
-#define PROPERTY_UUID128                    0x200
-// Authentication required
-#define PROPERTY_AUTHENTICATION_REQUIRED    0x400
-// Authorization from user required
-#define PROPERTY_AUTHORIZATION_REQUIRED     0x800
-
-
-typedef struct hal_linked_item{
-    struct hal_linked_item *next;
-    void *user_data;
-}hal_linked_item_t;
-
-typedef struct hal_timer{
-    hal_linked_item_t item;
-    uint32_t timeout;
-    void (*process)(struct hal_timer *ts);
-}hal_timer_source_t;
+#include "btstack.h"
+#include "btstack_chipset_bcm.h"
+#include "btstack_config.h"
+#include "hci_dump.h"
 
 /**@brief BLE status */
 typedef enum BLEStatus {
@@ -48,14 +21,10 @@ typedef enum BLEStatus {
 } BLEStatus_t;
 
 
-/**@brief BD address */
-#define ADDR_LEN 6
-typedef uint8_t addr_t[ADDR_LEN];
-
 /**@brief BLE advertising report data. */
 typedef struct{
     uint8_t peerAddrType;
-    addr_t  peerAddr;
+    bd_addr_t  peerAddr;
     int     rssi;
     uint8_t advEventType;
     uint8_t advDataLen;
@@ -63,13 +32,13 @@ typedef struct{
 }advertisementReport_t;
 
 typedef struct{
-	uint16_t adv_int_min;
-	uint16_t adv_int_max;
-	uint8_t adv_type;
-	uint8_t dir_addr_type;
-	uint8_t dir_addr[ADDR_LEN];
-	uint8_t channel_map;
-	uint8_t filter_policy;
+    uint16_t adv_int_min;
+    uint16_t adv_int_max;
+    uint8_t adv_type;
+    uint8_t dir_addr_type;
+    uint8_t dir_addr[BD_ADDR_LEN];
+    uint8_t channel_map;
+    uint8_t filter_policy;
 }advParams_t;
 
 /**@brief Device API */
@@ -77,10 +46,10 @@ void hal_btstack_init(void);
 void hal_btstack_deInit(void);
 void hal_btstack_loop_execute(void);
 
-void     hal_btstack_setTimer(hal_timer_source_t *ts, uint32_t timeout_in_ms);
-void     hal_btstack_setTimerHandler(hal_timer_source_t *ts, void (*process)(void *_ts));
-void     hal_btstack_addTimer(hal_timer_source_t *timer);
-int      hal_btstack_removeTimer(hal_timer_source_t *timer);
+void     hal_btstack_setTimer(btstack_timer_source_t *ts, uint32_t timeout_in_ms);
+void     hal_btstack_setTimerHandler(btstack_timer_source_t *ts, void (*process)(btstack_timer_source_t *_ts));
+void     hal_btstack_addTimer(btstack_timer_source_t *timer);
+int      hal_btstack_removeTimer(btstack_timer_source_t *timer);
 uint32_t hal_btstack_getTimeMs(void);
 
 void hal_btstack_debugLogger(uint8_t flag);
@@ -88,12 +57,12 @@ void hal_btstack_debugError(uint8_t flag);
 void hal_btstack_enablePacketLogger(void);
 
 /**@brief Gap API */
-void hal_btstack_getAdvertisementAddr(uint8_t *addr_type, addr_t addr);
-void hal_btstack_setRandomAddressMode(uint8_t random_address_type);
-void hal_btstack_setRandomAddr(addr_t addr);
-void hal_btstack_setPublicBdAddr(addr_t addr);
+void hal_btstack_getAdvertisementAddr(uint8_t *addr_type, bd_addr_t addr);
+void hal_btstack_setRandomAddressMode(gap_random_address_type_t random_address_type);
+void hal_btstack_setRandomAddr(bd_addr_t addr);
+void hal_btstack_setPublicBdAddr(bd_addr_t addr);
 void hal_btstack_setLocalName(const char *local_name);
-void hal_btstack_setAdvParams(uint16_t adv_int_min, uint16_t adv_int_max, uint8_t adv_type, uint8_t dir_addr_type, addr_t dir_addr, uint8_t channel_map, uint8_t filter_policy);
+void hal_btstack_setAdvParams(uint16_t adv_int_min, uint16_t adv_int_max, uint8_t adv_type, uint8_t dir_addr_type, bd_addr_t dir_addr, uint8_t channel_map, uint8_t filter_policy);
 void hal_btstack_setAdvData(uint16_t size, uint8_t *data);
 
 void hal_btstack_startAdvertising(void);
@@ -103,6 +72,7 @@ void hal_btstack_setConnectedCallback(void (*callback)(BLEStatus_t status, uint1
 void hal_btstack_setDisconnectedCallback(void (*callback)(uint16_t handle));
 
 void hal_btstack_disconnect(uint16_t handle);
+uint8_t hal_btstack_connect(bd_addr_t addr, bd_addr_type_t type);
 
 /**@brief Gatt server API */
 int  hal_btstack_attServerCanSend(void);

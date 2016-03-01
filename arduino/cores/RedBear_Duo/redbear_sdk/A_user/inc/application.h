@@ -41,10 +41,10 @@
 #include "spark_wiring_fuel.h"  
 #include "spark_wiring_print.h"
 #include "spark_wiring_usartserial.h"
+#include "spark_wiring_can.h"
 #include "spark_wiring_usbserial.h"
 #include "spark_wiring_usbmouse.h"
 #include "spark_wiring_usbkeyboard.h"
-#include "spark_wiring_spi.h"
 #include "spark_wiring_i2c.h"
 #include "spark_wiring_servo.h"
 #include "spark_wiring_wifi.h"
@@ -59,6 +59,7 @@
 #include "spark_wiring_tone.h"
 #include "spark_wiring_eeprom.h"
 #include "spark_wiring_version.h"
+#include "spark_wiring_watchdog.h"
 #include "spark_wiring_thread.h"
 #include "fast_pin.h"
 #include "string_convert.h"
@@ -68,6 +69,7 @@
 #include "spark_wiring_hciserial.h"
 #include "spark_wiring_btstack.h"
 #endif
+#include "spark_wiring_spi.h"
 
 // this was being implicitly pulled in by some of the other headers
 // adding here for backwards compatibility.
