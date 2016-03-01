@@ -95,7 +95,8 @@ recipe.preproc.macros="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {
 # ----------------------
 
 tools.fw_loader.path={runtime.platform.path}/tools/fw_loader/{runtime.os}
-tools.fw_loader.cmd.path={path}/fw-load
+tools.fw_loader.cmd=fw-load
+tools.fw_loader.cmd.windows=fw-load.bat
 
 tools.fw_loader.erase.params.verbose=
 tools.fw_loader.erase.params.quiet=
@@ -103,7 +104,7 @@ tools.fw_loader.erase.pattern=
 
 tools.fw_loader.bootloader.params.verbose=
 tools.fw_loader.bootloader.params.quiet=
-tools.fw_loader.bootloader.pattern="{cmd.path}" {path}/dfu-util {runtime.platform.path}/firmwares
+tools.fw_loader.bootloader.pattern="{cmd.path}/{cmd}" {path}/dfu-util {runtime.platform.path}/firmwares
 
 
 tools.avrdude.cmd.path={runtime.tools.avrdude.path}/bin/avrdude
