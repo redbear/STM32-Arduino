@@ -104,7 +104,7 @@ tools.fw_loader.erase.pattern=
 
 tools.fw_loader.bootloader.params.verbose=
 tools.fw_loader.bootloader.params.quiet=
-tools.fw_loader.bootloader.pattern="{cmd.path}/{cmd}" {path}/dfu-util {runtime.platform.path}/firmwares
+tools.fw_loader.bootloader.pattern="{path}/{cmd}" {path}/dfu-util {runtime.platform.path}/firmwares
 
 
 tools.avrdude.cmd.path={runtime.tools.avrdude.path}/bin/avrdude
