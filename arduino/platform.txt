@@ -94,6 +94,19 @@ recipe.preproc.macros="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {
 # RBL_nRF51822 Uploader tools
 # ----------------------
 
+tools.fw_loader.path={runtime.platform.path}/tools/fw_loader/{runtime.os}
+tools.fw_loader.cmd=fw-load
+tools.fw_loader.cmd.windows=fw-load.bat
+
+tools.fw_loader.erase.params.verbose=
+tools.fw_loader.erase.params.quiet=
+tools.fw_loader.erase.pattern=
+
+tools.fw_loader.bootloader.params.verbose=
+tools.fw_loader.bootloader.params.quiet=
+tools.fw_loader.bootloader.pattern="{path}/{cmd}" {path}/dfu-util {runtime.platform.path}/firmwares
+
+
 tools.avrdude.cmd.path={runtime.tools.avrdude.path}/bin/avrdude
 tools.avrdude.config.path={runtime.platform.path}/avrdude_conf/avrdude.conf 
 

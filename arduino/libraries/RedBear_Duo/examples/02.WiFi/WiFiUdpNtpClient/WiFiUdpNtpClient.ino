@@ -34,7 +34,7 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 
 unsigned int localPort = 2390;      // local port to listen for UDP packets
 
-IPAddress timeServer(206,246,122,250); // time.nist.gov NTP server
+IPAddress timeServer(128,138,141,172); // time.nist.gov NTP server
 
 const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
 
@@ -99,8 +99,8 @@ void loop()
     //the timestamp starts at byte 40 of the received packet and is four bytes,
     // or two words, long. First, esxtract the two words:
 
-    unsigned long highWord = (((packetBuffer[40]||0x0000FFFF)<<16)+ packetBuffer[41]);
-    unsigned long lowWord = (((packetBuffer[42]||0x0000FFFF)<<16)+packetBuffer[43]);
+    unsigned long highWord = (((packetBuffer[40]||0x0000FFFF)<<8)+ packetBuffer[41]);
+    unsigned long lowWord = (((packetBuffer[42]||0x0000FFFF)<<8)+packetBuffer[43]);
     // combine the four bytes (two words) into a long integer
     // this is NTP time (seconds since Jan 1 1900):
     unsigned long secsSince1900 = highWord << 16 | lowWord;

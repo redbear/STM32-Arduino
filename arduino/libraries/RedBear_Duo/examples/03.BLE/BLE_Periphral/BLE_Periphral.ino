@@ -154,7 +154,7 @@ void setup()
     character1_handle = ble.addCharacteristicDynamic(char1_uuid, PROPERTY_NOTIFY|PROPERTY_WRITE_WITHOUT_RESPONSE, characteristic1_data, CHARACTERISTIC1_MAX_LEN);
     character2_handle = ble.addCharacteristicDynamic(char2_uuid, PROPERTY_READ|PROPERTY_NOTIFY, characteristic2_data, CHARACTERISTIC2_MAX_LEN);
     ble.addService(service2_uuid);
-    character3_handle = ble.addCharacteristic(char1_uuid, PROPERTY_READ, characteristic3_data, CHARACTERISTIC3_MAX_LEN);
+    character3_handle = ble.addCharacteristic(char3_uuid, PROPERTY_READ, characteristic3_data, CHARACTERISTIC3_MAX_LEN);
     
     adv_params.adv_int_min = 0x0030;
     adv_params.adv_int_max = 0x0030;

@@ -1,0 +1,6 @@
+RedBear_Duo.name=Duo FW Uploader
+RedBear_Duo.name.communication=USB
+RedBear_Duo.name.protocol=
+RedBear_Duo.name.program.protocol=
+RedBear_Duo.program.tool=fw-uploader
+RedBear_Duo.program.extra_params=
