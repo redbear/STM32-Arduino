@@ -1,4 +1,3 @@
-#include "Arduino.h"
 
 #ifndef _INCL_MDNS
 #define _INCL_MDNS
