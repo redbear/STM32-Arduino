@@ -74,6 +74,8 @@ void hal_btstack_setDisconnectedCallback(void (*callback)(uint16_t handle));
 void hal_btstack_disconnect(uint16_t handle);
 uint8_t hal_btstack_connect(bd_addr_t addr, bd_addr_type_t type);
 
+void hal_btstack_setConnParamsRange(le_connection_parameter_range_t range);
+
 /**@brief Gatt server API */
 int  hal_btstack_attServerCanSend(void);
 int  hal_btstack_attServerSendNotify(uint16_t value_handle, uint8_t *value, uint16_t length);

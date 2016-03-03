@@ -31,6 +31,7 @@ void reportCallback(advertisementReport_t *report)
         Serial.print(" ");
     }
     Serial.println(" ");
+    Serial.println(" ");
 }
 
 void setup()
