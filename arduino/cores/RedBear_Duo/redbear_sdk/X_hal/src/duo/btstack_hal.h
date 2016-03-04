@@ -57,7 +57,6 @@ void hal_btstack_debugError(uint8_t flag);
 void hal_btstack_enablePacketLogger(void);
 
 /**@brief Gap API */
-void hal_btstack_getAdvertisementAddr(uint8_t *addr_type, bd_addr_t addr);
 void hal_btstack_setRandomAddressMode(gap_random_address_type_t random_address_type);
 void hal_btstack_setRandomAddr(bd_addr_t addr);
 void hal_btstack_setPublicBdAddr(bd_addr_t addr);
@@ -75,6 +74,12 @@ void hal_btstack_disconnect(uint16_t handle);
 uint8_t hal_btstack_connect(bd_addr_t addr, bd_addr_type_t type);
 
 void hal_btstack_setConnParamsRange(le_connection_parameter_range_t range);
+
+void hal_btstack_startScanning(void);
+void hal_btstack_stopScanning(void);
+
+void hal_btstack_setScanParams(uint8_t scan_type, uint16_t scan_interval, uint16_t scan_window);
+void hal_btstack_setBLEAdvertisementCallback(void (*cb)(advertisementReport_t *advertisement_report));
 
 /**@brief Gatt server API */
 int  hal_btstack_attServerCanSend(void);
@@ -94,10 +99,21 @@ uint16_t hal_btstack_addCharsDynamicUUID128bits(uint8_t *uuid, uint16_t flags, u
 
 
 /**@brief Gatt client API */
-void hal_btstack_startScanning(void);
-void hal_btstack_stopScanning(void);
+void hal_btstack_setGattServiceDiscoveredCallback(void (*cb)(BLEStatus_t status, gatt_client_service_t *service));
+void hal_btstack_setGattCharsDiscoveredCallback(void (*cb)(BLEStatus_t status, gatt_client_characteristic_t *characteristic));
+void hal_btstack_setGattCharsDescriptorsDiscoveredCallback(void (*cb)(BLEStatus_t status, gatt_client_characteristic_descriptor_t *characteristic));
 
-void hal_btstack_setBLEAdvertisementCallback(void (*cb)(advertisementReport_t *advertisement_report));
+uint8_t hal_btstack_discoverPrimaryServices(uint16_t con_handle);
+uint8_t hal_btstack_discoverPrimaryServicesByUUID16(uint16_t con_handle, uint16_t uuid16);
+uint8_t hal_btstack_discoverPrimaryServicesByUUID128(uint16_t con_handle, const uint8_t *uuid);
+
+uint8_t hal_btstack_discoverCharsForService(uint16_t con_handle, gatt_client_service_t  *service);
+uint8_t hal_btstack_discoverCharsForHandleRangeByUUID16(uint16_t con_handle, uint16_t start_handle, uint16_t end_handle, uint16_t uuid16);
+uint8_t hal_btstack_discoverCharsForHandleRangeByUUID128(uint16_t con_handle, uint16_t start_handle, uint16_t end_handle, uint8_t *uuid);
+uint8_t hal_btstack_discoverCharsForServiceByUUID16(uint16_t con_handle, gatt_client_service_t *service, uint16_t uuid16);
+uint8_t hal_btstack_discoverCharsForServiceByUUID128(uint16_t con_handle, gatt_client_service_t *service, uint8_t *uuid128);
+
+uint8_t hal_btstack_discoverCharsDescriptors(uint16_t con_handle, gatt_client_characteristic_t *characteristic);
 
 
 #ifdef __cplusplus
