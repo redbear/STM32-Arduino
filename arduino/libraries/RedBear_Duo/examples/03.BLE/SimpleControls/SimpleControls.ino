@@ -72,9 +72,9 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size)
 
     if(character1_handle == value_handle)
     {
-        memcpy(characteristic1_data, buffer, size);
+        memcpy(characteristic1_data, buffer, CHARACTERISTIC1_MAX_LEN);
         Serial.print("Characteristic1 write value: ");
-        for(uint8_t index=0; index<size; index++)
+        for(uint8_t index=0; index<CHARACTERISTIC1_MAX_LEN; index++)
         {
             Serial.print(characteristic1_data[index], HEX);
             Serial.print(" ");
