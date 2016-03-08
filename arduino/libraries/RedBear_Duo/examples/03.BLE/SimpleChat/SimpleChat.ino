@@ -36,7 +36,7 @@ static uint8_t characteristic2_data[CHARACTERISTIC2_MAX_LEN]={0x00};
 static btstack_timer_source_t characteristic2;
 
 static advParams_t adv_params;
-static uint8_t adv_data[]={0x02,0x01,0x06, 0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71};
+static uint8_t adv_data[]={0x02,0x01,0x06,0x08,0x08,'B','i','s','c','u','i','t',0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71};
 
 char rx_buf[TXRX_BUF_LEN];
 static uint8_t rx_buf_num;
@@ -70,9 +70,9 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size)
 
     if(character1_handle == value_handle)
     {
-        memcpy(characteristic1_data, buffer, CHARACTERISTIC1_MAX_LEN);
+        memcpy(characteristic1_data, buffer, min(size,CHARACTERISTIC1_MAX_LEN));
         Serial.print("Characteristic1 write value: ");
-        for(uint8_t index=0; index<CHARACTERISTIC1_MAX_LEN; index++)
+        for(uint8_t index=0; index<min(size,CHARACTERISTIC1_MAX_LEN); index++)
         {
             Serial.print(characteristic1_data[index], HEX);
             Serial.print(" ");
@@ -96,8 +96,10 @@ static void  characteristic2_notify(btstack_timer_source_t *ts)
 
     if (Serial.available()) {
       //read the serial command into a buffer
-
-      Serial.readBytes(rx_buf, Serial.available());
+      
+      uint8_t rx_len =min(Serial.available(),CHARACTERISTIC2_MAX_LEN);
+      
+      Serial.readBytes(rx_buf, rx_len);
       //send the serial command to the server
   
       Serial.print("Sent: ");
@@ -120,7 +122,7 @@ void setup()
 {
     Serial.begin(115200);
     delay(5000);
-    Serial.println("Simple Controlsl demo.");
+    Serial.println("Simple Chat demo.");
     
     //ble.debugLogger(true);
     ble.init();
