@@ -4,17 +4,16 @@
 
 v0.2.5
 
-* For the Duo firmware v0.2.2
-* Provides "BurnBootloader" feature
-* Fixes the bug in BLE_Periphal example
+* For the Duo firmware v0.2.2 (use "Burn Bootloader" from the Arduino IDE to update system firmware)
+* Provides "Burn Bootloader" feature to update system firmware
+* Fixes the bug in BLE_Peripheral example
 * Fixes the bug in WiFiDdpNtpClient example
-* Add pack.sh and test.sh
  
 ## Version History
 
 v0.2.4
 
-* For the Duo firmware v0.2.2, see [firmware](firmware) folder for details.
+* For the Duo firmware v0.2.2, see the [Duo firmware](https://github.com/redbear/Duo/tree/master/firmware) for details.
 * Fixes the Windows username bug.
 * Fixes the export firmware bug, now export to .bin (not .hex). 
 * Fixes the bug in grove sensor example.
