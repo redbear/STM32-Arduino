@@ -19,7 +19,7 @@ v0.2.4
 * Fixes the bug in grove sensor example.
 * After compilation, the IDE now adds CRC32 to the compiled binary file (for DFU upload).
 * Fixes the bug in webserver example (device ID).
-* 
+
 v0.2.3
 
 * For the Duo firmware v0.2.2
