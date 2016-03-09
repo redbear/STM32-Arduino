@@ -13,9 +13,9 @@ You do not really need the RBLink if you are not going to develop firmware using
 
 Note: unless you want to contribute to the Duo board support package, you do need to touch the folder 'arduino' because you will use the Arduino Boards Manager to add it to the Arduino IDE. 
 
-![image](images/RBDuo_Pinout.jpg)
+![image](docs/images/RBDuo_Pinout.jpg)
 
-![image](images/RBLink_Pinout.jpg)
+![image](docs/images/RBLink_Pinout.jpg)
 
 
 # Requirements
@@ -56,7 +56,7 @@ On Linux, if you cannot compile sketches (the IDE cannot find gcc or g++):
 
 # Update Firmware
 
-![image](images/mode_standalone.jpg)
+![image](docs/images/mode_standalone.jpg)
 
 1. Connect the Duo to your PC via the USB port.
 
@@ -89,7 +89,7 @@ Connect the Duo to your computer through the USB port of the Duo.
 
 *** Note that, it is not the RBLink's USB port if you are going to use the RBLink for Grove System components, the following photo shows the setup (connected to Grove RGB LED):
 
-![image](images/mode_grove.jpg)
+![image](docs/images/mode_grove.jpg)
 
 Step 5:
 
