@@ -20,18 +20,25 @@ Note: unless you want to contribute to the Duo board support package, you do nee
 
 # Requirements
 
+### Hardware
+
+1. RedBear [Duo](http://www.redbear.cc/duo) development board
+
+### Readings
+
 1. Basic [Arduino](http://www.arduino.cc) knowledge
-2. RedBear [Duo](http://www.redbear.cc/duo) development board
-3. Understand the [Duo system architecture](https://github.com/redbear/Duo)
-4. Go through the Duo [Getting Started Guide](https://github.com/redbear/Duo/blob/master/docs/getting_started.md)
-5. Arduino IDE (1.6.7)
-6. Arduino board support package (0.2.4)
-7. Duo Firmware (0.2.2)
+2. Understand the [Duo System Overview](https://github.com/redbear/Duo)
+3. Go through the Duo [Getting Started Guide](https://github.com/redbear/Duo/blob/master/docs/getting_started.md)
+
+### Software
+ 
+1. Arduino IDE (Tested with 1.6.7)
+2. Duo board support package for Arduino (See [version](VERSION.md) for the latet version)
 
 
 # Install Driver (only for Windows)
 
-USB CDC
+### USB CDC
 
 Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
 
@@ -54,22 +61,11 @@ On Linux, if you cannot compile sketches (the IDE cannot find gcc or g++):
 	$ sudo apt-get install lsb-core
 
 
-# Update Firmware
-
-![image](docs/images/mode_standalone.jpg)
-
-1. Connect the Duo to your PC via the USB port.
-
-2. Continue with [this page](https://github.com/redbear/STM32-Arduino/tree/master/firmware) for the instructions:
-	
-	https://github.com/redbear/STM32-Arduino/tree/master/firmware
-
-
 # Setup Arduino IDE
 
 Step 1:
 
-Download the Arduino IDE, tested with 1.6.7 on OSX and Windows only but Linux should also work.
+Download the Arduino IDE, support OSX, Windows and Linux.
 
 https://www.arduino.cc/en/Main/Software
 
@@ -81,7 +77,7 @@ https://redbearlab.github.io/arduino/package_redbear_index.json
 
 Step 3:
 
-From the menu, Tools > Board, select "Boards Manager" and install the RedBear Duo board support package to the IDE.
+From the menu, [ Tools ] > [ Board ], select "Boards Manager" and install the RedBear Duo board support package to the IDE.
 
 Step 4:
 
@@ -99,11 +95,31 @@ Step 6:
 
 Select the Port under the Tools menu.
 
-Step 7:
 
-From the menu, File > Examples > RedBear_Duo, select the example "Duo_Blink" and upload to the board.
+# Update Firmware
 
-Step 8:
+### For using Arduino IDE to update
+
+![image](docs/images/mode_standalone.jpg)
+
+* Connect the Duo to your PC via the USB port.
+* Select [ Menu ] -> [ Tools ] -> [ Programmer ] -> [ Duo FW Uploader ]
+* Press and hold the `SETUP` button on the board and press the `RESET` button, until it shows in flashing yellow, release the `SETUP` button, it is in DFU mode now.
+* Select [ Menu ] -> [ Tools ] -> [ Burn Bootloader ] to update the system firmware.
+* You will see the Blue LED on the board is flashing.
+
+### For using DFU-Util
+
+For people want to compile without the Arduino IDE, please use this method to update firmware:
+
+* Read [this page](https://github.com/redbear/STM32-Arduino/tree/master/firmware) for the instructions:
+	
+	https://github.com/redbear/STM32-Arduino/tree/master/firmware
+
+
+# Upload sketch (e.g. Blink)
+
+From the menu, [ File ] > [ Examples ] > [ RedBear_Duo ], select the example `Duo_Blink` and upload to the board.
 
 The blue LED (D7) on the board is blinking.
 
@@ -113,8 +129,5 @@ The blue LED (D7) on the board is blinking.
 For Board Package v0.2.3, there are only a few BLE examples, we will add more as soon as possible including BLE Central role examples.
 
 
-# Known Issues
-
-Sketches compiled (.bin) cannot be uploaded using DFU-UTIL, since there is no CRC32 added at the end, if you need to deploy the bin file to others without the source of your sketch, use the crc.sh in the utils folder to add CRC-32 checksum, this will be fixed in board package v0.2.4, hopefully.
 
 
