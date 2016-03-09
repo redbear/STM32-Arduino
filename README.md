@@ -112,9 +112,7 @@ Select the Port under the Tools menu.
 
 For people want to compile without the Arduino IDE, please use this method to update firmware:
 
-* Read [this page](https://github.com/redbear/STM32-Arduino/tree/master/firmware) for the instructions:
-	
-	https://github.com/redbear/STM32-Arduino/tree/master/firmware
+* Read [this page](https://github.com/redbear/Duo/tree/master/firmware) for the instructions:
 
 
 # Upload sketch (e.g. Blink)
