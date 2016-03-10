@@ -12,7 +12,7 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #define CHARACTERISTIC1_MAX_LEN    15
 #define CHARACTERISTIC2_MAX_LEN    15
 
-#define TXRX_BUF_LEN                      15
+#define TXRX_BUF_LEN               15
 
 /******************************************************
  *               Variable Definitions
@@ -114,7 +114,7 @@ static void  characteristic2_notify(btstack_timer_source_t *ts)
     }
     // reset
     ble.setTimer(ts, 200);
-    ble.addTimerToLoop(ts);
+    ble.addTimer(ts);
   
 }
 
@@ -160,7 +160,7 @@ void setup()
     // set one-shot timer
     characteristic2.process = &characteristic2_notify;
     ble.setTimer(&characteristic2, 500);//100ms
-    ble.addTimerToLoop(&characteristic2);
+    ble.addTimer(&characteristic2);
     
     Serial.println("BLE start advertising.");
     

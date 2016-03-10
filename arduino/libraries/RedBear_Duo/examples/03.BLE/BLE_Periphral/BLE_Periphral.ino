@@ -127,7 +127,7 @@ static void  characteristic2_notify(btstack_timer_source_t *ts)
     ble.sendNotify(character2_handle, characteristic2_data, CHARACTERISTIC2_MAX_LEN);
     // reset
     ble.setTimer(ts, 10000);
-    ble.addTimerToLoop(ts);
+    ble.addTimer(ts);
 }
 
 void setup()
@@ -174,7 +174,7 @@ void setup()
     // set one-shot timer
     characteristic2.process = &characteristic2_notify;
     ble.setTimer(&characteristic2, 10000);//2000ms
-    ble.addTimerToLoop(&characteristic2);
+    ble.addTimer(&characteristic2);
 }
 
 void loop()
