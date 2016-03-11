@@ -33,7 +33,7 @@ Note: unless you want to contribute to the Duo board support package, you do nee
 ### Software
  
 1. Arduino IDE (Tested with 1.6.7)
-2. Duo board support package for Arduino (See [version](VERSION.md) for the latet version)
+2. Duo board support package for Arduino (See [version](VERSION.md) for the latest version)
 
 
 # Install Driver (only for Windows)
