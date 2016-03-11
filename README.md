@@ -33,14 +33,14 @@ Note: unless you want to contribute to the Duo board support package, you do nee
 ### Software
  
 1. Arduino IDE (Tested with 1.6.7)
-2. Duo board support package for Arduino (See [version](VERSION.md) for the latet version)
+2. Duo board support package for Arduino (See [version](VERSION.md) for the latest version)
 
 
 # Install Driver (only for Windows)
 
 ### USB CDC
 
-Connect the Duo to your Windows PC using the USB port and install the driver from the "driver/windows" folder.
+Connect the Duo to your Windows PC using the USB port and install the driver from the [driver/windows](driver/windows) folder.
 
 
 # Update udev Rules (only for Linux)
@@ -89,11 +89,11 @@ Connect the Duo to your computer through the USB port of the Duo.
 
 Step 5:
 
-From the menu, Tools > Board, select RedBear Duo under RedBear IoT Boards.
+From the menu, [ Tools ] > [ Board ], select [ RedBear Duo ] under RedBear IoT Boards.
 
 Step 6:
 
-Select the Port under the Tools menu.
+Select the Port under the [ Tools ] -> [ Port ] menu.
 
 
 # Update Firmware
@@ -112,20 +112,22 @@ Select the Port under the Tools menu.
 
 For people want to compile without the Arduino IDE, please use this method to update firmware:
 
-* Read [this page](https://github.com/redbear/Duo/tree/master/firmware) for the instructions:
+* Read the [Firmware Management Guide](https://github.com/redbear/Duo/tree/master/firmware) for the instructions.
 
 
 # Upload sketch (e.g. Blink)
 
-From the menu, [ File ] > [ Examples ] > [ RedBear_Duo ], select the example `Duo_Blink` and upload to the board.
+From the menu, [ File ] > [ Examples ] > [ RedBear_Duo ] -> [01.Basics], select the example `Duo_Blink` and upload to the board.
 
 The blue LED (D7) on the board is blinking.
 
 
-# BLE Status
+# ToDo
 
-For Board Package v0.2.3, there are only a few BLE examples, we will add more as soon as possible including BLE Central role examples.
+* Support Arduino IDE 1.6.8
+* More BLE Peripheral examples
+* More BLE Central examples
+* Support upload sketches using the RBLink
 
-
-
+Please also propose other good features.
 

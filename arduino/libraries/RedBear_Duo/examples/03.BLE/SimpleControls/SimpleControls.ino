@@ -176,8 +176,8 @@ void setup()
     character1_handle = ble.addCharacteristicDynamic(service1_tx_uuid, ATT_PROPERTY_NOTIFY|ATT_PROPERTY_WRITE|ATT_PROPERTY_WRITE_WITHOUT_RESPONSE, characteristic1_data, CHARACTERISTIC1_MAX_LEN);
     character2_handle = ble.addCharacteristicDynamic(service1_rx_uuid, ATT_PROPERTY_NOTIFY, characteristic2_data, CHARACTERISTIC2_MAX_LEN);
     
-    adv_params.adv_int_min = 0x0030;
-    adv_params.adv_int_max = 0x0030;
+    adv_params.adv_int_min = 0x00A0;
+    adv_params.adv_int_max = 0x01A0;
     adv_params.adv_type    = 0;
     adv_params.dir_addr_type = 0;
     memset(adv_params.dir_addr,0,6);
