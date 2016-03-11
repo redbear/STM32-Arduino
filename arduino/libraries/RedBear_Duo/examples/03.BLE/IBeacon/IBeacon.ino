@@ -17,9 +17,9 @@ void setup()
     //ble.debugLogger(true);
     ble.init();
     
-    adv_params.adv_int_min = 0x00a0;
-    adv_params.adv_int_max = 0x0180;
-    adv_params.adv_type    = 0;
+    adv_params.adv_int_min = 0x00A0;
+    adv_params.adv_int_max = 0x01A0;
+    adv_params.adv_type    = 3;
     adv_params.dir_addr_type = 0;
     memset(adv_params.dir_addr,0,6);
     adv_params.channel_map = 0x07;

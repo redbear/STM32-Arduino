@@ -156,8 +156,8 @@ void setup()
     ble.addService(service2_uuid);
     character3_handle = ble.addCharacteristic(char3_uuid, ATT_PROPERTY_READ, characteristic3_data, CHARACTERISTIC3_MAX_LEN);
     
-    adv_params.adv_int_min = 0x0030;
-    adv_params.adv_int_max = 0x0030;
+    adv_params.adv_int_min = 0x00A0;
+    adv_params.adv_int_max = 0x01A0;
     adv_params.adv_type    = 0;
     adv_params.dir_addr_type = 0;
     memset(adv_params.dir_addr,0,6);
