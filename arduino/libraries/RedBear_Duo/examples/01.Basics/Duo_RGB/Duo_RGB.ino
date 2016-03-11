@@ -17,11 +17,11 @@ void setup()
 // This routine loops forever
 void loop()
 {
-    RGB.color(255, 0, 0);                 // turn down the LED
+    RGB.color(255, 0, 0);                 // set LED to RED
     delay(500);
-    RGB.color(0, 255 ,0);                 // turn down the LED
+    RGB.color(0, 255 ,0);                 // set LED to GREEN
     delay(500);
-    RGB.color(0, 0,255);                 // turn down the LED
+    RGB.color(0, 0,255);                 // set LED to BLUE
     delay(500);
 }
 
