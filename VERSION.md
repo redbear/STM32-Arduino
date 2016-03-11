@@ -2,14 +2,21 @@
 
 ## Current Version
 
+v0.2.6
+
+* For the Duo firmware v0.2.3 (use "Burn Bootloader" from the Arduino IDE to update system firmware)
+* Adds more BLE Peripheral examples
+* Adds more BLE Central examples
+* WebServer sketch now supports BLE
+ 
+## Version History
+
 v0.2.5
 
 * For the Duo firmware v0.2.2 (use "Burn Bootloader" from the Arduino IDE to update system firmware)
 * Provides "Burn Bootloader" feature to update system firmware
 * Fixes the bug in BLE_Peripheral example
 * Fixes the bug in WiFiDdpNtpClient example
- 
-## Version History
 
 v0.2.4
 
