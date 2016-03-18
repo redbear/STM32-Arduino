@@ -5,7 +5,6 @@ RedBear_Duo_native.name=RedBear Duo (Native USB Port)
 RedBear_Duo_native.upload.tool=avrdude
 RedBear_Duo_native.upload.protocol=avr109
 RedBear_Duo_native.upload.maximum_size=262144
-RedBear_Duo_native.upload.maximum_data_size=
 RedBear_Duo_native.upload.speed=19200
 RedBear_Duo_native.upload.disable_flushing=true
 RedBear_Duo_native.upload.use_1200bps_touch=true
