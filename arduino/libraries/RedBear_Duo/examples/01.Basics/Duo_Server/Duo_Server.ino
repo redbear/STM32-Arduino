@@ -6,7 +6,7 @@
  */
  
 // Modified the following for your AP/Router.
-//#define AP "duo"
+//#define AP "Duo"
 //#define PIN "password"
 
 #if defined(ARDUINO) 
@@ -15,9 +15,10 @@ SYSTEM_MODE(MANUAL);//do not connect to cloud
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
+#define MAX_CLIENT_NUM   3
 // Server Port
 TCPServer server = TCPServer(8888);
-TCPClient client;
+TCPClient client[MAX_CLIENT_NUM];
     
 void setup()
 {
@@ -48,14 +49,17 @@ void setup()
     
 void loop()
 {
-    if (client.connected())
+    for(uint8_t i = 0;i<MAX_CLIENT_NUM;i++)
     {
-        Serial.println("Connected by TCP client.");
-        client.println("Hello!");
-    }
-    else
-    {
-        client = server.available();
+        if (client[i].connected())
+        {
+            Serial.println("Connected by TCP client.");
+            client[i].println("Hello!");
+        }
+        else
+        {
+            client[i] = server.available();
+        }
     }
 
     delay(2000);
