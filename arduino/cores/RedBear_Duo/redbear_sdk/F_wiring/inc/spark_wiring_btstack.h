@@ -1,5 +1,5 @@
 
-#ifndef __SPARK_WIRING_BTSTACK_H
+#ifndef __SPARK_WIRING_BTSTACK_H_
 #define __SPARK_WIRING_BTSTACK_H_
 
 #if PLATFORM_ID == 88 // Duo
@@ -95,8 +95,12 @@ public:
     /**
      * @brief Set advertisement parameters.
      *
-     * @note  A problem when setting adv_type, need more test.
-     * @note  own_address_type is used from gap_random_address_set_mode
+     * @note  advertising_interval_min ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
+     *        advertising_interval_max ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
+     *        advertising_type (enum from 0: ADV_IND, ADC_DIRECT_IND, ADV_SCAN_IND, ADV_NONCONN_IND)
+     *        own_address_type (enum from 0: public device address, random device address)
+     *        advertising_channel_map (flags: chan_37(1), chan_38(2), chan_39(4))
+     * @note  If the advertising_type is set to ADV_SCAN_IND or ADV_NONCONN_IND,advertising_interval_min and advertising_interval_max shal not be set to less than 0x00A0.
      *
      */
     void setAdvParams(advParams_t *adv_params);
