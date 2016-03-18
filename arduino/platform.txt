@@ -48,7 +48,7 @@ compiler.elf2hex.flags2=-O ihex -I binary
 # Calculate hex size options
 compiler.size.cmd=arm-none-eabi-size
 
-# RBL_nRF51822 compile patterns
+# RedBear_Duo compile patterns
 # ------------------------
 
 ## Compile S files
@@ -91,7 +91,7 @@ recipe.preproc.includes="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags}
 preproc.macros.flags=-w -x c++ -E -CC
 recipe.preproc.macros="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {preproc.macros.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DPLATFORM_ID=88 -DPLATFORM_NAME=duo {build.extra_flags} {build.variant_base_include} {build.variant_extra_include} {includes} "{source_file}" -o "{preprocessed_file_path}"
 
-# RBL_nRF51822 Uploader tools
+# RedBear_Duo Uploader tools
 # ----------------------
 
 tools.fw_loader.path={runtime.platform.path}/tools/fw_loader/{runtime.os}
@@ -117,6 +117,27 @@ tools.avrdude.upload.params.verbose=-v -v -v -v
 tools.avrdude.upload.params.quiet=-q -q
 tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose} -p{build.mcu} -c{upload.protocol} -P{serial.port} -b{upload.speed} -D "-Uflash:w:{build.path}/{build.project_name}.bin.hex:i"
 
+#
+# OpenOCD tool
+#
 
+tools.openocd.path={runtime.tools.openocd.path}
+tools.openocd.cmd=bin/openocd
+tools.openocd.cmd.windows=bin/openocd.exe
 
+tools.openocd.upload.params.verbose=-d1
+tools.openocd.upload.params.quiet=-d0
+tools.openocd.upload.pattern="{path}/{cmd}" {upload.verbose} -s "{path}/share/openocd/scripts/" -f "{runtime.platform.path}/variants/{build.variant}/{build.openocdscript}" -c "program {{{build.path}/{build.project_name}.bin}} verify reset exit 0x80c0000"
+
+tools.openocd.program.params.verbose=-d2
+tools.openocd.program.params.quiet=-d0
+tools.openocd.program.pattern=
+
+tools.openocd.erase.params.verbose=-d3
+tools.openocd.erase.params.quiet=-d0
+tools.openocd.erase.pattern=
+
+tools.openocd.bootloader.params.verbose=-d1
+tools.openocd.bootloader.params.quiet=-d0
+tools.openocd.bootloader.pattern="{path}/{cmd}" {bootloader.verbose} -s "{path}/share/openocd/scripts/" -f "{runtime.platform.path}/variants/{build.variant}/{build.openocdscript}" -c "init; reset halt; Unlock (); reset halt; program {{{runtime.platform.path}/firmwares/{bootloader.bootloader_file}}} verify {bootloader.bootloader_loc}; program {{{runtime.platform.path}/firmwares/{bootloader.system_part1_file}}} verify {bootloader.system_part1_loc}; program {{{runtime.platform.path}/firmwares/{bootloader.system_part2_file}}} verify reset exit {bootloader.system_part2_loc}" 
 

@@ -1,6 +1,13 @@
-RedBear_Duo.name=Duo FW Uploader
-RedBear_Duo.name.communication=USB
-RedBear_Duo.name.protocol=
-RedBear_Duo.name.program.protocol=
-RedBear_Duo.program.tool=fw-uploader
-RedBear_Duo.program.extra_params=
+dfu_util.name=Duo FW Uploader
+dfu_util.name.communication=USB
+dfu_util.name.protocol=
+dfu_util.name.program.protocol=
+dfu_util.program.tool=fw_loader
+dfu_util.program.extra_params=
+
+rblink.name=RBLink
+rblink.name.communication=USB
+rblink.name.protocol=
+rblink.name.program.protocol=
+rblink.program.tool=openocd
+rblink.program.extra_params=
