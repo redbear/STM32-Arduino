@@ -1,0 +1,53 @@
+
+
+
+Json format:
+
+{
+    "RGB" : 
+    {
+    	"ID"        : 1,     
+    	"OpCode"    : 1,
+    	"R"         : 255,   
+    	"G"         : 100, 
+    	"B"         : 125    
+    }
+}
+
+
+Note: 
+	ID: 0~7
+	OpCode: 0 status change
+		    1 write status
+		    2 read status
+    R: 0~255
+    G: 0~255
+    B: 0~255
+    
+    
+For example:
+
+client read command: Read device1 RGB status, will ignore "R" "G" "B" params.
+{
+    "RGB" : 
+    {
+    	"ID"        : 1,     
+    	"OpCode"    : 2,
+    	"R"         : 0,  
+    	"G"         : 0,  
+    	"B"         : 0    
+    }
+}
+
+Then will receive:
+{
+    "RGB" : 
+    {
+    	"ID"        : 1,     
+    	"OpCode"    : 0,
+    	"R"         : 255,  
+    	"G"         : 50,  
+    	"B"         : 100      
+    }
+}
+
