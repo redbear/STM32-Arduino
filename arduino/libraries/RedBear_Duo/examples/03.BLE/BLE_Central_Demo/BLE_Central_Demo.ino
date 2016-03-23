@@ -1,8 +1,16 @@
 
-SYSTEM_MODE(MANUAL);
+/******************************************************
+ *                      Macros Define
+ ******************************************************/
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
-static uint16_t connected_id = 0xFFFF;
-
+/******************************************************
+ *                      Type Define
+ ******************************************************/
 typedef struct {
     uint16_t  connected_handle;
     uint8_t   addr_type;
@@ -11,19 +19,41 @@ typedef struct {
         gatt_client_service_t service;
         struct{
             gatt_client_characteristic_t chars;
-            gatt_client_characteristic_descriptor_t descriptor[2];
+            gatt_client_characteristic_descriptor_t descriptor[2]; // User_descriptor and client charactersitc configuration descriptor.
         }chars[2];
-    }service;
+    }service; // Service contains two characteristics and each characteristic contains two descriptors.
 }Device_t;
+
+/******************************************************
+ *               Variable Definitions
+ ******************************************************/
+// Connect handle.
+static uint16_t connected_id = 0xFFFF;
 
 Device_t device;
 uint8_t  chars_index=0;
 uint8_t  desc_index=0;
 
+// The service uuid to be discovered.
 static uint8_t service1_uuid[16] ={0x71,0x3d,0x00,0x00,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e};
-
+// 
 static uint8_t gatt_notify_flag=0;
 
+/******************************************************
+ *               Function Definitions
+ ******************************************************/
+ /**
+ * @brief Find the data given the type in advertising data.
+ *
+ * @param[in]  type          The type of field data.
+ * @param[in]  advdata_len   Length of advertising data.
+ * @param[in]  *p_advdata    The pointer of advertising data.
+ * @param[out] *len          The length of found data.
+ * @param[out] *p_field_data The pointer of buffer to store field data.
+ *
+ * @retval 0 Find the data
+ *         1 Not find.
+ */
 uint32_t ble_advdata_decode(uint8_t type, uint8_t advdata_len, uint8_t *p_advdata, uint8_t *len, uint8_t *p_field_data)
 {
     uint8_t index=0;
@@ -44,6 +74,13 @@ uint32_t ble_advdata_decode(uint8_t type, uint8_t advdata_len, uint8_t *p_advdat
     return 1;
 }
 
+/**
+ * @brief Callback for scanning device.
+ *
+ * @param[in]  *report
+ *
+ * @retval None
+ */
 void reportCallback(advertisementReport_t *report)
 {
     uint8_t index;
@@ -75,6 +112,7 @@ void reportCallback(advertisementReport_t *report)
 
     uint8_t len;
     uint8_t adv_name[31];
+    // Find short local name.
     if(0x00 == ble_advdata_decode(0x08, report->advDataLen, report->advData, &len, adv_name))
     {
         Serial.print("  The length of Short Local Name : ");
@@ -103,12 +141,22 @@ void reportCallback(advertisementReport_t *report)
     }
 }
 
+/**
+ * @brief Connect handle.
+ *
+ * @param[in]  status   BLE_STATUS_CONNECTION_ERROR or BLE_STATUS_OK.
+ * @param[in]  handle   Connect handle.
+ *
+ * @retval None
+ */
 void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
     switch (status){
         case BLE_STATUS_OK:
             Serial.println("Device connected!");
+            // Connect to remote device, start to discover service.
             connected_id = handle;
             device.connected_handle = handle;
+            // Start to discover service, will report result on discoveredServiceCallback.
             ble.discoverPrimaryServices(handle);
             break;
         default:
@@ -116,21 +164,38 @@ void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
     }
 }
 
+/**
+ * @brief Disconnect handle.
+ *
+ * @param[in]  handle   Connect handle.
+ *
+ * @retval None
+ */
 void deviceDisconnectedCallback(uint16_t handle){
     Serial.print("Disconnected handle:");
     Serial.println(handle,HEX);
     if(connected_id == handle)
     {
         Serial.println("Restart scanning.");
+        // Disconnect from remote device, restart to scanning.
         connected_id = 0xFFFF;
         ble.startScanning();
     }
 }
 
+/**
+ * @brief Callback for handling result of discovering service.
+ *
+ * @param[in]  status      BLE_STATUS_OK/BLE_STATUS_DONE
+ * @param[in]  con_handle  
+ * @param[in]  *service    Discoverable service.
+ *
+ * @retval None
+ */
 static void discoveredServiceCallback(BLEStatus_t status, uint16_t con_handle, gatt_client_service_t *service)
 {
     if(status == BLE_STATUS_OK)
-    {
+    {   // Found a service.
         Serial.println(" ");
         Serial.print("Service start handle: ");
         Serial.println(service->start_group_handle, HEX);
@@ -155,15 +220,25 @@ static void discoveredServiceCallback(BLEStatus_t status, uint16_t con_handle, g
     else if(status == BLE_STATUS_DONE)
     {
         Serial.println("Discovered service done");
+        // All sevice have been found, start to discover characteristics.
+        // Result will be reported on discoveredCharsCallback.
         ble.discoverCharacteristics(device.connected_handle, &device.service.service);
     }
 }
 
-
+/**
+ * @brief Callback for handling result of discovering characteristic.
+ *
+ * @param[in]  status           BLE_STATUS_OK/BLE_STATUS_DONE
+ * @param[in]  con_handle  
+ * @param[in]  *characteristic  Discoverable characteristic.
+ *
+ * @retval None
+ */
 static void discoveredCharsCallback(BLEStatus_t status, uint16_t con_handle, gatt_client_characteristic_t *characteristic)
 {
     if(status == BLE_STATUS_OK)
-    {
+    {   // Found a characteristic.
         Serial.println(" ");
         Serial.print("characteristic start handle: ");
         Serial.println(characteristic->start_handle, HEX);
@@ -193,14 +268,25 @@ static void discoveredCharsCallback(BLEStatus_t status, uint16_t con_handle, gat
     {
         Serial.println("Discovered characteristic done");
         chars_index = 0;
+        // All characteristics have been found, start to discover descriptors.
+        // Result will be reported on discoveredCharsDescriptorsCallback.
         ble.discoverCharacteristicDescriptors(device.connected_handle, &device.service.chars[chars_index].chars);
     }
 }
 
+/**
+ * @brief Callback for handling result of discovering descriptor.
+ *
+ * @param[in]  status         BLE_STATUS_OK/BLE_STATUS_DONE
+ * @param[in]  con_handle  
+ * @param[in]  *descriptor    Discoverable descriptor.
+ *
+ * @retval None
+ */
 static void discoveredCharsDescriptorsCallback(BLEStatus_t status, uint16_t con_handle, gatt_client_characteristic_descriptor_t *descriptor)
 {
     if(status == BLE_STATUS_OK)
-    {
+    {   // Found a descriptor.
         Serial.println(" ");
         Serial.print("descriptor handle: ");
         Serial.println(descriptor->handle, HEX);
@@ -221,6 +307,7 @@ static void discoveredCharsDescriptorsCallback(BLEStatus_t status, uint16_t con_
     }
     else if(status == BLE_STATUS_DONE)
     {
+        // finish.
         Serial.println("Discovered descriptor done");
         chars_index++;
         if(chars_index < 2)
@@ -229,13 +316,24 @@ static void discoveredCharsDescriptorsCallback(BLEStatus_t status, uint16_t con_
             ble.discoverCharacteristicDescriptors(device.connected_handle, &device.service.chars[chars_index].chars);
         }
         else
-        {
+        {   // Read value of characteristic, 
+            // Result will be reported on gattReadCallback.
             ble.readValue(device.connected_handle,&device.service.chars[1].chars);
         }
     }
 }
 
-
+/**
+ * @brief Callback for handling result of reading.
+ *
+ * @param[in]  status         BLE_STATUS_OK/BLE_STATUS_DONE/BLE_STATUS_OTHER_ERROR
+ * @param[in]  con_handle  
+ * @param[in]  value_handle   
+ * @param[in]  *value
+ * @param[in]  length
+ *
+ * @retval None
+ */
 void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
     if(status == BLE_STATUS_OK)
@@ -258,10 +356,20 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
     else if(status == BLE_STATUS_DONE)
     {
         uint8_t data[]= {0x01,0x02,0x03,0x04,0x05,1,2,3,4,5};
+        // Result will be reported on gattWrittenCallback.
+        // If use ble.writeValueWithoutResponse, will no response.
         ble.writeValue(device.connected_handle, device.service.chars[0].chars.value_handle, sizeof(data), data);
     }
 }
 
+/**
+ * @brief Callback for handling result of writting.
+ *
+ * @param[in]  status         BLE_STATUS_DONE/BLE_STATUS_OTHER_ERROR
+ * @param[in]  con_handle  
+ *
+ * @retval None
+ */
 void gattWrittenCallback(BLEStatus_t status, uint16_t con_handle)
 {
     if(BLE_STATUS_DONE)
@@ -272,6 +380,17 @@ void gattWrittenCallback(BLEStatus_t status, uint16_t con_handle)
     }
 }
 
+/**
+ * @brief Callback for handling result of reading descriptor.
+ *
+ * @param[in]  status         BLE_STATUS_DONE/BLE_STATUS_OTHER_ERROR
+ * @param[in]  con_handle  
+ * @param[in]  value_handle   
+ * @param[in]  *value
+ * @param[in]  length
+ *
+ * @retval None
+ */
 void gattReadDescriptorCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
     if(status == BLE_STATUS_OK)
@@ -293,10 +412,19 @@ void gattReadDescriptorCallback(BLEStatus_t status, uint16_t con_handle, uint16_
     }
     else if(status == BLE_STATUS_DONE)
     {
+        // Enable notify.
         ble.writeClientCharsConfigDescritpor(device.connected_handle, &device.service.chars[0].chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
     }
 }
 
+/**
+ * @brief Callback for handling result of writting client characteristic configuration.
+ *
+ * @param[in]  status         BLE_STATUS_DONE/BLE_STATUS_OTHER_ERROR
+ * @param[in]  con_handle
+ *
+ * @retval None
+ */
 void gattWriteCCCDCallback(BLEStatus_t status, uint16_t con_handle)
 {
     if(status == BLE_STATUS_DONE)
@@ -314,6 +442,17 @@ void gattWriteCCCDCallback(BLEStatus_t status, uint16_t con_handle)
     }
 }
 
+/**
+ * @brief Callback for handling notify event from remote device.
+ *
+ * @param[in]  status         BLE_STATUS_OK
+ * @param[in]  con_handle  
+ * @param[in]  value_handle   
+ * @param[in]  *value
+ * @param[in]  length 
+ *
+ * @retval None
+ */
 void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
     Serial.println(" ");
@@ -332,16 +471,24 @@ void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t 
     Serial.println(" ");
 }
 
+/**
+ * @brief Setup.
+ */
 void setup()
 {
     Serial.begin(115200);
     delay(5000);
-
+    
+    // Open debugger, must befor init().
     //ble.debugLogger(true);
     //ble.debugError(true);
     //ble.enablePacketLogger();
+    
     Serial.println("BLE central demo!");
+    // Initialize ble_stack.
     ble.init();
+    
+    // Register callback functions.
     ble.onConnectedCallback(deviceConnectedCallback);
     ble.onDisconnectedCallback(deviceDisconnectedCallback);
     ble.onScanReportCallback(reportCallback);
@@ -356,12 +503,16 @@ void setup()
     ble.onGattWriteClientCharacteristicConfigCallback(gattWriteCCCDCallback);
     ble.onGattNotifyUpdateCallback(gattNotifyUpdateCallback);
 
-
+    // Set scan parameters.
     ble.setScanParams(0, 0x0030, 0x0030);
+    // Start scanning.
     ble.startScanning();
     Serial.println("Start scanning ");
 }
 
+/**
+ * @brief Loop.
+ */
 void loop()
 {
 
