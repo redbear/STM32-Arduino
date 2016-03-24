@@ -23,20 +23,29 @@ TCPClient client;
 /*******************************************************
  *               Variable Definitions
  ******************************************************/
-
 static uint8_t        is_connecting_flag = 0; 
 static uint8_t        current_connecting_num = 0xFF;  
 static uint8_t        current_disconnecting_num = 0xFF;
 static uint8_t        current_discovered_num = 0xFF;
 
-static char rx_buf[255];
+static char rx_buf[100];
 static uint8_t rx_len;
+
+// Timer task for setting RGB.
+static btstack_timer_source_t rgb_config;
 
 static uint8_t is_nano_ok = 0;
 static uint8_t is_wifi_connected = 0;
+// 128bits-UUID in advertisement
+static const uint8_t service_uuid[16] = {0x66, 0x7E, 0x50, 0x17, 0x55, 0x5E, 0xE9, 0x9C, 0xE5, 0x11, 0xBC, 0xF0, 0xF8, 0x3B, 0x2D, 0x5A};
 /******************************************************
  *               Function Definitions
  ******************************************************/
+void rgb_config_handler(btstack_timer_source_t *ts)
+{
+    RGB.color(255, 255, 255);   
+}
+
 void printWifiStatus() 
 {
     // print the SSID of the network you're attached to:
@@ -72,8 +81,8 @@ void send_status(uint8_t *buf)
     aJson.deleteItem(root);
     aJson.deleteItem(temp);
     // Send JSON stream to client.
+    Serial.println(p);
     client.println(p);
-    RGB.color(255, 255, 255);   
 }
 
 void parseJson(char *jsonString)
@@ -117,8 +126,7 @@ void parseJson(char *jsonString)
     else
     {
         Serial.println("NULL Json"); 
-    }
-    RGB.color(255, 255, 255);   
+    } 
 }
 
 uint32_t ble_advdata_decode(uint8_t type, uint8_t advdata_len, uint8_t *p_advdata, uint8_t *len, uint8_t *p_field_data)
@@ -170,15 +178,18 @@ void reportCallback(advertisementReport_t *report)
     Serial.println(" ");
 
     uint8_t len;
-    uint8_t adv_name[31];
-    // Get the local name in advertisment.
-    if(0x00 == ble_advdata_decode(0x08, report->advDataLen, report->advData, &len, adv_name))
+    uint8_t adv_uuid[31];
+    // Get the complete 128bits-UUID in advertisment.
+    if(0x00 == ble_advdata_decode(0x07, report->advDataLen, report->advData, &len, adv_uuid))
     {
-        Serial.print("  The length of Short Local Name : ");
-        Serial.println(len, HEX);
-        Serial.print("  The Short Local Name is        : ");
-        Serial.println((const char *)adv_name);
-        if(0x00 == memcmp(adv_name, "Demo_Nano", 9))
+        Serial.print("The service uuid: ");
+        for(index=0; index<16; index++)
+        {
+            Serial.print(adv_uuid[index], HEX);
+            Serial.print(" ");
+        }
+        Serial.println(" ");
+        if(0x00 == memcmp(service_uuid, adv_uuid, 16))
         {
             // Get a number of unconnected nano in queue.
             current_connecting_num = nano_checkUnconnected();
@@ -387,6 +398,8 @@ void gattWriteCCCDCallback(BLEStatus_t status, uint16_t con_handle)
 void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
     RGB.color(0, 0, 255);   
+    ble.setTimer(&rgb_config, 200);
+    ble.addTimer(&rgb_config);  
     Serial.println(" ");
     Serial.println("Notify Update value ");
     Serial.print("conn handle: ");
@@ -409,7 +422,6 @@ void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t 
         uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[2], value[3], value[4]};
         send_status(buf);
     }
-    RGB.color(255, 255, 255);   
 }
 
 void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
@@ -417,6 +429,8 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
     if(status == BLE_STATUS_OK)
     {  
         RGB.color(0, 0, 255);   
+        ble.setTimer(&rgb_config, 200);
+        ble.addTimer(&rgb_config);
         Serial.println(" ");
         Serial.println("Read characteristic ok");
         Serial.print("conn handle: ");
@@ -438,7 +452,6 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
             uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[2], value[3], value[4]};
             send_status(buf);
         }
-        RGB.color(255, 255, 255);  
     }
 }
 
@@ -502,8 +515,10 @@ void setup()
     ble.startScanning();
     Serial.println("Starting scanning....");
     RGB.control(true);
-    // set LED to Red.
+    // Set LED to Red.
     RGB.color(255, 0, 0);   
+    // Regist rgb process handler.
+    rgb_config.process = &rgb_config_handler;
 }
 
 void loop()
@@ -511,11 +526,15 @@ void loop()
     if(client.connected())
     { 
         is_wifi_connected = 1;
-        digitalWrite(D7, 0);
+        digitalWrite(D7, 1);
         if(client.available())
         { 
             Serial.println("Receive json...");
             RGB.color(0, 255, 0);   
+            // Set timer.
+            ble.setTimer(&rgb_config, 200);
+            ble.addTimer(&rgb_config);
+            
             delay(1);
             rx_len = 0;
             memset(rx_buf, 0x00, sizeof(rx_buf));
@@ -532,7 +551,7 @@ void loop()
     else
     {   
         is_wifi_connected = 0;
-        digitalWrite(D7, 1);
+        digitalWrite(D7, 0);
         client = server.available();
     }
 }
