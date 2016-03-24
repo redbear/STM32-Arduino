@@ -2,14 +2,23 @@
 
 ## Current Version
 
+v0.2.7
+
+* For the Duo firmware v0.2.3
+* Support burn bootloader and system firmwares using the RBLink USB port
+* Support burn sketch using the RBLink USB port
+* Bug fixes to the examples
+* BLE Controller, Chat, SimpleControls now work with the RedBear BLE Controller iOS and Android Apps
+* Note: if connecting to the PC USB using the RBLink USB port, use `Serial1` instead of `Serial` (for USB) for serial debugging. 
+ 
+## Version History
+
 v0.2.6
 
 * For the Duo firmware v0.2.3 (use "Burn Bootloader" from the Arduino IDE to update system firmware)
 * Adds more BLE Peripheral examples
 * Adds more BLE Central examples
 * WebServer sketch now supports BLE
- 
-## Version History
 
 v0.2.5
 
