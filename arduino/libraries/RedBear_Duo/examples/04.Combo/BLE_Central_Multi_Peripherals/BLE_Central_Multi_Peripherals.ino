@@ -1,6 +1,7 @@
 
 #include "application.h"
 #include "ble_nano.h"
+#include "JSON.h"
 #include "aJSON.h"
 
 #if defined(ARDUINO) 
@@ -38,13 +39,12 @@ static uint8_t is_nano_ok = 0;
 static uint8_t is_wifi_connected = 0;
 // 128bits-UUID in advertisement
 static const uint8_t service_uuid[16] = {0x66, 0x7E, 0x50, 0x17, 0x55, 0x5E, 0xE9, 0x9C, 0xE5, 0x11, 0xBC, 0xF0, 0xF8, 0x3B, 0x2D, 0x5A};
+// Parse json string
+static uint8_t json_flag = 0;
+static uint8_t cmd[4];
 /******************************************************
  *               Function Definitions
  ******************************************************/
-void rgb_config_handler(btstack_timer_source_t *ts)
-{
-    RGB.color(255, 255, 255);   
-}
 
 void printWifiStatus() 
 {
@@ -76,57 +76,100 @@ void send_status(uint8_t *buf)
     aJson.addItemToObject(temp, "B", aJson.createItem(buf[4]));
     aJson.addItemToObject(root, "RGB", temp);
     
-    const char *p = aJson.print(root);
+    char *p = aJson.print(root);
 
     aJson.deleteItem(root);
     aJson.deleteItem(temp);
     // Send JSON stream to client.
     Serial.println(p);
-    client.println(p);
+    if(client.connected())
+    {   
+        Serial.println("Not connected");
+        client.println(p);
+    }
+    free(p);
+    delay(100);
+}
+
+wiced_result_t wiced_json_callback( wiced_json_object_t* json_object )
+{     // Parse json string.
+//    uint8_t index;
+//    Serial.println("JSON callback");
+//    Serial.print(("object : "));
+//    for(index=0; index<json_object->object_string_length; index++)
+//    {
+//        Serial.print(json_object->object_string[index]);
+//    }
+//    Serial.println("");
+//    Serial.print(("value : "));
+//    for(index=0; index<json_object->value_length; index++)
+//    {
+//        Serial.write(json_object->value[index]);
+//    }
+//    Serial.println("");
+    
+    if(0x00 == memcmp(json_object->object_string, "ID", 2))
+    {   
+        cmd[0] = (uint8_t)atoi(json_object->value);
+        if(cmd[0] > 7)
+            json_flag = 0;
+        else
+            json_flag = 1;
+    }
+    else if(0x00 == memcmp(json_object->object_string, "OpCode", 6))
+    {
+        if(json_flag == 1)
+        {
+            if(json_object->value[0] == '1') // write command
+                json_flag = 2;
+            else if(json_object->value[0] == '2') // Read command.
+                json_flag = 0x0F;
+        }
+    }
+    else if(0x00 == memcmp(json_object->object_string, "R", 1))
+    {
+        if(json_flag == 2)
+        {
+            json_flag = 3;
+            cmd[1] = (uint8_t)atoi(json_object->value);
+        }
+    }
+    else if(0x00 == memcmp(json_object->object_string, "G", 1))
+    {
+        if(json_flag == 3)
+        {
+            json_flag = 4;
+            cmd[2] = (uint8_t)atoi(json_object->value);
+        }
+    }
+    else if( 0x00 == memcmp(json_object->object_string, "B", 1) )
+    {
+        if(json_flag == 4)
+        {
+          json_flag = 5;
+          cmd[3] = (uint8_t)atoi(json_object->value);
+        }
+    }
+    if(json_flag == 5)
+    {   // Write command
+        if(is_nano_ok)
+            nano_write(cmd[0], &cmd[1], 3);
+
+    }
+    else if(json_flag == 0x0F)
+    {   // Read command
+        if(is_nano_ok)
+          nano_read(cmd[0]);
+    }
 }
 
 void parseJson(char *jsonString)
-{
-    aJsonObject* root;
-    root = aJson.parse(jsonString);
-    if(NULL != root)
-    {
-        aJsonObject* rgb_object = aJson.getObjectItem(root, "RGB");
-        if(rgb_object != NULL)
-        {
-            aJsonObject* id = aJson.getObjectItem(rgb_object, "ID");
-            aJsonObject* OpCode = aJson.getObjectItem(rgb_object, "OpCode");
-            aJsonObject* r = aJson.getObjectItem(rgb_object, "R");
-            aJsonObject* g = aJson.getObjectItem(rgb_object, "G");
-            aJsonObject* b = aJson.getObjectItem(rgb_object, "B");
-            // Parse JSON stream.
-            if( (id!=NULL) && (OpCode!=NULL) && (r!=NULL) && (g!=NULL) && (b!=NULL) )
-            {
-                if(OpCode->valueint == 1)
-                {   // Write command.
-                    uint8_t buf[5] = {0xA5, 0xFF, r->valueint, g->valueint, b->valueint};
-                    // Check whether all nano is connected and discovered.
-                    if(is_nano_ok)
-                        nano_write(id->valueint, buf, 5);
-                }
-                else if(OpCode->valueint == 2)
-                {   // Read command.
-                    nano_read(id->valueint);
-                }
-            }
-            aJson.deleteItem(id);
-            aJson.deleteItem(OpCode);
-            aJson.deleteItem(r);
-            aJson.deleteItem(g);
-            aJson.deleteItem(b);
-        }       
-        aJson.deleteItem(root);
-        aJson.deleteItem(rgb_object);
-    }
-    else
-    {
-        Serial.println("NULL Json"); 
-    } 
+{   
+    //json_flag = 0;
+    //memset(cmd, 0x00, 5);
+    wiced_JSON_parser( jsonString, strlen(jsonString) );
+    delay(100);
+    RGB.color(255, 255, 255);
 }
 
 uint32_t ble_advdata_decode(uint8_t type, uint8_t advdata_len, uint8_t *p_advdata, uint8_t *len, uint8_t *p_field_data)
@@ -398,8 +441,6 @@ void gattWriteCCCDCallback(BLEStatus_t status, uint16_t con_handle)
 void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
     RGB.color(0, 0, 255);   
-    ble.setTimer(&rgb_config, 200);
-    ble.addTimer(&rgb_config);  
     Serial.println(" ");
     Serial.println("Notify Update value ");
     Serial.print("conn handle: ");
@@ -417,11 +458,13 @@ void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t 
     }
     Serial.println(" ");
     if(is_wifi_connected)
-    {
+    { 
+        Serial.println("Send!");
         // The buf is {"ID", "OpCode", "R", "G", "B"};
-        uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[2], value[3], value[4]};
+        uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[0], value[1], value[2]};
         send_status(buf);
     }
+    RGB.color(255, 255, 255);
 }
 
 void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
@@ -429,8 +472,6 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
     if(status == BLE_STATUS_OK)
     {  
         RGB.color(0, 0, 255);   
-        ble.setTimer(&rgb_config, 200);
-        ble.addTimer(&rgb_config);
         Serial.println(" ");
         Serial.println("Read characteristic ok");
         Serial.print("conn handle: ");
@@ -449,9 +490,11 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
         Serial.println(" ");
         if(is_wifi_connected)
         {
-            uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[2], value[3], value[4]};
+            Serial.println("Send!");
+            uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[0], value[1], value[2]};
             send_status(buf);
         }
+        RGB.color(255, 255, 255);
     }
 }
 
@@ -459,7 +502,7 @@ void setup()
 {
     Serial.begin(115200);
     delay(3000);
-    
+    pinMode(D7, OUTPUT);
     // attempt to connect to Wifi network:
     Serial.print("Attempting to connect to Network named: ");
     // print the network name (SSID);
@@ -515,10 +558,9 @@ void setup()
     ble.startScanning();
     Serial.println("Starting scanning....");
     RGB.control(true);
-    // Set LED to Red.
-    RGB.color(255, 0, 0);   
-    // Regist rgb process handler.
-    rgb_config.process = &rgb_config_handler;
+    RGB.color(255, 0, 0);
+    //
+    wiced_JSON_parser_register_callback(wiced_json_callback);
 }
 
 void loop()
@@ -530,11 +572,7 @@ void loop()
         if(client.available())
         { 
             Serial.println("Receive json...");
-            RGB.color(0, 255, 0);   
-            // Set timer.
-            ble.setTimer(&rgb_config, 200);
-            ble.addTimer(&rgb_config);
-            
+            RGB.color(0, 255, 0);
             delay(1);
             rx_len = 0;
             memset(rx_buf, 0x00, sizeof(rx_buf));

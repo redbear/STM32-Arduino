@@ -24,8 +24,8 @@ typedef struct{
 
 	  struct{
 		    gatt_client_service_t service;
-		    characteristic_t      tx_chars;    //Characteristic of setting RGB.
-		    characteristic_t      rx_chars;    //Characteristic of RGB status.Read or NOTIFY permit.
+		    characteristic_t      cmd_chars;    //Characteristic of setting RGB.
+		    characteristic_t      status_chars;    //Characteristic of RGB status.Read or NOTIFY permit.
 	  }rbl_service;
 
 	  NanoDiscoveryState_t discoveryState;
@@ -34,9 +34,9 @@ typedef struct{
 /******************************************************
  *               Variable Definitions
  ******************************************************/
-static const uint8_t service_uuid[16]  = {0x5A, 0x2D, 0x3B, 0xF8, 0xF0, 0xBC, 0x11, 0xE5, 0x9C, 0xE9, 0x5E, 0x55, 0x17, 0x50, 0x7E, 0x66};
-static const uint8_t chars_tx_uuid[16] = {0x5A, 0x2D, 0x40, 0xEE, 0xF0, 0xBC, 0x11, 0xE5, 0x9C, 0xE9, 0x5E, 0x55, 0x17, 0x50, 0x7E, 0x66};
-static const uint8_t chars_rx_uuid[16] = {0x5A, 0x2D, 0x42, 0x9C, 0xF0, 0xBC, 0x11, 0xE5, 0x9C, 0xE9, 0x5E, 0x55, 0x17, 0x50, 0x7E, 0x66};
+static const uint8_t service_uuid[16]      = {0x5A, 0x2D, 0x3B, 0xF8, 0xF0, 0xBC, 0x11, 0xE5, 0x9C, 0xE9, 0x5E, 0x55, 0x17, 0x50, 0x7E, 0x66};
+static const uint8_t chars_cmd_uuid[16]    = {0x5A, 0x2D, 0x40, 0xEE, 0xF0, 0xBC, 0x11, 0xE5, 0x9C, 0xE9, 0x5E, 0x55, 0x17, 0x50, 0x7E, 0x66};
+static const uint8_t chars_status_uuid[16] = {0x5A, 0x2D, 0x42, 0x9C, 0xF0, 0xBC, 0x11, 0xE5, 0x9C, 0xE9, 0x5E, 0x55, 0x17, 0x50, 0x7E, 0x66};
 
 static nano_t  nano[NANO_NUM];
 
@@ -159,15 +159,15 @@ void nano_discoveredCharsResult(uint8_t num, gatt_client_characteristic_t *chars
 	  if(num >= NANO_NUM)
 		    return;
 
-    if(0x00 == memcmp(chars->uuid128, chars_tx_uuid, 16))
+    if(0x00 == memcmp(chars->uuid128, chars_cmd_uuid, 16))
     {   
-    	  Serial.println("Discovered characteristic tx");
-    	  nano[num].rbl_service.tx_chars.chars = *chars;
+    	  Serial.println("Discovered characteristic cmd");
+    	  nano[num].rbl_service.cmd_chars.chars = *chars;
     }
-    else if(0x00 == memcmp(chars->uuid128, chars_rx_uuid, 16))
+    else if(0x00 == memcmp(chars->uuid128, chars_status_uuid, 16))
     {
-    	  Serial.println("Discovered characteristic rx");
-    	  nano[num].rbl_service.rx_chars.chars = *chars;
+    	  Serial.println("Discovered characteristic status");
+    	  nano[num].rbl_service.status_chars.chars = *chars;
     }
 }
 
@@ -175,11 +175,9 @@ uint8_t nano_discoverDescriptor(uint8_t num)
 {
 	  if(num >= NANO_NUM)
 		    return 0xFF;
-    //Only discover descriptors of rx_characteristic.
+    //Only discover descriptors of status_characteristic.
 	  nano[num].discoveryState = NANO_DISCOVERY_DESCRIPTOR_OF_RX_CHARS;
-	  return ble.discoverCharacteristicDescriptors(nano[num].connect_handle, &nano[num].rbl_service.rx_chars.chars);
-
-	  return 0;
+	  return ble.discoverCharacteristicDescriptors(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars);
 }
 
 void nano_discoverDescriptorResult(uint8_t num, gatt_client_characteristic_descriptor_t *descriptor)
@@ -189,11 +187,11 @@ void nano_discoverDescriptorResult(uint8_t num, gatt_client_characteristic_descr
 
 	  if(descriptor->uuid16 == 0x2901)
 	  {
-		    nano[num].rbl_service.rx_chars.use_descriptor = *descriptor;
+		    nano[num].rbl_service.status_chars.use_descriptor = *descriptor;
 	  }
 	  else if(descriptor->uuid16 == 0x2902)
 	  {   //CCCD handle.
-		    nano[num].rbl_service.rx_chars.cccd = *descriptor;
+		    nano[num].rbl_service.status_chars.cccd = *descriptor;
 	  }
 }
 
@@ -202,7 +200,7 @@ uint8_t nano_startNotify(uint8_t num)
 	  if(num >= NANO_NUM)
 		    return 0xFF;
     //Start notify.
-	  return ble.writeClientCharsConfigDescritpor(nano[num].connect_handle, &nano[num].rbl_service.rx_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
+	  return ble.writeClientCharsConfigDescritpor(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
 }
 
 uint8_t nano_stopNotify(uint8_t num)
@@ -210,7 +208,7 @@ uint8_t nano_stopNotify(uint8_t num)
 	  if(num >= NANO_NUM)
 		    return 0xFF;
     // Close notify.
-	  return ble.writeClientCharsConfigDescritpor(nano[num].connect_handle, &nano[num].rbl_service.rx_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NONE);
+	  return ble.writeClientCharsConfigDescritpor(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NONE);
 }
 
 uint8_t nano_write(uint8_t num, uint8_t *buf, uint8_t len)
@@ -218,7 +216,7 @@ uint8_t nano_write(uint8_t num, uint8_t *buf, uint8_t len)
     if(num >= NANO_NUM)
         return 0xFF;
     // Write value_handle, no response.  
-    return ble.writeValueWithoutResponse(nano[num].connect_handle, nano[num].rbl_service.tx_chars.chars.value_handle, len, buf);
+    return ble.writeValueWithoutResponse(nano[num].connect_handle, nano[num].rbl_service.cmd_chars.chars.value_handle, len, buf);
 }
 
 uint8_t nano_read(uint8_t num)
@@ -226,6 +224,6 @@ uint8_t nano_read(uint8_t num)
     if(num >= NANO_NUM)
         return 0xFF;
     // Read value handle, see read_callback.  
-    return ble.readValue(nano[num].connect_handle, &nano[num].rbl_service.rx_chars.chars);
+    return ble.readValue(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars);
 }
 
