@@ -18,4 +18,4 @@ $1 -d 2b04:d058 -a 0 -s 0x080C0000 -D $2/duo-user-part.bin
 
 # Update Factory Reset Part and exit DFU mode
 
-$1 -d 2b04:d058 -a 2 -s 0x140000:leave -D $2/duo-user-part.bin
+$1 -d 2b04:d058 -a 2 -s 0x140000:leave -D $2/duo-factory-reset.bin
