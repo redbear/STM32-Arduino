@@ -1,8 +1,11 @@
 
+/*
+ * Note : Remember to set the max number of peripheral at "ble_nano.h".
+ */
+
 #include "application.h"
 #include "ble_nano.h"
-#include "JSON.h"
-#include "aJSON.h"
+#include <ArduinoJson.h>
 
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
@@ -11,7 +14,7 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
 // your network name also called SSID
-char ssid[] = "Duo";
+char ssid[] = "duo";
 // your network password
 char password[] = "password";
 
@@ -29,19 +32,14 @@ static uint8_t        current_connecting_num = 0xFF;
 static uint8_t        current_disconnecting_num = 0xFF;
 static uint8_t        current_discovered_num = 0xFF;
 
-static char rx_buf[100];
+static char    rx_buf[61];
 static uint8_t rx_len;
-
-// Timer task for setting RGB.
-static btstack_timer_source_t rgb_config;
 
 static uint8_t is_nano_ok = 0;
 static uint8_t is_wifi_connected = 0;
 // 128bits-UUID in advertisement
-static const uint8_t service_uuid[16] = {0x66, 0x7E, 0x50, 0x17, 0x55, 0x5E, 0xE9, 0x9C, 0xE5, 0x11, 0xBC, 0xF0, 0xF8, 0x3B, 0x2D, 0x5A};
-// Parse json string
-static uint8_t json_flag = 0;
-static uint8_t cmd[4];
+static const uint8_t service_uuid[16] = {0x66, 0x7E, 0x50, 0x17, 0x55, 0x5E, 0xE9, 0x9C, 0xE5, 0x11, 0xBC, 0xF0, 0xF8, 0x3B, 0x2D, 0x5B};
+
 /******************************************************
  *               Function Definitions
  ******************************************************/
@@ -64,110 +62,97 @@ void printWifiStatus()
     Serial.println(" dBm");
 }
 
-void send_status(uint8_t *buf)
+void send_number(uint8_t flag)
 {
-    aJsonObject *root = aJson.createObject();
-    aJsonObject *temp = aJson.createObject();
-    // Create JSON stream.
-    aJson.addItemToObject(temp, "ID", aJson.createItem(buf[0]));
-    aJson.addItemToObject(temp, "OpCode", aJson.createItem(buf[1]));
-    aJson.addItemToObject(temp, "R", aJson.createItem(buf[2]));
-    aJson.addItemToObject(temp, "G", aJson.createItem(buf[3]));
-    aJson.addItemToObject(temp, "B", aJson.createItem(buf[4]));
-    aJson.addItemToObject(root, "RGB", temp);
-    
-    char *p = aJson.print(root);
-
-    aJson.deleteItem(root);
-    aJson.deleteItem(temp);
-    // Send JSON stream to client.
-    Serial.println(p);
+    uint8_t num;
+    char json_buffer[60];
+    // If all peripherals are connected, notify the number
+    if(flag)
+        num = NANO_NUM;
+    else
+        num = 0;
+    // Creat json string
+    StaticJsonBuffer<500> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["OpCode"] = 0;
+    root["ID"] = 0xF0;
+    root["NUM"] = num;
+    root["R"] = 0;
+    root["G"] = 0;
+    root["B"] = 0;
+    root.printTo(json_buffer,60);
+    Serial.println(json_buffer);
+    // Send it
     if(client.connected())
     {   
-        Serial.println("Not connected");
-        client.println(p);
+        client.println(json_buffer);
     }
-    free(p);
+}
+
+void send_status(uint8_t *buf)
+{   
+    char json_buffer[60];
+    StaticJsonBuffer<500> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["OpCode"] = buf[0];
+    root["ID"] = buf[1];
+    root["NUM"] = 0xFF;
+    root["R"] = buf[2];
+    root["G"] = buf[3];
+    root["B"] = buf[4];
+    root.printTo(json_buffer,60);   
+    Serial.println(json_buffer);
+    
+    if(client.connected())
+    {   
+        client.println(json_buffer);
+    }
     delay(100);
 }
 
-wiced_result_t wiced_json_callback( wiced_json_object_t* json_object )
-{     // Parse json string.
-//    uint8_t index;
-//    Serial.println("JSON callback");
-//    Serial.print(("object : "));
-//    for(index=0; index<json_object->object_string_length; index++)
-//    {
-//        Serial.print(json_object->object_string[index]);
-//    }
-//    Serial.println("");
-//    Serial.print(("value : "));
-//    for(index=0; index<json_object->value_length; index++)
-//    {
-//        Serial.write(json_object->value[index]);
-//    }
-//    Serial.println("");
-    
-    if(0x00 == memcmp(json_object->object_string, "ID", 2))
-    {   
-        cmd[0] = (uint8_t)atoi(json_object->value);
-        if(cmd[0] > 7)
-            json_flag = 0;
-        else
-            json_flag = 1;
-    }
-    else if(0x00 == memcmp(json_object->object_string, "OpCode", 6))
-    {
-        if(json_flag == 1)
-        {
-            if(json_object->value[0] == '1') // write command
-                json_flag = 2;
-            else if(json_object->value[0] == '2') // Read command.
-                json_flag = 0x0F;
-        }
-    }
-    else if(0x00 == memcmp(json_object->object_string, "R", 1))
-    {
-        if(json_flag == 2)
-        {
-            json_flag = 3;
-            cmd[1] = (uint8_t)atoi(json_object->value);
-        }
-    }
-    else if(0x00 == memcmp(json_object->object_string, "G", 1))
-    {
-        if(json_flag == 3)
-        {
-            json_flag = 4;
-            cmd[2] = (uint8_t)atoi(json_object->value);
-        }
-    }
-    else if( 0x00 == memcmp(json_object->object_string, "B", 1) )
-    {
-        if(json_flag == 4)
-        {
-          json_flag = 5;
-          cmd[3] = (uint8_t)atoi(json_object->value);
-        }
-    }
-    if(json_flag == 5)
-    {   // Write command
-        if(is_nano_ok)
-            nano_write(cmd[0], &cmd[1], 3);
-
-    }
-    else if(json_flag == 0x0F)
-    {   // Read command
-        if(is_nano_ok)
-          nano_read(cmd[0]);
-    }
-}
-
 void parseJson(char *jsonString)
-{   
-    //json_flag = 0;
-    //memset(cmd, 0x00, 5);
-    wiced_JSON_parser( jsonString, strlen(jsonString) );
+{ 
+    // Parse json string
+    StaticJsonBuffer<500> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(jsonString);
+    if (!root.success()) {
+        Serial.println("parseObject() failed");
+        return;
+    }
+    uint8_t OpCode = root["OpCode"];
+    uint8_t id = root["ID"];
+    uint8_t num = root["NUM"];
+    uint8_t r = root["R"];
+    uint8_t g = root["G"];
+    uint8_t b = root["B"];
+
+    Serial.print("OpCode:");
+    Serial.println(OpCode, HEX);
+    Serial.print("id:");
+    Serial.println(id, HEX);
+    Serial.print("num:");
+    Serial.println(num, HEX);
+    Serial.print("r:");
+    Serial.println(r, HEX);
+    Serial.print("g:");
+    Serial.println(g, HEX);    
+    Serial.print("b:");
+    Serial.println(b, HEX);       
+
+    if((OpCode == 1) && (is_nano_ok))
+    {   //Write command
+        uint8_t buf[3]= {r, g, b};
+        nano_write(id, buf, 3);
+    }
+    else if((OpCode == 2) && (is_nano_ok))
+    {   //Read command
+        nano_read(id);
+    }
+    else if((OpCode == 3) && (id==0xF0))
+    {   //Get number of peripheral
+        send_number(is_nano_ok);
+    }
+    
     delay(100);
     RGB.color(255, 255, 255);
 }
@@ -212,7 +197,7 @@ void reportCallback(advertisementReport_t *report)
     Serial.print("The rssi: ");
     Serial.println(report->rssi, DEC);
 
-    Serial.print("The ADV data: ");
+    Serial.print("The adv_data: ");
     for(index=0; index<report->advDataLen; index++)
     {
         Serial.print(report->advData[index], HEX);
@@ -262,8 +247,12 @@ void deviceDisconnectedCallback(uint16_t handle){
     Serial.print("Disconnected handle : ");
     Serial.println(handle,HEX);
     RGB.color(255, 0, 0);
-    
-    is_nano_ok = 0;
+
+    if(is_nano_ok)
+    {
+        is_nano_ok = 0;
+        send_number(is_nano_ok);
+    }
     // Get the number of nano according to the connect_handle.
     current_disconnecting_num = nano_getNumAccordingHandle(handle);
     if(0xFF != current_disconnecting_num)
@@ -289,9 +278,11 @@ void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
             Serial.println(handle, HEX);
             if(current_connecting_num != 0xFF)
             {
-                Serial.println("Connect to PERIPHERAL_NANO.");
+                Serial.print("Connect to PERIPHERAL_NANO ");
+                Serial.println(current_connecting_num, HEX);
                 // Save conn_handle.
                 nano_setConnectHandle(current_connecting_num, handle);
+                current_connecting_num = 0xFF;
             }
             // Check whether all nano have been connected.
             if(0xFF == nano_checkUnconnected())
@@ -308,6 +299,8 @@ void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
                 current_discovered_num = nano_getNumOfUndiscovered();
                 if(0xFF != current_discovered_num)
                 {
+                    Serial.print("Start discovered :  ");
+                    Serial.println(current_discovered_num, HEX);
                     nano_discoverService(current_discovered_num);
                 }
             }
@@ -316,12 +309,13 @@ void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
                 Serial.println("Restart scanning.");
                 ble.startScanning();
             }
+            is_connecting_flag = 0;
             break;
         default:
             ble.startScanning();
             break;
     }
-    is_connecting_flag = 0;
+    
 }
 
 // Handle the callback event of discovered service.
@@ -344,13 +338,19 @@ static void discoveredServiceCallback(BLEStatus_t status, uint16_t con_handle, g
             Serial.print(" ");
         }
         Serial.println(" ");
-           
-        nano_discoveredServiceResult(nano_getNumAccordingHandle(con_handle), service);
+        
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_discoveredServiceResult(num, service);
     }
     else if(status == BLE_STATUS_DONE)
     {   // Finish.
         Serial.println("Discovered service done, start to discover chars of service.");
-        nano_discoverCharsOfService(nano_getNumAccordingHandle(con_handle));
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_discoverCharsOfService(num);
     }
 }
 
@@ -378,13 +378,18 @@ static void discoveredCharsCallback(BLEStatus_t status, uint16_t con_handle, gat
             Serial.print(" ");
         }
         Serial.println(" ");
-
-        nano_discoveredCharsResult(nano_getNumAccordingHandle(con_handle), characteristic);
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_discoveredCharsResult(num, characteristic);
     }
     else if(status == BLE_STATUS_DONE)
     {   // Finish.
         Serial.println("Discovered characteristic done, start to discover descriptors.");
-        nano_discoverDescriptor(nano_getNumAccordingHandle(con_handle));
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_discoverDescriptor(num);
     }
 }
 
@@ -405,12 +410,18 @@ static void discoveredCharsDescriptorsCallback(BLEStatus_t status, uint16_t con_
             Serial.print(" ");
         }
         Serial.println(" ");
-        nano_discoverDescriptorResult(nano_getNumAccordingHandle(con_handle), descriptor);
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_discoverDescriptorResult(num, descriptor);
     }
     else if(status == BLE_STATUS_DONE)
     {   // Finish.
         Serial.println("Discovered descriptor done, open notify.");
-        nano_startNotify(nano_getNumAccordingHandle(con_handle));
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_startNotify(num);
     }
 }
 
@@ -420,27 +431,39 @@ void gattWriteCCCDCallback(BLEStatus_t status, uint16_t con_handle)
     {   // Open notify OK.
         Serial.println("gattWriteCCCDCallback done");
         // Finish discover,set state to NANO_DISCOVERY_FINISH.
-        nano_setDiscoveredState(nano_getNumAccordingHandle(con_handle), NANO_DISCOVERY_FINISH);
+        uint8_t num = nano_getNumAccordingHandle(con_handle);
+        Serial.print("Device ID :  ");
+        Serial.println(num, HEX);   
+        nano_setDiscoveredState(num, NANO_DISCOVERY_FINISH);
+        
         current_discovered_num = nano_getNumOfUndiscovered();
+        Serial.print("Next device ID :  ");
+        Serial.println(current_discovered_num, HEX);   
         if(0xFF != current_discovered_num)
         {   // Start discover other device.
             nano_discoverService(current_discovered_num);
         }
         else
         {
-            // All nano are discovered.
+            // All peripherals are discovered.
             is_nano_ok = 1;
+            send_number(is_nano_ok);
             // set LED to white.
             RGB.color(255, 255, 255);   
             Serial.println("All nano discover done!");
         }
+    }
+    else
+    {
+        Serial.println("gattWriteCCCDCallback fail");
+        Serial.print("con_handle: ");
+        Serial.println(con_handle, HEX);
     }
 }
 
 //Handler the notify event from device.
 void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
-    RGB.color(0, 0, 255);   
     Serial.println(" ");
     Serial.println("Notify Update value ");
     Serial.print("conn handle: ");
@@ -457,21 +480,21 @@ void gattNotifyUpdateCallback(BLEStatus_t status, uint16_t con_handle, uint16_t 
         Serial.print(" ");
     }
     Serial.println(" ");
-    if(is_wifi_connected)
+    if(is_wifi_connected && is_nano_ok)
     { 
+        RGB.color(0, 0, 255);   
         Serial.println("Send!");
-        // The buf is {"ID", "OpCode", "R", "G", "B"};
-        uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[0], value[1], value[2]};
+        // The buf is { "OpCode","ID", "R", "G", "B"};
+        uint8_t buf[5] = {0x00, nano_getNumAccordingHandle(con_handle), value[0], value[1], value[2]};
         send_status(buf);
+        RGB.color(255, 255, 255);
     }
-    RGB.color(255, 255, 255);
 }
 
 void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length)
 {
     if(status == BLE_STATUS_OK)
     {  
-        RGB.color(0, 0, 255);   
         Serial.println(" ");
         Serial.println("Read characteristic ok");
         Serial.print("conn handle: ");
@@ -488,13 +511,14 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
             Serial.print(" ");
         }
         Serial.println(" ");
-        if(is_wifi_connected)
+        if(is_wifi_connected && is_nano_ok)
         {
+            RGB.color(0, 0, 255);   
             Serial.println("Send!");
-            uint8_t buf[5] = {nano_getNumAccordingHandle(con_handle), 0x00, value[0], value[1], value[2]};
+            uint8_t buf[5] = {0x00, nano_getNumAccordingHandle(con_handle), value[0], value[1], value[2]};
             send_status(buf);
+            RGB.color(255, 255, 255);
         }
-        RGB.color(255, 255, 255);
     }
 }
 
@@ -559,8 +583,6 @@ void setup()
     Serial.println("Starting scanning....");
     RGB.control(true);
     RGB.color(255, 0, 0);
-    //
-    wiced_JSON_parser_register_callback(wiced_json_callback);
 }
 
 void loop()
@@ -572,18 +594,21 @@ void loop()
         if(client.available())
         { 
             Serial.println("Receive json...");
-            RGB.color(0, 255, 0);
             delay(1);
             rx_len = 0;
             memset(rx_buf, 0x00, sizeof(rx_buf));
             while(client.available()) 
             {
                 rx_buf[rx_len++] = client.read();
-            }  
-            rx_buf[rx_len++] = '\0';         
-            rx_buf[rx_len++] = EOF;            
-            Serial.println(rx_buf);
-            parseJson(rx_buf);
+                if(rx_len>=60)
+                    rx_len = 60;
+            }            
+            //Serial.println(rx_buf);
+            if(is_nano_ok)
+            {   
+                RGB.color(0, 255, 0);
+                parseJson(rx_buf);
+            }
         }
     }
     else

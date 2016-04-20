@@ -8,7 +8,7 @@
 #include "spark_wiring_btstack.h"
 
 #define INVALID_CONN_HANDLE 0xFFFF
-#define NANO_NUM            8        //No more than 8, it's limited by btstack library's congfiguration.
+#define NANO_NUM            5        //No more than 8, it's limited by btstack library's congfiguration.
 
 typedef enum{
 

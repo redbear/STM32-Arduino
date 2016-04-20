@@ -18,7 +18,7 @@ typedef struct{
 
 typedef struct{
 
-	  uint16_t         connect_handle;
+	  volatile uint16_t         connect_handle;
 	  bd_addr_type_t   addr_type;
 	  bd_addr_t        peer_addr;
 
