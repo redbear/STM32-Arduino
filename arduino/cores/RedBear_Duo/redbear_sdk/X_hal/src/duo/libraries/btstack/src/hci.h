@@ -92,11 +92,8 @@ extern "C" {
 #define HCI_OUTGOING_PRE_BUFFER_SIZE 1
 
 // BNEP may uncompress the IP Header by 16 bytes
-#ifdef HAVE_BNEP
-#define HCI_INCOMING_PRE_BUFFER_SIZE (16 - HCI_ACL_HEADER_SIZE - 4)
-#endif 
 #ifndef HCI_INCOMING_PRE_BUFFER_SIZE
-    #define HCI_INCOMING_PRE_BUFFER_SIZE 0
+#define HCI_INCOMING_PRE_BUFFER_SIZE (16 - HCI_ACL_HEADER_SIZE - 4)
 #endif
 
 // 
@@ -323,15 +320,7 @@ typedef enum {
     AUTHORIZATION_GRANTED
 } authorization_state_t;
 
-typedef struct sm_pairing_packet {
-    uint8_t code;
-    uint8_t io_capability;
-    uint8_t oob_data_flag;
-    uint8_t auth_req;
-    uint8_t max_encryption_key_size;
-    uint8_t initiator_key_distribution;
-    uint8_t responder_key_distribution;
-} sm_pairing_packet_t;
+typedef uint8_t sm_pairing_packet_t[7];
 
 // connection info available as long as connection exists
 typedef struct sm_connection {
@@ -389,16 +378,8 @@ typedef struct {
 
     btstack_timer_source_t timeout;
     
-#ifdef HAVE_TIME
-    // timer
-    struct timeval timestamp;
-#endif
-#ifdef HAVE_TICK
-    uint32_t timestamp; // timestamp in system ticks
-#endif
-#ifdef HAVE_TIME_MS
-    uint32_t timestamp; // timestamp in ms
-#endif
+    // timeout in system ticks (HAVE_EMBEDDED_TICK) or milliseconds (HAVE_EMBEDDED_TIME_MS)
+    uint32_t timestamp;
 
     // ACL packet recombination - PRE_BUFFER + ACL Header + ACL payload
     uint8_t  acl_recombination_buffer[HCI_INCOMING_PRE_BUFFER_SIZE + 4 + HCI_ACL_BUFFER_SIZE];
@@ -497,10 +478,11 @@ typedef enum hci_init_state{
 } hci_substate_t;
 
 enum {
-    LE_ADVERTISEMENT_TASKS_DISABLE      = 1 << 0,
-    LE_ADVERTISEMENT_TASKS_SET_DATA     = 1 << 1,
-    LE_ADVERTISEMENT_TASKS_SET_PARAMS   = 1 << 2,
-    LE_ADVERTISEMENT_TASKS_ENABLE       = 1 << 3,
+    LE_ADVERTISEMENT_TASKS_DISABLE       = 1 << 0,
+    LE_ADVERTISEMENT_TASKS_SET_ADV_DATA  = 1 << 1,
+    LE_ADVERTISEMENT_TASKS_SET_SCAN_DATA = 1 << 2,
+    LE_ADVERTISEMENT_TASKS_SET_PARAMS    = 1 << 3,
+    LE_ADVERTISEMENT_TASKS_ENABLE        = 1 << 4,
 };
 
 enum {
@@ -537,13 +519,16 @@ typedef struct {
     btstack_linked_list_t     connections;
 
     /* callback to L2CAP layer */
-    void (*acl_packet_handler)(uint8_t packet_type, uint8_t *packet, uint16_t size);
+    btstack_packet_handler_t acl_packet_handler;
 
     /* callback for SCO data */
-    void (*sco_packet_handler)(uint8_t packet_type, uint8_t *packet, uint16_t size);
+    btstack_packet_handler_t sco_packet_handler;
 
     /* callbacks for events */
     btstack_linked_list_t event_handlers;
+
+    // local version information callback
+    void (*local_version_information_callback)(uint8_t * local_version_information);
 
     // hardware error callback
     void (*hardware_error_callback)(void);
@@ -633,6 +618,9 @@ typedef struct {
     uint8_t  * le_advertisements_data;
     uint8_t    le_advertisements_data_len;
 
+    uint8_t  * le_scan_response_data;
+    uint8_t    le_scan_response_data_len;
+
     uint8_t  le_advertisements_active;
     uint8_t  le_advertisements_enabled;
     uint8_t  le_advertisements_todo;
@@ -684,14 +672,15 @@ void hci_set_control(const btstack_control_t *hardware_control);
 void hci_set_link_key_db(btstack_link_key_db_t const * link_key_db);
 
 /**
- * @brief Set class of device that will be set during Bluetooth init.
- */
-void hci_set_class_of_device(uint32_t class_of_device);
-
-/**
  * @brief Set callback for Bluetooth Hardware Error
  */
 void hci_set_hardware_error_callback(void (*fn)(void));
+
+/**
+ * @brief Set callback for local information from Bluetooth controller right after HCI Reset
+ * @note Can be used to select chipset driver dynamically during startup
+ */
+void hci_set_local_version_information_callback(void (*fn)(uint8_t * local_version_information));
 
 /**
  * @brief Set Public BD ADDR - passed on to Bluetooth chipset during init if supported in bt_control_h
@@ -731,12 +720,12 @@ void hci_add_event_handler(btstack_packet_callback_registration_t * callback_han
 /**
  * @brief Registers a packet handler for ACL data. Used by L2CAP
  */
-void hci_register_acl_packet_handler(void (*handler)(uint8_t packet_type, uint8_t *packet, uint16_t size));
+void hci_register_acl_packet_handler(btstack_packet_handler_t handler);
 
 /**
  * @brief Registers a packet handler for SCO data. Used for HSP and HFP profiles.
  */
-void hci_register_sco_packet_handler(void (*handler)(uint8_t packet_type, uint8_t *packet, uint16_t size));
+void hci_register_sco_packet_handler(btstack_packet_handler_t handler);
 
 
 // Sending HCI Commands
@@ -761,7 +750,14 @@ int hci_send_cmd(const hci_cmd_t *cmd, ...);
 int hci_get_sco_packet_length(void);
 
 /**
- * @brief Check hci packet buffer and if SCO packet can be sent to controller
+ * @brief Request emission of HCI_EVENT_SCO_CAN_SEND_NOW as soon as possible
+ * @note HCI_EVENT_SCO_CAN_SEND_NOW might be emitted during call to this function
+ *       so packet handler should be ready to handle it
+ */
+void hci_request_sco_can_send_now_event(void);
+
+/**
+ * @brief Check HCI packet buffer and if SCO packet can be sent to controller
  */
 int hci_can_send_sco_packet_now(void);
 
@@ -771,7 +767,7 @@ int hci_can_send_sco_packet_now(void);
 int hci_can_send_prepared_sco_packet_now(void);
 
 /**
- * @brief Send SCO packet prepared in hci packet buffer
+ * @brief Send SCO packet prepared in HCI packet buffer
  */
 int hci_send_sco_packet_buffer(int size);
 

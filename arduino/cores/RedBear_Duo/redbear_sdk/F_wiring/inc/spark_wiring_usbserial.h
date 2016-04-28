@@ -30,7 +30,6 @@
 #include "spark_wiring_stream.h"
 #include "usb_hal.h"
 #include "system_task.h"
-#include "concurrent_hal.h"
 
 class USBSerial : public Stream
 {
@@ -48,8 +47,11 @@ public:
 
 	virtual size_t write(uint8_t byte);
 	virtual int read();
+	virtual int availableForWrite(void);
 	virtual int available();
 	virtual void flush();
+
+	virtual void blockOnOverrun(bool);
 
 #if PLATFORM_THREADING
 	os_mutex_recursive_t get_mutex()
@@ -82,6 +84,9 @@ public:
 	}
 
 	using Print::write;
+
+private:
+	bool _blocking;
 };
 
 USBSerial& _fetch_global_serial();

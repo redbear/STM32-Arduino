@@ -46,28 +46,13 @@
 #define btstack_hsp_ag_h
 
 #include "hci.h"
-#include "classic/sdp_query_rfcomm.h"
+#include "classic/sdp_client_rfcomm.h"
 
 #if defined __cplusplus
 extern "C" {
 #endif
 
 /* API_START */
-
-/**
- * @brief Packet handler for HSP Audio Gateway (AG) events. 
- * 
- * The HSP AG event has type HCI_EVENT_HSP_META with following subtypes:  
- * - HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE    
- * - HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE                       
- * - HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED      
- * - HSP_SUBEVENT_SPEAKER_GAIN_CHANGED         
- * - HSP_SUBEVENT_HS_COMMAND      
- *
- * @param event See include/btstack/hci_cmds.h
- * @param event_size
- */
-typedef void (*hsp_ag_callback_t)(uint8_t * event, uint16_t event_size);
 
 /**
  * @brief Set up HSP AG.
@@ -86,30 +71,59 @@ void hsp_ag_create_sdp_record(uint8_t * service, uint32_t service_record_handle,
 
 /**
  * @brief Register packet handler to receive HSP AG events.
+
+ * The HSP AG event has type HCI_EVENT_HSP_META with following subtypes:  
+ * - HSP_SUBEVENT_RFCOMM_CONNECTION_COMPLETE
+ * - HSP_SUBEVENT_RFCOMM_DISCONNECTION_COMPLETE
+ * - HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE    
+ * - HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE                       
+ * - HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED      
+ * - HSP_SUBEVENT_SPEAKER_GAIN_CHANGED         
+ * - HSP_SUBEVENT_HS_COMMAND      
+ *
  * @param callback 
  */
-void hsp_ag_register_packet_handler(hsp_ag_callback_t callback);
+void hsp_ag_register_packet_handler(btstack_packet_handler_t callback);
 
 /**
- * @brief Connect to HSP Headset
+ * @brief Connect to HSP Headset.
  *
  * Perform SDP query for an RFCOMM service on a remote device, 
- * and establish an RFCOMM connection if such service is found. The reception of the  
- * HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE or 
- * HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE event
- * indicate if the connection is successfully established or not. 
+ * and establish an RFCOMM connection if such service is found. Reception of the  
+ * HSP_SUBEVENT_RFCOMM_CONNECTION_COMPLETE with status 0
+ * indicates if the connection is successfully established. 
  *
  * @param bd_addr
  */
 void hsp_ag_connect(bd_addr_t bd_addr);
 
 /**
- * @brief Disconnect from HSP Headset.
+ * @brief Disconnect from HSP Headset
  *
- * Releases the RFCOMM channel.
+ * Reception of the HSP_SUBEVENT_RFCOMM_DISCONNECTION_COMPLETE with status 0
+ * indicates if the connection is successfully released. 
  * @param bd_addr
  */
 void hsp_ag_disconnect(void);
+
+
+/**
+ * @brief Establish audio connection.
+ * 
+ * Reception of the HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE with status 0
+ * indicates if the audio connection is successfully established. 
+ * @param bd_addr
+ */
+void hsp_ag_establish_audio_connection(void);
+
+/**
+ * @brief Release audio connection.
+ *
+ * Reception of the HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE with status 0
+ * indicates if the connection is successfully released. 
+ * @param bd_addr
+ */
+void hsp_ag_release_audio_connection(void);
 
 /**
  * @brief Set microphone gain. 

@@ -146,7 +146,9 @@ typedef uint8_t sm_key_t[16];
 #define BNEP_CHANNEL_NOT_CONNECTED                         0xA1
 #define BNEP_DATA_LEN_EXCEEDS_MTU                          0xA2
 
-// COMMANDS
+
+
+// DAEMON COMMANDS
 
 #define OGF_BTSTACK 0x3d
 
@@ -154,10 +156,10 @@ typedef uint8_t sm_key_t[16];
 // get state: @returns HCI_STATE
 #define BTSTACK_GET_STATE                                  0x01
 
-// set power mode: @param HCI_POWER_MODE
+// set power mode: param HCI_POWER_MODE
 #define BTSTACK_SET_POWER_MODE                             0x02
 
-// set capture mode: @param on
+// set capture mode: param on
 #define BTSTACK_SET_ACL_CAPTURE_MODE                       0x03
 
 // get BTstack version
@@ -175,25 +177,25 @@ typedef uint8_t sm_key_t[16];
 // set global Bluetooth state
 #define BTSTACK_SET_BLUETOOTH_ENABLED                      0x08
 
-// create l2cap channel: @param bd_addr(48), psm (16)
+// create l2cap channel: param bd_addr(48), psm (16)
 #define L2CAP_CREATE_CHANNEL                               0x20
 
-// disconnect l2cap disconnect, @param channel(16), reason(8)
+// disconnect l2cap disconnect, param channel(16), reason(8)
 #define L2CAP_DISCONNECT                                   0x21
 
-// register l2cap service: @param psm(16), mtu (16)
+// register l2cap service: param psm(16), mtu (16)
 #define L2CAP_REGISTER_SERVICE                             0x22
 
-// unregister l2cap disconnect, @param psm(16)
+// unregister l2cap disconnect, param psm(16)
 #define L2CAP_UNREGISTER_SERVICE                           0x23
 
-// accept connection @param bd_addr(48), dest cid (16)
+// accept connection param bd_addr(48), dest cid (16)
 #define L2CAP_ACCEPT_CONNECTION                            0x24
 
-// decline l2cap disconnect,@param bd_addr(48), dest cid (16), reason(8)
+// decline l2cap disconnect,param bd_addr(48), dest cid (16), reason(8)
 #define L2CAP_DECLINE_CONNECTION                           0x25
 
-// create l2cap channel: @param bd_addr(48), psm (16), mtu (16)
+// create l2cap channel: param bd_addr(48), psm (16), mtu (16)
 #define L2CAP_CREATE_CHANNEL_MTU                           0x26
 
 // register SDP Service Record: service record (size)
@@ -252,6 +254,7 @@ typedef uint8_t sm_key_t[16];
 #define GATT_GET_MTU                                             0x82
 
 
+
 // EVENTS
 
 /**
@@ -301,13 +304,50 @@ typedef uint8_t sm_key_t[16];
  */
 #define DAEMON_EVENT_REMOTE_NAME_CACHED                    0x65
 
-// internal daemon events
-
-// data: event(8)
+// internal - data: event(8)
 #define DAEMON_EVENT_CONNECTION_OPENED                     0x67
 
-// data: event(8)
+// internal - data: event(8)
 #define DAEMON_EVENT_CONNECTION_CLOSED                     0x68
+
+// data: event(8), len(8), local_cid(16), credits(8)
+#define DAEMON_EVENT_L2CAP_CREDITS                         0x74
+
+/**
+ * @format 12
+ * @param status
+ * @param psm
+ */
+#define DAEMON_EVENT_L2CAP_SERVICE_REGISTERED              0x75
+
+/**
+ * @format 21
+ * @param rfcomm_cid
+ * @param credits
+ */
+#define DAEMON_EVENT_RFCOMM_CREDITS                        0x84
+
+/**
+ * @format 11
+ * @param status
+ * @param channel_id
+ */
+#define DAEMON_EVENT_RFCOMM_SERVICE_REGISTERED             0x85
+
+/**
+ * @format 11
+ * @param status
+ * @param server_channel_id
+ */
+#define DAEMON_EVENT_RFCOMM_PERSISTENT_CHANNEL             0x86
+
+/**
+  * @format 14
+  * @param status
+  * @param service_record_handle
+  */
+#define DAEMON_EVENT_SDP_SERVICE_REGISTERED                0x90
+
 
 
 // additional HCI events
@@ -322,6 +362,7 @@ typedef uint8_t sm_key_t[16];
  * @param handle
  */
 #define HCI_EVENT_SCO_CAN_SEND_NOW                         0x6F
+
 
 // L2CAP EVENTS
     
@@ -346,8 +387,7 @@ typedef uint8_t sm_key_t[16];
 #define L2CAP_EVENT_CHANNEL_CLOSED                         0x71
 
 /**
- * @format 1BH222
- * @param status
+ * @format BH222
  * @param address
  * @param handle
  * @param psm
@@ -359,17 +399,6 @@ typedef uint8_t sm_key_t[16];
 // ??
 // data: event(8), len(8), handle(16)
 #define L2CAP_EVENT_TIMEOUT_CHECK                          0x73
-
-// ??
-// data: event(8), len(8), local_cid(16), credits(8)
-#define L2CAP_EVENT_CREDITS                                0x74
-
-/**
- * @format 12
- * @param status
- * @param psm
- */
-#define L2CAP_EVENT_SERVICE_REGISTERED                     0x75
 
 /**
  * @format H2222
@@ -406,7 +435,7 @@ typedef uint8_t sm_key_t[16];
  * @param rfcomm_cid
  * @param max_frame_size
  */
-#define RFCOMM_EVENT_OPEN_CHANNEL_COMPLETE                 0x80
+#define RFCOMM_EVENT_CHANNEL_OPENED                        0x80
 
 /**
  * @format 2
@@ -428,28 +457,7 @@ typedef uint8_t sm_key_t[16];
  * @param line_status
  */
 #define RFCOMM_EVENT_REMOTE_LINE_STATUS                    0x83
-    
-/**
- * @format 21
- * @param rfcomm_cid
- * @param credits
- */
-#define RFCOMM_EVENT_CREDITS                               0x84
-
-/**
- * @format 11
- * @param status
- * @param channel_id
- */
-#define RFCOMM_EVENT_SERVICE_REGISTERED                    0x85
-    
-/**
- * @format 11
- * @param status
- * @param server_channel_id
- */
-#define RFCOMM_EVENT_PERSISTENT_CHANNEL                    0x86
-    
+        
 /**
  * @format 21
  * @param rfcomm_cid
@@ -459,24 +467,17 @@ typedef uint8_t sm_key_t[16];
 
  /**
   * TODO: format for variable data 2?
-  * @param rfcomm_cid
-  * @param rpn_data
+  * param rfcomm_cid
+  * param rpn_data
   */
 #define RFCOMM_EVENT_PORT_CONFIGURATION                    0x88
 
 /**
  * @format 2
- * @param local_cid
+ * @param rfcomm_cid
  */
 #define RFCOMM_EVENT_CAN_SEND_NOW                          0x89
 
-
-/**
-  * @format 14
-  * @param status
-  * @param service_record_handle
-  */
-#define SDP_EVENT_SERVICE_REGISTERED                             0x90
 
 /**
  * @format 1
@@ -623,24 +624,66 @@ typedef uint8_t sm_key_t[16];
  */    
 #define ATT_EVENT_MTU_EXCHANGE_COMPLETE                          0xB5
 
-// data: event(8), len(8), status (8), hci_handle (16), attribute_handle (16)
+ /**
+  * @format 1H2
+  * @param status
+  * @param conn_handle
+  * @param attribute_handle
+  */
 #define ATT_EVENT_HANDLE_VALUE_INDICATION_COMPLETE               0xB6
 
+/**
+ * @format
+ */
+#define ATT_EVENT_CAN_SEND_NOW                                   0xB7
 
-// data: event(8), len(8), status (8), bnep service uuid (16) 
-#define BNEP_EVENT_SERVICE_REGISTERED                      0xC0
+// TODO: daemon only event
 
-// data: event(8), len(8), status (8), bnep source uuid (16), bnep destination uuid (16), mtu (16), remote_address (48) 
-#define BNEP_EVENT_OPEN_CHANNEL_COMPLETE                   0xC1
+/**
+ * @format 12
+ * @param status
+ * @param service_uuid
+ */
+ #define BNEP_EVENT_SERVICE_REGISTERED                      0xC0
 
-// data: event(8), len(8), bnep source uuid (16), bnep destination uuid (16), remote_address (48) 
-#define BNEP_EVENT_CHANNEL_CLOSED                          0xC2
+/**
+ * @format 12222B
+ * @param status
+ * @param bnep_cid
+ * @param source_uuid
+ * @param destination_uuid
+ * @param mtu
+ * @param remote_address
+ */
+ #define BNEP_EVENT_CHANNEL_OPENED                   0xC1
 
-// data: event(8), len(8), bnep source uuid (16), bnep destination uuid (16), remote_address (48), channel state (8)
+/**
+ * @format 222B
+ * @param bnep_cid
+ * @param source_uuid
+ * @param destination_uuid
+ * @param remote_address
+ */
+ #define BNEP_EVENT_CHANNEL_CLOSED                          0xC2
+
+/**
+ * @format 222B1
+ * @param bnep_cid
+ * @param source_uuid
+ * @param destination_uuid
+ * @param remote_address
+ * @param channel_state
+ */
 #define BNEP_EVENT_CHANNEL_TIMEOUT                         0xC3    
     
-// data: event(8), len(8)
-#define BNEP_EVENT_READY_TO_SEND                           0xC4
+/**
+ * @format 222B
+ * @param bnep_cid
+ * @param source_uuid
+ * @param destination_uuid
+ * @param remote_address
+ */
+ #define BNEP_EVENT_CAN_SEND_NOW                           0xC4
 
  /**
   * @format H1B
@@ -735,10 +778,18 @@ typedef uint8_t sm_key_t[16];
 
 // GAP
 
-// data: event(8), len(8), hci_handle (16), security_level (8)
+/**
+ * @format H1
+ * @param handle
+ * @param security_level
+ */
 #define GAP_EVENT_SECURITY_LEVEL                                 0xE0
 
-// data: event(8), len(8), status (8), bd_addr(48)
+/**
+ * @format 1B
+ * @param status
+ * @param address
+ */
 #define GAP_EVENT_DEDICATED_BONDING_COMPLETED                    0xE1
 
 /**
@@ -750,7 +801,7 @@ typedef uint8_t sm_key_t[16];
  * @param data_length
  * @param data
  */
-#define GAP_LE_EVENT_ADVERTISING_REPORT                          0xE2
+#define GAP_EVENT_ADVERTISING_REPORT                          0xE2
 
 
 // Meta Events, see below for sub events
@@ -766,40 +817,58 @@ typedef uint8_t sm_key_t[16];
 // #define HCI_EVENT_SDP_META                                 0xxx
 // #define HCI_EVENT_SM_META                                  0xxx
 
+
+/** HSP Subevent */
+
+/**
+ * @format 11
+ * @param subevent_code
+ * @param status 0 == OK
+ */
+#define HSP_SUBEVENT_RFCOMM_CONNECTION_COMPLETE             0x01
+
+/**
+ * @format 11
+ * @param subevent_code
+ * @param status 0 == OK
+ */
+#define HSP_SUBEVENT_RFCOMM_DISCONNECTION_COMPLETE           0x02
+
+
 /**
  * @format 11H
  * @param subevent_code
  * @param status 0 == OK
  * @param handle
  */
-#define HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE             0x01
+#define HSP_SUBEVENT_AUDIO_CONNECTION_COMPLETE             0x03
 
 /**
  * @format 11
  * @param subevent_code
  * @param status 0 == OK
  */
-#define HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE          0x02
+#define HSP_SUBEVENT_AUDIO_DISCONNECTION_COMPLETE          0x04
 
 /**
  * @format 1
  * @param subevent_code
  */
-#define HSP_SUBEVENT_RING                                  0x03
+#define HSP_SUBEVENT_RING                                  0x05
 
 /**
  * @format 11
  * @param subevent_code
  * @param gain Valid range: [0,15]
  */
-#define HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED               0x04
+#define HSP_SUBEVENT_MICROPHONE_GAIN_CHANGED               0x06
 
 /**
  * @format 11
  * @param subevent_code
  * @param gain Valid range: [0,15]
  */
-#define HSP_SUBEVENT_SPEAKER_GAIN_CHANGED                  0x05
+#define HSP_SUBEVENT_SPEAKER_GAIN_CHANGED                  0x07
 
 /**
  * @format 1JV
@@ -807,7 +876,7 @@ typedef uint8_t sm_key_t[16];
  * @param value_length
  * @param value
  */
-#define HSP_SUBEVENT_HS_COMMAND                            0x06
+#define HSP_SUBEVENT_HS_COMMAND                            0x08
 
 /**
  * @format 1JV
@@ -815,34 +884,200 @@ typedef uint8_t sm_key_t[16];
  * @param value_length
  * @param value
  */
-#define HSP_SUBEVENT_AG_INDICATION                         0x07
+#define HSP_SUBEVENT_AG_INDICATION                         0x09
 
 
-// HFP Subevents
+/** HFP Subevent */
 
+/**
+ * @format 11H
+ * @param subevent_code
+ * @param status 0 == OK
+ * @param con_handle
+ */
 #define HFP_SUBEVENT_SERVICE_LEVEL_CONNECTION_ESTABLISHED  0x01
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
 #define HFP_SUBEVENT_SERVICE_LEVEL_CONNECTION_RELEASED     0x02
+
+/**
+ * @format 11H
+ * @param subevent_code
+ * @param status 0 == OK
+ * @param handle
+ */
 #define HFP_SUBEVENT_AUDIO_CONNECTION_ESTABLISHED          0x03
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
 #define HFP_SUBEVENT_AUDIO_CONNECTION_RELEASED             0x04
+
+/**
+ * @format 11
+ * @param subevent_code
+ * @param status 0 == OK
+ */
 #define HFP_SUBEVENT_COMPLETE                              0x05
+
+/**
+ * @format 111T
+ * @param subevent_code
+ * @param indicator_index
+ * @param indicator_status
+ * @param indicator_name
+ */
 #define HFP_SUBEVENT_AG_INDICATOR_STATUS_CHANGED           0x06
+
+/**
+ * @format 1111T
+ * @param subevent_code
+ * @param network_operator_mode
+ * @param network_operator_format
+ * @param network_operator_name
+ */
 #define HFP_SUBEVENT_NETWORK_OPERATOR_CHANGED              0x07
-#define HFP_SUBEVENT_EXTENDED_AUDIO_GATEWAY_ERROR          0x08
-#define HFP_SUBEVENT_CODECS_CONNECTION_COMPLETE            0x09
-#define HFP_SUBEVENT_START_RINGINIG                        0x0A
-#define HFP_SUBEVENT_STOP_RINGINIG                         0x0B
-#define HFP_SUBEVENT_CALL_TERMINATED                       0x0C
-#define HFP_SUBEVENT_PLACE_CALL_WITH_NUMBER                0x0D
-#define HFP_SUBEVENT_REDIAL_LAST_NUMBER                    0x0E
-#define HFP_SUBEVENT_ATTACH_NUMBER_TO_VOICE_TAG            0x0F
-#define HFP_SUBEVENT_NUMBER_FOR_VOICE_TAG                  0x10
-#define HFP_SUBEVENT_TRANSMIT_DTMF_CODES                   0x11
-#define HFP_SUBEVENT_TRANSMIT_STATUS_OF_CURRENT_CALL       0x12
-#define HFP_SUBEVENT_CALL_ANSWERED                         0x13
-#define HFP_SUBEVENT_CONFERENCE_CALL                       0x14
-#define HFP_SUBEVENT_RING                                  0x15
-#define HFP_SUBEVENT_SPEAKER_VOLUME                        0x16
-#define HFP_SUBEVENT_MICROPHONE_VOLUME                     0x17
+
+/**
+ * @format 11
+ * @param subevent_code
+ * @param error
+ */
+#define HFP_SUBEVENT_EXTENDED_AUDIO_GATEWAY_ERROR             0x08
+
+/**
+ * @format 11
+ * @param subevent_code
+ * @param status
+ */
+#define HFP_SUBEVENT_CODECS_CONNECTION_COMPLETE               0x09
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+#define HFP_SUBEVENT_START_RINGINIG                           0x0A
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+#define HFP_SUBEVENT_STOP_RINGINIG                            0x0B
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+#define HFP_SUBEVENT_CALL_TERMINATED                          0x0C
+
+/**
+ * @format 1T
+ * @param subevent_code
+ * @param number
+ */
+#define HFP_SUBEVENT_PLACE_CALL_WITH_NUMBER                   0x0D
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+#define HFP_SUBEVENT_ATTACH_NUMBER_TO_VOICE_TAG               0x0E
+
+/**
+ * @format 1T
+ * @param subevent_code
+ * @param number
+ */
+#define HFP_SUBEVENT_NUMBER_FOR_VOICE_TAG                     0x0F
+
+/**
+ * @format 1T
+ * @param subevent_code
+ * @param dtmf code
+ */
+#define HFP_SUBEVENT_TRANSMIT_DTMF_CODES                      0x10
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+ #define HFP_SUBEVENT_CALL_ANSWERED                            0x11
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+#define HFP_SUBEVENT_CONFERENCE_CALL                          0x12
+
+/**
+ * @format 1
+ * @param subevent_code
+ */
+#define HFP_SUBEVENT_RING                                     0x13
+
+/**
+ * @format 111
+ * @param subevent_code
+ * @param status
+ * @param gain
+ */
+ #define HFP_SUBEVENT_SPEAKER_VOLUME                           0x14
+
+/**
+ * @format 111
+ * @param subevent_code
+ * @param status
+ * @param gain
+ */
+#define HFP_SUBEVENT_MICROPHONE_VOLUME                        0x15
+
+/**
+ * @format 11T
+ * @param subevent_code
+ * @param type
+ * @param number
+ */
+#define HFP_SUBEVENT_CALL_WAITING_NOTIFICATION                0x16
+
+/**
+ * @format 11T
+ * @param subevent_code
+ * @param type
+ * @param number
+ */
+#define HFP_SUBEVENT_CALLING_LINE_INDETIFICATION_NOTIFICATION 0x17
+
+/**
+ * @format 111111T
+ * @param subevent_code
+ * @param clcc_idx
+ * @param clcc_dir
+ * @param clcc_status
+ * @param clcc_mpty
+ * @param bnip_type
+ * @param bnip_number
+ */
+#define HFP_SUBEVENT_ENHANCED_CALL_STATUS                     0x18
+
+/**
+ * @format 111T
+ * @param subevent_code
+ * @param status
+ * @param bnip_type
+ * @param bnip_number
+ */
+ #define HFP_SUBEVENT_SUBSCRIBER_NUMBER_INFORMATION            0x19
+
+/**
+ * @format 1T
+ * @param subevent_code
+ * @param value
+ */
+#define HFP_SUBEVENT_RESPONSE_AND_HOLD_STATUS                 0x1A
 
 // ANCS Client
 

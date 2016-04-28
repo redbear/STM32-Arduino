@@ -36,41 +36,34 @@
  */
 
 /*
- *  sdp_rfcomm_query.h
+ * spp_server.h
+ * 
+ * Create SPP SDP Records
  */
 
-#ifndef __SDP_QUERY_RFCOMM_H
-#define __SDP_QUERY_RFCOMM_H
+#ifndef __SPP_SERVER_H
+#define __SPP_SERVER_H
 
-#include "btstack_util.h"
-
-#define SDP_SERVICE_NAME_LEN 20
-
+#include <stdint.h>
+ 
 #if defined __cplusplus
 extern "C" {
 #endif
 
 /* API_START */
 
-/** 
- * @brief Checks if the SDP Client is ready
- * @return 1 when no query is active
+/**
+ * @brief Create SDP record for SPP service
+ * @param service buffer - needs to large enough
+ * @param service_record_handle
+ * @param rfcomm_channel
+ * @param name
  */
-int sdp_query_rfcomm_ready(void);
+void spp_create_sdp_record(uint8_t *service, uint32_t service_record_handle, int rfcomm_channel, const char *name);
 
-/** 
- * @brief Searches SDP records on a remote device for RFCOMM services with a given UUID.
- */
-void sdp_query_rfcomm_channel_and_name_for_uuid(btstack_packet_handler_t callback, bd_addr_t remote, uint16_t uuid);
-
-/** 
- * @brief Searches SDP records on a remote device for RFCOMM services with a given service search pattern.
- */
-void sdp_query_rfcomm_channel_and_name_for_search_pattern(btstack_packet_handler_t callback, bd_addr_t remote, uint8_t * des_serviceSearchPattern);
 /* API_END */
 
 #if defined __cplusplus
 }
 #endif
-
-#endif // __SDP_QUERY_RFCOMM_H
+#endif // __SPP_SERVER_H

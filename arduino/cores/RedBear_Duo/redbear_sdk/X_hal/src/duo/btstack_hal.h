@@ -10,6 +10,7 @@ extern "C" {
 #include "btstack_chipset_bcm.h"
 #include "btstack_config.h"
 #include "hci_dump.h"
+#include "btstack_hal_define.h"
 
 /**@brief BLE status */
 typedef enum BLEStatus {
@@ -41,13 +42,37 @@ typedef struct{
 }advParams_t;
 
 
+typedef uint16_t (*gattReadCallback_t)                   (uint16_t handle, uint8_t * buffer, uint16_t buffer_size);
+typedef int      (*gattWriteCallback_t)                  (uint16_t handle, uint8_t *buffer, uint16_t buffer_size);
+
+typedef void     (*bleAdvertismentCallback_t)            (advertisementReport_t * bleAdvertisement);
+
+typedef void     (*bleConnectedCallback_t)               (BLEStatus_t status, uint16_t handle);
+typedef void     (*bleDisconnectedCallback_t)            (uint16_t handle);
+
+typedef void     (*gattServicesDiscoveredCallback_t)     (BLEStatus_t status, uint16_t conn_handle, gatt_client_service_t *service);
+typedef void     (*gattCharsDiscoveredCallback_t)        (BLEStatus_t status, uint16_t conn_handle, gatt_client_characteristic_t *characteristic);
+typedef void     (*gattDescriptorsDiscoveredCallback_t)  (BLEStatus_t status, uint16_t conn_handle, gatt_client_characteristic_descriptor_t *characteristic);
+
+typedef void     (*gattCharacteristicReadCallback_t)     (BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length);
+typedef void     (*gattCharacteristicWrittenCallback_t)  (BLEStatus_t status, uint16_t con_handle);
+
+typedef void     (*gattDescriptorReadCallback_t)         (BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length);
+typedef void     (*gattDescriptorWrittenCallback_t)      (BLEStatus_t status, uint16_t con_handle);
+
+typedef void     (*gattWriteCCCDCallback_t)              (BLEStatus_t status, uint16_t con_handle);
+typedef void     (*gattNotifyUpdateCallback_t)           (BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length);
+typedef void     (*gattIndicateUpdateCallback_t)         (BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t *value, uint16_t length);
+
+typedef void     (*btstack_timer_handler_t)(btstack_timer_source_t *_ts);
+
 /**@brief Device API */
 void hal_btstack_init(void);
 void hal_btstack_deInit(void);
 void hal_btstack_loop_execute(void);
 
 void     hal_btstack_setTimer(btstack_timer_source_t *ts, uint32_t timeout_in_ms);
-void     hal_btstack_setTimerHandler(btstack_timer_source_t *ts, void (*process)(btstack_timer_source_t *_ts));
+void     hal_btstack_setTimerHandler(btstack_timer_source_t *ts, btstack_timer_handler_t handler);
 void     hal_btstack_addTimer(btstack_timer_source_t *timer);
 int      hal_btstack_removeTimer(btstack_timer_source_t *timer);
 uint32_t hal_btstack_getTimeMs(void);
@@ -60,15 +85,18 @@ void hal_btstack_enable_packet_info(void);
 void hal_btstack_setRandomAddressMode(gap_random_address_type_t random_address_type);
 void hal_btstack_setRandomAddr(bd_addr_t addr);
 void hal_btstack_setPublicBdAddr(bd_addr_t addr);
+void hal_btstack_getLocalBdAddr(bd_addr_t address_buffer);
+void hal_btstack_getAddrOfAdvertisement(uint8_t *addr_type, bd_addr_t addr);
 void hal_btstack_setLocalName(const char *local_name);
-void hal_btstack_setAdvParams(uint16_t adv_int_min, uint16_t adv_int_max, uint8_t adv_type, uint8_t dir_addr_type, bd_addr_t dir_addr, uint8_t channel_map, uint8_t filter_policy);
-void hal_btstack_setAdvData(uint16_t size, uint8_t *data);
+void hal_btstack_setAdvertisementParams(uint16_t adv_int_min, uint16_t adv_int_max, uint8_t adv_type, uint8_t dir_addr_type, bd_addr_t dir_addr, uint8_t channel_map, uint8_t filter_policy);
+void hal_btstack_setAdvertisementData(uint16_t size, uint8_t *data);
+void hal_btstack_setScanResponseData(uint16_t size, uint8_t *data);
 
 void hal_btstack_startAdvertising(void);
 void hal_btstack_stopAdvertising(void);
 
-void hal_btstack_setConnectedCallback(void (*callback)(BLEStatus_t status, uint16_t handle));
-void hal_btstack_setDisconnectedCallback(void (*callback)(uint16_t handle));
+void hal_btstack_setConnectedCallback(bleConnectedCallback_t cb);
+void hal_btstack_setDisconnectedCallback(bleDisconnectedCallback_t cb);
 
 void hal_btstack_disconnect(uint16_t handle);
 uint8_t hal_btstack_connect(bd_addr_t addr, bd_addr_type_t type);
@@ -79,15 +107,15 @@ void hal_btstack_startScanning(void);
 void hal_btstack_stopScanning(void);
 
 void hal_btstack_setScanParams(uint8_t scan_type, uint16_t scan_interval, uint16_t scan_window);
-void hal_btstack_setBLEAdvertisementCallback(void (*cb)(advertisementReport_t *advertisement_report));
+void hal_btstack_setBLEAdvertisementCallback(bleAdvertismentCallback_t cb);
 
 /**@brief Gatt server API */
 int  hal_btstack_attServerCanSend(void);
 int  hal_btstack_attServerSendNotify(uint16_t value_handle, uint8_t *value, uint16_t length);
 int  hal_btstack_attServerSendIndicate(uint16_t value_handle, uint8_t *value, uint16_t length);
 
-void hal_btstack_setGattCharsRead(uint16_t (*cb)(uint16_t handle, uint8_t *buffer, uint16_t buffer_size));
-void hal_btstack_setGattCharsWrite(int (*cb)(uint16_t handle, uint8_t *buffer, uint16_t buffer_size));
+void hal_btstack_setGattCharsRead(gattReadCallback_t cb);
+void hal_btstack_setGattCharsWrite(gattWriteCallback_t cb);
 
 void hal_btstack_addServiceUUID16bits(uint16_t uuid);
 void hal_btstack_addServiceUUID128bits(uint8_t *uuid);
@@ -99,18 +127,19 @@ uint16_t hal_btstack_addCharsDynamicUUID128bits(uint8_t *uuid, uint16_t flags, u
 
 
 /**@brief Gatt client API */
-void hal_btstack_setGattServiceDiscoveredCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, gatt_client_service_t *service));
-void hal_btstack_setGattCharsDiscoveredCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, gatt_client_characteristic_t *characteristic));
-void hal_btstack_setGattCharsDescriptorsDiscoveredCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, gatt_client_characteristic_descriptor_t *characteristic));
-void hal_btstack_setGattCharacteristicReadCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t * value, uint16_t length));
-void hal_btstack_setGattCharacteristicWrittenCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle));
+void hal_btstack_setGattServiceDiscoveredCallback(gattServicesDiscoveredCallback_t cb);
+void hal_btstack_setGattCharsDiscoveredCallback(gattCharsDiscoveredCallback_t cb);
+void hal_btstack_setGattDescriptorsDiscoveredCallback(gattDescriptorsDiscoveredCallback_t cb);
 
-void hal_btstack_setGattCharsDescriptorReadCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t * value, uint16_t length));
-void hal_btstack_setGattCharsDescriptorWrittenCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle));
+void hal_btstack_setGattCharacteristicReadCallback(gattCharacteristicReadCallback_t cb);
+void hal_btstack_setGattCharacteristicWrittenCallback(gattCharacteristicWrittenCallback_t cb);
 
-void hal_btstack_setGattWriteClientCharacteristicConfigCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle));
-void hal_btstack_setGattNotifyUpdateCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t * value, uint16_t length));
-void hal_btstack_setGattIndicateUpdateCallback(void (*cb)(BLEStatus_t status, uint16_t con_handle, uint16_t value_handle, uint8_t * value, uint16_t length));
+void hal_btstack_setGattDescriptorReadCallback(gattDescriptorReadCallback_t cb);
+void hal_btstack_setGattDescriptorWrittenCallback(gattDescriptorWrittenCallback_t cb);
+
+void hal_btstack_setGattWriteCCCDCallback(gattWriteCCCDCallback_t cb);
+void hal_btstack_setGattNotifyUpdateCallback(gattNotifyUpdateCallback_t cb);
+void hal_btstack_setGattIndicateUpdateCallback(gattIndicateUpdateCallback_t cb);
 
 
 uint8_t hal_btstack_discoverPrimaryServices(uint16_t con_handle);

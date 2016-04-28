@@ -129,6 +129,12 @@ gap_connection_type_t gap_get_connection_type(hci_con_handle_t connection_handle
 void gap_set_local_name(const char * local_name);
 
 /**
+ * @brief Set class of device that will be set during Bluetooth init.
+ * @note has to be done before stack starts up
+ */
+void gap_set_class_of_device(uint32_t class_of_device);
+
+/**
  * @brief Enable/disable bonding. Default is enabled.
  * @param enabled
  */
@@ -246,6 +252,18 @@ void gap_advertisements_set_params(uint16_t adv_int_min, uint16_t adv_int_max, u
  * @param enabled
  */
 void gap_advertisements_enable(int enabled);
+
+/** 
+ * @brief Set Scan Response Data
+ *
+ * @note For scan response data, scannable undirected advertising (ADV_SCAN_IND) need to be used
+ *
+ * @param advertising_data_length
+ * @param advertising_data (max 31 octets)
+ * @note data is not copied, pointer has to stay valid
+ */
+void gap_scan_response_set_data(uint8_t scan_response_data_length, uint8_t * scan_response_data);
+
 /**
  * @brief Request an update of the connection parameter for a given LE connection
  * @param handle
@@ -274,13 +292,13 @@ int gap_update_connection_parameters(hci_con_handle_t con_handle, uint16_t conn_
  * @brief Set accepted connection parameter range
  * @param range
  */
-void gap_get_connection_parameter_range(le_connection_parameter_range_t range);
+void gap_get_connection_parameter_range(le_connection_parameter_range_t * range);
 
 /**
  * @brief Get accepted connection parameter range
  * @param range
  */
-void gap_set_connection_parameter_range(le_connection_parameter_range_t range);
+void gap_set_connection_parameter_range(le_connection_parameter_range_t * range);
 
 /**
  * @brief Connect to remote LE device
