@@ -48,10 +48,19 @@ static btstack_timer_source_t characteristic2;
 static advParams_t adv_params;
 // Advertise data.
 static uint8_t adv_data[]={
-    0x02,0x01,0x06,     // Flag : LE General Discoverable Mode & BR/EDR not supported.
-    0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71  // Complete 128bit service uuid.
+    0x02,
+    BLE_GAP_AD_TYPE_FLAGS,
+    BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,   
+    0x11,
+    BLE_GAP_AD_TYPE_128BIT_SERVICE_UUID_COMPLETE,
+    0x1e, 0x94, 0x8d, 0xf1, 0x48, 0x31, 0x94, 0xba, 0x75, 0x4c, 0x3e, 0x50, 0x00, 0x00, 0x3d, 0x71 
 };
 
+static uint8_t scan_response[]={
+    0x08,
+    BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME,
+    'R', 'B',  'L', '-', 'D', 'U', 'O'
+};
 /******************************************************
  *               Function Definitions
  ******************************************************/
@@ -253,10 +262,11 @@ void setup()
     adv_params.channel_map = 0x07;
     adv_params.filter_policy = 0x00;
     
-    ble.setAdvParams(&adv_params);
-    
+    ble.setAdvertisementParams(&adv_params);
+
+    ble.setScanResponseData(sizeof(scan_response), scan_response);
     // Set advertise data.
-    ble.setAdvData(sizeof(adv_data), adv_data);
+    ble.setAdvertisementData(sizeof(adv_data), adv_data);
     // Start advertising.
     ble.startAdvertising();
     Serial.println("BLE start advertising.");

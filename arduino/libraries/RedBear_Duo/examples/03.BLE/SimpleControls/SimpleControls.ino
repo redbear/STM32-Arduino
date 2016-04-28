@@ -46,9 +46,15 @@ static btstack_timer_source_t characteristic2;
 
 static advParams_t adv_params;
 static uint8_t adv_data[]={
-    0x02,0x01,0x06, // Flag.
-    0x08,0x08,'B','i','s','c','u','i','t', // Short local name.
-    0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71 // 128-bits complete UUID.
+    0x02,
+    BLE_GAP_AD_TYPE_FLAGS,
+    BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE, 
+    BLE_GAP_AD_TYPE_SHORT_LOCAL_NAME,
+    0x08,
+    'B','i','s','c','u','i','t', 
+    0x11,
+    BLE_GAP_AD_TYPE_128BIT_SERVICE_UUID_COMPLETE,
+    0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71 
 };
 
 // Mark whether need to notify analog value to client.
@@ -234,9 +240,9 @@ void setup()
     adv_params.channel_map = 0x07;
     adv_params.filter_policy = 0x00;
     
-    ble.setAdvParams(&adv_params);
+    ble.setAdvertisementParams(&adv_params);
     
-    ble.setAdvData(sizeof(adv_data), adv_data);
+    ble.setAdvertisementData(sizeof(adv_data), adv_data);
 
     ble.startAdvertising();
 
