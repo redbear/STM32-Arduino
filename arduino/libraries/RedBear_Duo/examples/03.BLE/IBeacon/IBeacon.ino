@@ -6,6 +6,14 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
 static advParams_t adv_params;
+
+/******************** IBeacon Format ***************************/                  
+/* 02 01 06 1A FF 4C 00 02 15: iBeacon prefix (fixed)
+  71 3d 00 00 50 3e 4c 75 ba 94 31 48 f1 8d 94 1e: proximity UUID
+  00 49: major
+  00 0A: minor
+  C5: 2’s complement of measured TX power*/
+  
 static uint8_t adv_data[31]={
     0x02,
     BLE_GAP_AD_TYPE_FLAGS,
