@@ -28,7 +28,7 @@ SYSTEM_MODE(MANUAL);//do not connect to cloud
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
-#define EDDSTONEURL
+#define EDDSTONEUID
 
 static advParams_t adv_params;
 
@@ -62,17 +62,32 @@ const url_schemes eddystone_url_scheme = http_www_dot;
 // 127..255  0x7F..0xFF  Reserved for Future Use
 // The following example encodes the URL frank-duerr.de
 // ("http://www." is added by the schema definition)
-const uint8_t eddystone_enc_url[] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07};//redbear.com
+const uint8_t eddystone_enc_url[] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07};//redbearlab.com
 
 // TLM version
 const uint8_t eddystone_tlm_version = 0x00;
 
+/*Byte offset  Value Description Data Type
+0 0x02  Length  Flags. CSS v5, Part A, § 1.3
+1 0x01  Flags data type value 
+2 0x06  Flags data  
+3 0x03  Length  Complete list of 16-bit Service UUIDs. Ibid. § 1.1
+4 0x03  Complete list of 16-bit Service UUIDs data type value 
+5 0xAA  16-bit Eddystone UUID 
+6 0xFE  ... 
+7 0x??  Length  Service Data. Ibid. § 1.11
+8 0x16  Service Data data type value  
+9 0xAA  16-bit Eddystone UUID 
+10  0xFE  ...*/
 // 10 byte namespace id. Google suggests different methods to create this:
 // - Truncated hash: first 10 bytes of your SHA1 hash of your FQDN.
 // - Elided Version 4 UUID: version 4 UUID with bytes 5 - 10 (inclusive) removed 
 // 6 byte instance id (any scheme you like).
 #if defined EDDSTONEUID
 static uint8_t adv_data[]={
+    0x02,0x01,0x06,
+    0x03,0x03,0xAA,0xFE,
+    0x15,0x16,0xAA,0xFE,
     EDDYSTONE_FRAME_TYPE_UID,
     (uint8_t)EDDYSTONE_TXPWR,
     0x4F, 0xFB, 0x0B, 0x0A, 0xA9, 0x21, 0x0F, 0xE6, 0xD1, 0xD2,
@@ -80,9 +95,12 @@ static uint8_t adv_data[]={
 };
 #elif defined EDDSTONEURL
 static uint8_t adv_data[]={
+    0x02,0x01,0x06,
+    0x03,0x03,0xAA,0xFE,
+    0x11,0x16,0xAA,0xFE,
     EDDYSTONE_FRAME_TYPE_URL,
     (uint8_t)EDDYSTONE_TXPWR,
-    http_www_dot, 0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07//redbear.com
+    http_www_dot, 0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07//redbearlab.com
 };
 #endif
 
