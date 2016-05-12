@@ -20,25 +20,29 @@
  * Motify by Jackson_Lv 2016.5
  * 
  */
- 
+
+#include <AES.h>
 #include"eddystone.h"
+
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
-#define EDDSTONEUID
+#define DEVICE_NAME                "EddyStone"
+
+#define Button D1
 
 static advParams_t adv_params;
 
 // 10 byte namespace id. Google suggests different methods to create this:
 // - Truncated hash: first 10 bytes of your SHA1 hash of your FQDN.
 // - Elided Version 4 UUID: version 4 UUID with bytes 5 - 10 (inclusive) removed 
-const uint8_t eddystone_namespace_id[10] = {0x4F, 0xFB, 0x0B, 0x0A, 0xA9, 0x21, 0x0F, 0xE6, 0xD1, 0xD2};
+const uint8_t eddystone_namespace_id[10] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62};
 
 // 6 byte instance id (any scheme you like).
-const uint8_t eddystone_instance_id[6] = {0x4A, 0xB5, 0x16, 0xDC, 0xBD, 0xC2};
+const uint8_t eddystone_instance_id[6] = {0x65, 0x64, 0x64, 0x79, 0x73, 0x74};
 
 // Scheme of the encoded URL.
 const url_schemes eddystone_url_scheme = http_www_dot;
@@ -64,8 +68,6 @@ const url_schemes eddystone_url_scheme = http_www_dot;
 // ("http://www." is added by the schema definition)
 const uint8_t eddystone_enc_url[] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07};//redbearlab.com
 
-// TLM version
-const uint8_t eddystone_tlm_version = 0x00;
 
 /*Byte offset  Value Description Data Type
 0 0x02  Length  Flags. CSS v5, Part A, § 1.3
@@ -83,18 +85,17 @@ const uint8_t eddystone_tlm_version = 0x00;
 // - Truncated hash: first 10 bytes of your SHA1 hash of your FQDN.
 // - Elided Version 4 UUID: version 4 UUID with bytes 5 - 10 (inclusive) removed 
 // 6 byte instance id (any scheme you like).
-#if defined EDDSTONEUID
-static uint8_t adv_data[]={
+static uint8_t uid_adv_data[]={
     0x02,0x01,0x06,
     0x03,0x03,0xAA,0xFE,
     0x15,0x16,0xAA,0xFE,
     EDDYSTONE_FRAME_TYPE_UID,
     (uint8_t)EDDYSTONE_TXPWR,
-    0x4F, 0xFB, 0x0B, 0x0A, 0xA9, 0x21, 0x0F, 0xE6, 0xD1, 0xD2,
-    0x4A, 0xB5, 0x16, 0xDC, 0xBD, 0xC2
+    0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 
+    0x65, 0x64, 0x64, 0x79, 0x73, 0x74
 };
-#elif defined EDDSTONEURL
-static uint8_t adv_data[]={
+
+static uint8_t url_adv_data[]={
     0x02,0x01,0x06,
     0x03,0x03,0xAA,0xFE,
     0x11,0x16,0xAA,0xFE,
@@ -102,19 +103,269 @@ static uint8_t adv_data[]={
     (uint8_t)EDDYSTONE_TXPWR,
     http_www_dot, 0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07//redbearlab.com
 };
-#endif
+
+static uint8_t eid_adv_data[]={
+    0x02,0x01,0x06,
+    0x03,0x03,0xAA,0xFE,
+    0x11,0x16,0xAA,0xFE,
+    EDDYSTONE_FRAME_TYPE_EID,
+    (uint8_t)EDDYSTONE_TXPWR,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+};
+
+
+//identify key
+static uint8_t identify_key[]="RedBearLab      ";
+//use to computing the temporary key
+static uint8_t value_temp[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+//use to save the temporary key
+static const uint8_t const_temp_key[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0x00,0x00,0x00,0x00};
+static uint8_t temp_key[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0x00,0x00,0x00,0x00};
+//use to computing the EID value 
+static const uint8_t const_EID_value_temp[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01};
+static uint8_t EID_value_temp[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01};
+//use to save the EID value 
+static uint8_t EID_value[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+
+static btstack_timer_source_t sp_time_counter;
+static btstack_timer_source_t time_counter;
+static uint8_t K = 0;
+
+static uint16_t time_count = 0;
+static uint32_t Ktime_count = 1;
+
+AES aes ;
+
+void sp_time_counter_acheive();
+void time_counter_acheive();
+
+// set one-shot timer
+Timer t0(1000, sp_time_counter_acheive);
+
+Timer t1(1000, time_counter_acheive);
+
+static uint8_t eddystone_type = 0x10;
+
+static uint8_t adv_data[31]={};
+
+/**
+ * @brief Connect handle.
+ *
+ * @param[in]  status   BLE_STATUS_CONNECTION_ERROR or BLE_STATUS_OK.
+ * @param[in]  handle   Connect handle.
+ *
+ * @retval None
+ */
+void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
+    switch (status){
+        case BLE_STATUS_OK:
+            Serial.println("Device connected!");
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * @brief Disconnect handle.
+ *
+ * @param[in]  handle   Connect handle.
+ *
+ * @retval None
+ */
+void deviceDisconnectedCallback(uint16_t handle){
+    Serial.println("Disconnected.");
+}
+
+
+void sp_time_counter_acheive()
+{
+  if(eddystone_type == EDDYSTONE_FRAME_TYPE_EID)
+  {
+      byte succ ;
+      time_count++;
+      temp_key[14]=(0xFF00&time_count)>>8;
+      temp_key[15]=0xFF&time_count;
+      Serial.print("temp_key: ");
+      for(uint8_t i = 0;i<sizeof(temp_key);i++)
+      {
+        Serial.print(temp_key[i],HEX);
+        Serial.print(" ");
+      }
+      Serial.println("");
+      succ = aes.set_key (identify_key, 128) ;
+      succ = aes.encrypt (temp_key, value_temp) ;
+      if (succ != SUCCESS)
+      {
+            Serial.println ("Failure encrypt") ;
+      }
+      Serial.print("value_temp: ");
+      for(uint8_t i = 0;i<sizeof(value_temp);i++)
+      {
+        Serial.print(value_temp[i],HEX);
+        Serial.print(" ");
+      }
+      Serial.println("");
+  }
+}
+
+
+void time_counter_acheive()
+{
+  
+  if(eddystone_type == EDDYSTONE_FRAME_TYPE_EID)
+  {
+      byte succ ;
+      ble.stopAdvertising();
+      K++;
+      if(K ==16)
+      {
+          K = 0;
+      }
+      Ktime_count = pow(2,K);
+      EID_value_temp[11] = K;
+      Serial.println("");
+      Serial.print("Ktime_count: ");
+      Serial.print(Ktime_count);
+      Serial.println(" sec");
+      EID_value_temp[12] = (0xFF000000&(Ktime_count)>>24);
+      EID_value_temp[13] = (0x00FF0000&(Ktime_count)>>16);
+      EID_value_temp[14] = (0x0000FF00&Ktime_count)>>8;
+      EID_value_temp[15] = (0x000000FF&Ktime_count);
+      succ = aes.set_key (value_temp, 128) ;
+      succ = aes.encrypt (EID_value_temp, EID_value) ;
+      Serial.print("EID_value_temp: ");
+      for(uint8_t i = 0;i<sizeof(EID_value_temp);i++)
+      {
+        Serial.print(EID_value_temp[i],HEX);
+        Serial.print(" ");
+      }
+      Serial.println("");
+      Serial.println("");
+      if (succ != SUCCESS)
+            Serial.println ("Failure encrypt") ;
+      else
+      {
+        for(uint8_t i=0;i<8;i++)
+        {
+          adv_data[i+13] = EID_value[i];
+        }
+        ble.setAdvertisementData(sizeof(adv_data), adv_data);
+      
+        ble.startAdvertising();
+      }
+      t1.changePeriod(Ktime_count*1000);
+      t1.reset();
+  }
+  
+  
+}
+
+void eddys_type_change()
+{
+    Serial.println ("Adv Type Change") ;
+    eddystone_type = eddystone_type + 0x10;
+    if(eddystone_type == 0x20)
+    {
+      eddystone_type = eddystone_type + 0x10;
+    }
+    else if (eddystone_type == 0x40)
+    {
+      eddystone_type = 0;
+    }
+
+    switch(eddystone_type)
+    {
+      case EDDYSTONE_FRAME_TYPE_UID:
+      {
+
+          memcpy(adv_data,uid_adv_data,sizeof(uid_adv_data));
+          ble.setAdvertisementData(sizeof(adv_data), adv_data);
+      
+          ble.startAdvertising();
+      }
+      break;
+
+      case EDDYSTONE_FRAME_TYPE_URL:
+      {
+          memcpy(adv_data,url_adv_data,sizeof(url_adv_data));
+          ble.setAdvertisementData(sizeof(adv_data), adv_data);
+      
+          ble.startAdvertising();
+      }
+      break;
+      case EDDYSTONE_FRAME_TYPE_EID:
+      {
+          byte succ ;
+          memcpy(adv_data,eid_adv_data,sizeof(eid_adv_data));
+          memcpy(temp_key,const_temp_key,sizeof(const_temp_key));
+          memcpy(EID_value_temp,const_EID_value_temp,sizeof(EID_value_temp));
+          succ = aes.set_key (identify_key, 128) ;
+          succ = aes.encrypt (temp_key, value_temp) ;
+          if (succ != SUCCESS)
+              Serial.println ("Failure encrypt") ;
+          else
+          {
+              Serial.print ("value temp: ") ;
+              for(uint8_t i = 0;i<sizeof(value_temp);i++)
+              {
+                Serial.print (value_temp[i],HEX) ;
+                Serial.print (" ") ;
+              }
+              Serial.println (" ") ;
+          }
+              succ = aes.set_key (value_temp, 128) ;
+              succ = aes.encrypt (EID_value_temp, EID_value) ;
+          if (succ != SUCCESS)
+              Serial.println ("Failure encrypt") ;  
+          else
+          {
+    
+              Serial.print ("EID value: ") ;
+              for(uint8_t i = 0;i<sizeof(EID_value);i++)
+              {
+                Serial.print (EID_value[i],HEX) ;
+                Serial.print (" ") ;
+              }
+              Serial.println (" ") ;
+    
+              for(uint8_t i=0;i<8;i++)
+              {
+                adv_data[i+13] = EID_value[i];
+              }  
+          }
+          
+          ble.setAdvertisementData(sizeof(adv_data), adv_data);     
+          ble.startAdvertising();
+
+          if(t0.isActive())
+          {
+              t0.reset();
+              t1.reset();
+          }
+          else 
+          {
+                t0.start();
+                t1.start();
+          }
+          break;
+        }
+    }
+}
 
 void setup()
 {
+    byte succ ;
     Serial.begin(115200);
     delay(5000);
     Serial.println("IBeacon demo.");
     //ble.debugLogger(true);
     ble.init();
-    
+    ble.onConnectedCallback(deviceConnectedCallback);
+    ble.onDisconnectedCallback(deviceDisconnectedCallback);
     adv_params.adv_int_min = 0x00A0;
     adv_params.adv_int_max = 0x01A0;
-    adv_params.adv_type    = 3;
+    adv_params.adv_type    = 7;
     adv_params.dir_addr_type = 0;
     memset(adv_params.dir_addr,0,6);
     adv_params.channel_map = 0x07;
@@ -122,10 +373,91 @@ void setup()
     
     ble.setAdvertisementParams(&adv_params);
     
-    ble.setAdvertisementData(sizeof(adv_data), adv_data);
+    switch(eddystone_type)
+    {
+      case EDDYSTONE_FRAME_TYPE_UID:
+      {
+
+          memcpy(adv_data,uid_adv_data,sizeof(uid_adv_data));
+          ble.setAdvertisementData(sizeof(adv_data), adv_data);
+      
+          ble.startAdvertising();
+          Serial.println ("startAdvertising ") ;
+      }
+      break;
+
+      case EDDYSTONE_FRAME_TYPE_URL:
+      {
+          memcpy(adv_data,url_adv_data,sizeof(url_adv_data));
+          ble.setAdvertisementData(sizeof(adv_data), adv_data);
+      
+          ble.startAdvertising();
+          Serial.println ("startAdvertising ") ;
+      }
+      break;
+      case EDDYSTONE_FRAME_TYPE_EID:
+      {
+          byte succ ;
+          memcpy(adv_data,eid_adv_data,sizeof(eid_adv_data));
+          memcpy(temp_key,const_temp_key,sizeof(const_temp_key));
+          memcpy(EID_value_temp,const_EID_value_temp,sizeof(EID_value_temp));
+          succ = aes.set_key (identify_key, 128) ;
+          succ = aes.encrypt (temp_key, value_temp) ;
+          if (succ != SUCCESS)
+              Serial.println ("Failure encrypt") ;
+          else
+          {
+              Serial.print ("value temp: ") ;
+              for(uint8_t i = 0;i<sizeof(value_temp);i++)
+              {
+                Serial.print (value_temp[i],HEX) ;
+                Serial.print (" ") ;
+              }
+              Serial.println (" ") ;
+          }
+              succ = aes.set_key (value_temp, 128) ;
+              succ = aes.encrypt (EID_value_temp, EID_value) ;
+          if (succ != SUCCESS)
+              Serial.println ("Failure encrypt") ;  
+          else
+          {
     
-    ble.startAdvertising();
-    Serial.println("BLE start advertising.");
+              Serial.print ("EID value: ") ;
+              for(uint8_t i = 0;i<sizeof(EID_value);i++)
+              {
+                Serial.print (EID_value[i],HEX) ;
+                Serial.print (" ") ;
+              }
+              Serial.println (" ") ;
+    
+              for(uint8_t i=0;i<8;i++)
+              {
+                adv_data[i+13] = EID_value[i];
+              }  
+          }
+          
+          ble.setAdvertisementData(sizeof(adv_data), adv_data);     
+          ble.startAdvertising();
+          Serial.println ("startAdvertising ") ;
+
+          if(t0.isActive())
+          {
+              t0.reset();
+              t1.reset();
+          }
+          else 
+          {
+                t0.start();
+                t1.start();
+          }
+          break;
+        }
+    }
+     
+
+    pinMode(Button,INPUT_PULLDOWN);
+    attachInterrupt(D1, eddys_type_change, RISING);
+
 }
 
 void loop()

@@ -14,6 +14,7 @@
 
 #define EDDYSTONE_TXPWR -17
 
+
 // Arduino IDE has problems with enums passed as function parameters.
 // Interestingly, you cannot declare the enum type in the file
 // with a function having a parameter of this enum type. The workaround
