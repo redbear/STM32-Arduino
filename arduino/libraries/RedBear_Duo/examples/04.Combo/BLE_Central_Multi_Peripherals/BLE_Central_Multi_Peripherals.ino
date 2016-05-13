@@ -1,11 +1,13 @@
 
 /*
  * Note : Remember to set the max number of peripheral at "ble_nano.h".
+ *        If you want to connect to two nano, set NANO_NUM 2.
  */
 
 #include "application.h"
 #include "ble_nano.h"
 #include <ArduinoJson.h>
+#include "MDNS.h"
 
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
@@ -14,7 +16,7 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
 // your network name also called SSID
-char ssid[] = "duo";
+char ssid[] = "Duo";
 // your network password
 char password[] = "password";
 
@@ -23,7 +25,7 @@ char password[] = "password";
 // that you want to connect to:
 TCPServer server = TCPServer(8888);
 TCPClient client;
-
+MDNS mdns;
 /*******************************************************
  *               Variable Definitions
  ******************************************************/
@@ -38,11 +40,33 @@ static uint8_t rx_len;
 static uint8_t is_nano_ok = 0;
 static uint8_t is_wifi_connected = 0;
 // 128bits-UUID in advertisement
-static const uint8_t service_uuid[16] = {0x66, 0x7E, 0x50, 0x17, 0x55, 0x5E, 0xE9, 0x9C, 0xE5, 0x11, 0xBC, 0xF0, 0xF8, 0x3B, 0x2D, 0x5B};
+static const uint8_t service_uuid[16] = {0x66, 0x7E, 0x50, 0x17, 0x55, 0x5E, 0xE9, 0x9C, 0xE5, 0x11, 0xBC, 0xF0, 0xF8, 0x3B, 0x2D, 0x5A};
 
 /******************************************************
  *               Function Definitions
  ******************************************************/
+void mdns_init()
+{
+    bool success = mdns.setHostname("duo");
+     
+    if (success) {
+        success = mdns.setService("tcp", "duosample", 8888, "RedBear.8*RGB");
+        Serial.println("setService");
+    }
+
+    if (success) {
+        success = mdns.begin();
+        Serial.println("mdns.begin");
+    }
+    
+    if (success) {
+        Spark.publish("mdns/setup", "success");
+        Serial.println("mdns/setup success");
+    } else {
+        Spark.publish("mdns/setup", "error");
+        Serial.println("mdns/setup error");
+    }
+}
 
 void printWifiStatus() 
 {
@@ -527,6 +551,8 @@ void setup()
     Serial.begin(115200);
     delay(3000);
     pinMode(D7, OUTPUT);
+    Serial.println("Arduino sketch started.\n");
+    
     // attempt to connect to Wifi network:
     Serial.print("Attempting to connect to Network named: ");
     // print the network name (SSID);
@@ -556,7 +582,9 @@ void setup()
     Serial.println("\nIP Address obtained");
     printWifiStatus();
     Serial.println("\nStarting connection to server...");   
-                   
+    
+    mdns_init();      
+             
     //ble.debugLogger(true);
     //ble.debugError(true);
     //ble.enablePacketLogger();
@@ -587,6 +615,7 @@ void setup()
 
 void loop()
 {
+    mdns.processQueries();
     if(client.connected())
     { 
         is_wifi_connected = 1;
@@ -603,7 +632,7 @@ void loop()
                 if(rx_len>=60)
                     rx_len = 60;
             }            
-            //Serial.println(rx_buf);
+            Serial.println(rx_buf);
             if(is_nano_ok)
             {   
                 RGB.color(0, 255, 0);
