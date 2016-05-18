@@ -233,9 +233,9 @@ void setup()
     adv_params.channel_map = 0x07;
     adv_params.filter_policy = 0x00;
     
-    ble.setAdvParams(&adv_params);
+    ble.setAdvertisementParams(&adv_params);
     
-    ble.setAdvData(sizeof(adv_data), adv_data);
+    ble.setAdvertisementData(sizeof(adv_data), adv_data);
 
     ble.startAdvertising();
 
