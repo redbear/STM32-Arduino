@@ -343,7 +343,7 @@ void setup()
     byte succ ;
     Serial.begin(115200);
     delay(5000);
-    Serial.println("IBeacon demo.");
+    Serial.println("EddyStone demo.");
     //ble.debugLogger(true);
     ble.init();
     ble.onConnectedCallback(deviceConnectedCallback);
