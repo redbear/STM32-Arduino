@@ -62,4 +62,5 @@ RedBear_Duo.bootloader.system_part1_file=duo-system-part1.bin
 RedBear_Duo.bootloader.system_part1_loc=0x8020000
 RedBear_Duo.bootloader.system_part2_file=duo-system-part2.bin
 RedBear_Duo.bootloader.system_part2_loc=0x8040000
-
+RedBear_Duo.bootloader.user_part_file=duo-user-part.bin
+RedBear_Duo.bootloader.user_part_loc=0x80c0000
