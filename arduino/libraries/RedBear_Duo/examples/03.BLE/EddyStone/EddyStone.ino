@@ -199,13 +199,6 @@ void sp_time_counter_acheive()
       {
             Serial.println ("Failure encrypt") ;
       }
-      Serial.print("value_temp: ");
-      for(uint8_t i = 0;i<sizeof(value_temp);i++)
-      {
-        Serial.print(value_temp[i],HEX);
-        Serial.print(" ");
-      }
-      Serial.println("");
   }
 }
 
@@ -234,14 +227,6 @@ void time_counter_acheive()
       EID_value_temp[15] = (0x000000FF&Ktime_count);
       succ = aes.set_key (value_temp, 128) ;
       succ = aes.encrypt (EID_value_temp, EID_value) ;
-      Serial.print("EID_value_temp: ");
-      for(uint8_t i = 0;i<sizeof(EID_value_temp);i++)
-      {
-        Serial.print(EID_value_temp[i],HEX);
-        Serial.print(" ");
-      }
-      Serial.println("");
-      Serial.println("");
       if (succ != SUCCESS)
             Serial.println ("Failure encrypt") ;
       else
