@@ -39,10 +39,10 @@ static advParams_t adv_params;
 // 10 byte namespace id. Google suggests different methods to create this:
 // - Truncated hash: first 10 bytes of your SHA1 hash of your FQDN.
 // - Elided Version 4 UUID: version 4 UUID with bytes 5 - 10 (inclusive) removed 
-const uint8_t eddystone_namespace_id[10] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62};
+//const uint8_t eddystone_namespace_id[10] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62};
 
 // 6 byte instance id (any scheme you like).
-const uint8_t eddystone_instance_id[6] = {0x65, 0x64, 0x64, 0x79, 0x73, 0x74};
+//const uint8_t eddystone_instance_id[6] = {0x65, 0x64, 0x64, 0x79, 0x73, 0x74};
 
 // Scheme of the encoded URL.
 const url_schemes eddystone_url_scheme = http_www_dot;
@@ -66,7 +66,7 @@ const url_schemes eddystone_url_scheme = http_www_dot;
 // 127..255  0x7F..0xFF  Reserved for Future Use
 // The following example encodes the URL frank-duerr.de
 // ("http://www." is added by the schema definition)
-const uint8_t eddystone_enc_url[] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07};//redbearlab.com
+//const uint8_t eddystone_enc_url[] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07};//redbearlab.com
 
 
 /*Byte offset  Value Description Data Type
@@ -127,8 +127,6 @@ static uint8_t EID_value_temp[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0
 //use to save the EID value 
 static uint8_t EID_value[16] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
-static btstack_timer_source_t sp_time_counter;
-static btstack_timer_source_t time_counter;
 static uint8_t K = 0;
 
 static uint16_t time_count = 0;
@@ -281,6 +279,7 @@ void eddys_type_change()
       break;
       case EDDYSTONE_FRAME_TYPE_EID:
       {
+          time_count = 0;
           byte succ ;
           memcpy(adv_data,eid_adv_data,sizeof(eid_adv_data));
           memcpy(temp_key,const_temp_key,sizeof(const_temp_key));
@@ -382,6 +381,7 @@ void setup()
       break;
       case EDDYSTONE_FRAME_TYPE_EID:
       {
+
           byte succ ;
           memcpy(adv_data,eid_adv_data,sizeof(eid_adv_data));
           memcpy(temp_key,const_temp_key,sizeof(const_temp_key));
