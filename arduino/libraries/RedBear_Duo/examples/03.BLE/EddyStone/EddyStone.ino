@@ -280,6 +280,8 @@ void eddys_type_change()
       case EDDYSTONE_FRAME_TYPE_EID:
       {
           time_count = 0;
+          K = 0;
+          t1.changePeriod(1000);
           byte succ ;
           memcpy(adv_data,eid_adv_data,sizeof(eid_adv_data));
           memcpy(temp_key,const_temp_key,sizeof(const_temp_key));
