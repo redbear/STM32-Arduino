@@ -13,7 +13,7 @@ gcc_path=$3
 echo ${gcc_path}
 
 # Jump to the path of crc commands.
-cd ${comand_path}
+cd "${comand_path}"
 
 # Calculate CRC32.
 if [ -s $1 ]; then \
@@ -26,4 +26,4 @@ if [ -s $1 ]; then \
 fi
 
 # Generate hex file.
-${gcc_path}/arm-none-eabi-objcopy -O ihex -I binary $1 $1.hex	
+"${gcc_path}/arm-none-eabi-objcopy" -O ihex -I binary $1 $1.hex	
