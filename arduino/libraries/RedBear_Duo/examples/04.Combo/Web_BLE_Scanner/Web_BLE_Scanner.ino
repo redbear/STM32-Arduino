@@ -257,8 +257,6 @@ void setup()
     delay(5000);
     Serial.println("BLE scan wep demo.");
     WiFi.on();
-    WiFi.clearCredentials();
-    WiFi.setCredentials(AP, PIN, WPA2);
     WiFi.connect();
   
     IPAddress localIP = WiFi.localIP();
