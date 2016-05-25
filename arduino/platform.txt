@@ -74,7 +74,7 @@ recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2bin.cmd}" {compiler.elf
 #recipe.objcopy.hex2.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags2} "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.hex" 
 
 ## Add CRC32
-recipe.hooks.postbuild.0.pattern={runtime.platform.path}/tools/crc32/{runtime.os}/sh {runtime.platform.path}/tools/crc32/{runtime.os}/crc32.sh "{build.path}/{build.project_name}.bin" {runtime.platform.path}/tools/crc32/{runtime.os} {compiler.path}
+recipe.hooks.postbuild.0.pattern="{runtime.platform.path}/tools/crc32/{runtime.os}/sh" "{runtime.platform.path}/tools/crc32/{runtime.os}/crc32.sh" "{build.path}/{build.project_name}.bin" "{runtime.platform.path}/tools/crc32/{runtime.os}" "{compiler.path}"
 
 ## Save hex
 recipe.output.tmp_file={build.project_name}.bin
