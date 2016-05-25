@@ -32,9 +32,25 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 
 #define DEVICE_NAME                "EddyStone"
 
-#define Button D1
+#define Button                     D1
 
-static advParams_t adv_params;
+// BLE peripheral advertising parameters
+// Note  advertising_interval_min ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
+//        advertising_interval_max ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
+//        advertising_type (enum from 0: BLE_GAP_ADV_TYPE_ADV_IND, BLE_GAP_ADV_TYPE_ADV_DIRECT_IND, BLE_GAP_ADV_TYPE_ADV_SCAN_IND, BLE_GAP_ADV_TYPE_ADV_NONCONN_IND)
+//        own_address_type (enum from 0: BLE_GAP_ADDR_TYPE_PUBLIC, BLE_GAP_ADDR_TYPE_RANDOM)
+//        advertising_channel_map (flags: BLE_GAP_ADV_CHANNEL_MAP_37, BLE_GAP_ADV_CHANNEL_MAP_38, BLE_GAP_ADV_CHANNEL_MAP_39, BLE_GAP_ADV_CHANNEL_MAP_ALL)
+//        filter policies (enum from 0: BLE_GAP_ADV_FP_ANY, BLE_GAP_ADV_FP_FILTER_SCANREQ, BLE_GAP_ADV_FP_FILTER_CONNREQ, BLE_GAP_ADV_FP_FILTER_BOTH)
+// Note  If the advertising_type is set to BLE_GAP_ADV_TYPE_ADV_SCAN_IND or BLE_GAP_ADV_TYPE_ADV_NONCONN_IND,advertising_interval_min and advertising_interval_max shal not be set to less than 0x00A0.
+static advParams_t adv_params = {
+    .adv_int_min   = 0x00A0,
+    .adv_int_max   = 0x01A0,
+    .adv_type      = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND,
+    .dir_addr_type = BLE_GAP_ADDR_TYPE_PUBLIC,
+    .dir_addr      = {0,0,0,0,0,0},
+    .channel_map   = BLE_GAP_ADV_CHANNEL_MAP_ALL,
+    .filter_policy = BLE_GAP_ADV_FP_ANY
+};
 
 // 10 byte namespace id. Google suggests different methods to create this:
 // - Truncated hash: first 10 bytes of your SHA1 hash of your FQDN.
@@ -67,7 +83,6 @@ const url_schemes eddystone_url_scheme = http_www_dot;
 // The following example encodes the URL frank-duerr.de
 // ("http://www." is added by the schema definition)
 //const uint8_t eddystone_enc_url[] = {0x72, 0x65, 0x64, 0x62, 0x65, 0x61, 0x72, 0x6c, 0x61,0x62, 0x07};//redbearlab.com
-
 
 /*Byte offset  Value Description Data Type
 0 0x02  Length  Flags. CSS v5, Part A, § 1.3
@@ -175,7 +190,6 @@ void deviceDisconnectedCallback(uint16_t handle){
     Serial.println("Disconnected.");
 }
 
-
 void sp_time_counter_acheive()
 {
   if(eddystone_type == EDDYSTONE_FRAME_TYPE_EID)
@@ -200,10 +214,8 @@ void sp_time_counter_acheive()
   }
 }
 
-
 void time_counter_acheive()
 {
-  
   if(eddystone_type == EDDYSTONE_FRAME_TYPE_EID)
   {
       byte succ ;
@@ -240,8 +252,6 @@ void time_counter_acheive()
       t1.changePeriod(Ktime_count*1000);
       t1.reset();
   }
-  
-  
 }
 
 void eddys_type_change()
@@ -256,15 +266,13 @@ void eddys_type_change()
     {
       eddystone_type = 0;
     }
-
+    
     switch(eddystone_type)
     {
       case EDDYSTONE_FRAME_TYPE_UID:
       {
-
           memcpy(adv_data,uid_adv_data,sizeof(uid_adv_data));
           ble.setAdvertisementData(sizeof(adv_data), adv_data);
-      
           ble.startAdvertising();
       }
       break;
@@ -273,7 +281,6 @@ void eddys_type_change()
       {
           memcpy(adv_data,url_adv_data,sizeof(url_adv_data));
           ble.setAdvertisementData(sizeof(adv_data), adv_data);
-      
           ble.startAdvertising();
       }
       break;
@@ -300,13 +307,12 @@ void eddys_type_change()
               }
               Serial.println (" ") ;
           }
-              succ = aes.set_key (value_temp, 128) ;
-              succ = aes.encrypt (EID_value_temp, EID_value) ;
+          succ = aes.set_key (value_temp, 128) ;
+          succ = aes.encrypt (EID_value_temp, EID_value) ;
           if (succ != SUCCESS)
               Serial.println ("Failure encrypt") ;  
           else
           {
-    
               Serial.print ("EID value: ") ;
               for(uint8_t i = 0;i<sizeof(EID_value);i++)
               {
@@ -349,24 +355,15 @@ void setup()
     ble.init();
     ble.onConnectedCallback(deviceConnectedCallback);
     ble.onDisconnectedCallback(deviceDisconnectedCallback);
-    adv_params.adv_int_min = 0x00A0;
-    adv_params.adv_int_max = 0x01A0;
-    adv_params.adv_type    = 7;
-    adv_params.dir_addr_type = 0;
-    memset(adv_params.dir_addr,0,6);
-    adv_params.channel_map = 0x07;
-    adv_params.filter_policy = 0x00;
-    
+
     ble.setAdvertisementParams(&adv_params);
     
     switch(eddystone_type)
     {
       case EDDYSTONE_FRAME_TYPE_UID:
       {
-
           memcpy(adv_data,uid_adv_data,sizeof(uid_adv_data));
           ble.setAdvertisementData(sizeof(adv_data), adv_data);
-      
           ble.startAdvertising();
           Serial.println ("startAdvertising ") ;
       }
@@ -376,14 +373,12 @@ void setup()
       {
           memcpy(adv_data,url_adv_data,sizeof(url_adv_data));
           ble.setAdvertisementData(sizeof(adv_data), adv_data);
-      
           ble.startAdvertising();
           Serial.println ("startAdvertising ") ;
       }
       break;
       case EDDYSTONE_FRAME_TYPE_EID:
       {
-
           byte succ ;
           memcpy(adv_data,eid_adv_data,sizeof(eid_adv_data));
           memcpy(temp_key,const_temp_key,sizeof(const_temp_key));
@@ -408,7 +403,6 @@ void setup()
               Serial.println ("Failure encrypt") ;  
           else
           {
-    
               Serial.print ("EID value: ") ;
               for(uint8_t i = 0;i<sizeof(EID_value);i++)
               {
@@ -440,11 +434,8 @@ void setup()
           break;
         }
     }
-     
-
     pinMode(Button,INPUT_PULLDOWN);
     attachInterrupt(D1, eddys_type_change, RISING);
-
 }
 
 void loop()

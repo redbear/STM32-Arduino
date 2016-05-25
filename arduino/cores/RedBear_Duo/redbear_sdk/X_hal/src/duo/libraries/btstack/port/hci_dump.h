@@ -56,9 +56,9 @@
 extern "C" {
 #endif
 
-#define LOG_LEVEL_DEBUG 0
-#define LOG_LEVEL_INFO  1
-#define LOG_LEVEL_ERROR 2
+#define BT_STACK_LOG_LEVEL_DEBUG 0
+#define BT_STACK_LOG_LEVEL_INFO  1
+#define BT_STACK_LOG_LEVEL_ERROR 2
 
 /* API_START */
 
