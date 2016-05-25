@@ -34,10 +34,21 @@ static uint8_t  appearance[2] = {
   LOW_BYTE(BLE_PERIPHERAL_APPEARANCE), HIGH_BYTE(BLE_PERIPHERAL_APPEARANCE) 
 };
 
-static uint8_t  change[2] = { 
-  0x00, 0x00 
+static uint8_t  change[4] = { 
+  0x00, 0x00, 0xFF, 0xFF
 };
 
+// BLE connection params
+// Connection interval 
+//  Range: 0x0006 to 0x0C80
+//  Time = N * 1.25 msec
+//  Time Range: 7.5 msec to 4000 msec.
+//Slave latency 
+//  Range: 0x0000 to 0x01F3
+//Connection supervision timeout 
+//  Range: 0x000A to 0x0C80
+//  Time = N * 10 msec
+//  Time Range: 100 msec to 32 seconds
 static uint8_t  conn_param[8] = {
   LOW_BYTE(MIN_CONN_INTERVAL), HIGH_BYTE(MIN_CONN_INTERVAL), 
   LOW_BYTE(MAX_CONN_INTERVAL), HIGH_BYTE(MAX_CONN_INTERVAL), 
@@ -46,17 +57,19 @@ static uint8_t  conn_param[8] = {
 };
 
 // BLE peripheral advertising parameters
+// Note  advertising_interval_min ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
+//       advertising_interval_max ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
+//       advertising_type (enum from 0: BLE_GAP_ADV_TYPE_ADV_IND, BLE_GAP_ADV_TYPE_ADV_DIRECT_IND, BLE_GAP_ADV_TYPE_ADV_SCAN_IND, BLE_GAP_ADV_TYPE_ADV_NONCONN_IND)
+//       own_address_type (enum from 0: BLE_GAP_ADDR_TYPE_PUBLIC, BLE_GAP_ADDR_TYPE_RANDOM)
+//       advertising_channel_map (flags: BLE_GAP_ADV_CHANNEL_MAP_37, BLE_GAP_ADV_CHANNEL_MAP_38, BLE_GAP_ADV_CHANNEL_MAP_39, BLE_GAP_ADV_CHANNEL_MAP_ALL)
+//       filter policies (enum from 0: BLE_GAP_ADV_FP_ANY, BLE_GAP_ADV_FP_FILTER_SCANREQ, BLE_GAP_ADV_FP_FILTER_CONNREQ, BLE_GAP_ADV_FP_FILTER_BOTH)
+// Note  If the advertising_type is set to BLE_GAP_ADV_TYPE_ADV_SCAN_IND or BLE_GAP_ADV_TYPE_ADV_NONCONN_IND,advertising_interval_min and advertising_interval_max shal not be set to less than 0x00A0.
 static advParams_t adv_params = {
   .adv_int_min   = 0x0030,
   .adv_int_max   = 0x0030,
   .adv_type      = BLE_GAP_ADV_TYPE_ADV_IND,
-  .dir_addr_type = 0,
-  .dir_addr[0]   = 0x00;
-  .dir_addr[0]   = 0x00;
-  .dir_addr[0]   = 0x00;
-  .dir_addr[0]   = 0x00;
-  .dir_addr[0]   = 0x00;
-  .dir_addr[0]   = 0x00;
+  .dir_addr_type = BLE_GAP_ADDR_TYPE_PUBLIC,
+  .dir_addr      = {0,0,0,0,0,0},
   .channel_map   = BLE_GAP_ADV_CHANNEL_MAP_ALL,
   .filter_policy = BLE_GAP_ADV_FP_ANY
 };
@@ -233,7 +246,7 @@ void setup() {
   }
   // Wait IP address to be updated.
   IPAddress localIP = WiFi.localIP();
-  while (localIP[0] == 0) 
+  while (localIP[0] == 0) {
     localIP = WiFi.localIP();
     delay(1000);
   }
@@ -272,7 +285,6 @@ void setup() {
 
   // Set BLE advertising parameters
   ble.setAdvertisementParams(&adv_params);
-
   // Set BLE advertising and scan respond data
   ble.setAdvertisementData(sizeof(adv_data), adv_data);
   ble.setScanResponseData(sizeof(scan_response), scan_response);
@@ -286,7 +298,7 @@ void loop() {
   mdns.processQueries();
   int i = 0;
 
-  if (client.connected()) 
+  if (client.connected()) {
     Serial.println("new client");           // print a message out the serial port
 
     char buffer[150] = {0};                 // make a buffer to hold incoming data
