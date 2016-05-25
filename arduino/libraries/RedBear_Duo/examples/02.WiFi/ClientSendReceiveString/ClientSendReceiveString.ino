@@ -13,16 +13,17 @@
  modified 1 DEC 2015
  by Jackson Lv
  */
- // your network name also called SSID
-char ssid[] = "duo";
-// your network password
-char password[] = "password";
 
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
+ 
+// your network name also called SSID
+char ssid[] = "duo";
+// your network password
+char password[] = "password";
 
 uint16_t port = 9999;     // port number of the server
 IPAddress server(192, 168, 0, 0);   // IP Address of the server
@@ -53,12 +54,10 @@ void setup() {
   Serial.println("Waiting for an ip address");
   
   IPAddress localIP = WiFi.localIP();
-
-  while (localIP[0] == 0)
-  {
-      localIP = WiFi.localIP();
-      Serial.println("waiting for an IP address");
-      delay(1000);
+  while (localIP[0] == 0) {
+    localIP = WiFi.localIP();
+    Serial.println("waiting for an IP address");
+    delay(1000);
   }
 
   Serial.println("\nIP Address obtained");
@@ -100,7 +99,6 @@ void loop() {
     Serial.print("Received: ");
     Serial.println(buffer);
   }
-  
 }
 
 void printWifiStatus() {

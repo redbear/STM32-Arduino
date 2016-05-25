@@ -19,14 +19,14 @@
  by Jackson Lv
  */
 
-// your network name also called SSID
-char ssid[] = "Duo";
-
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
+
+// your network name also called SSID
+char ssid[] = "Duo";
 
 void printWifiData();
 void printCurrentNet();
@@ -54,9 +54,7 @@ void setup() {
   Serial.println("Waiting for an ip address");
   
   IPAddress localIP = WiFi.localIP();
-
-  while (localIP[0] == 0)
-  {
+  while (localIP[0] == 0) {
       localIP = WiFi.localIP();
       Serial.println("waiting for an IP address");
       delay(1000);
@@ -123,6 +121,5 @@ void printCurrentNet() {
   Serial.print("Encryption Type:");
   Serial.println(ap.security, HEX);
   Serial.println();
-  
 }
 

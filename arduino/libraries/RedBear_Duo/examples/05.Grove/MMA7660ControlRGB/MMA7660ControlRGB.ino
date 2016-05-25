@@ -13,23 +13,43 @@
  * IN THE SOFTWARE.
  */
  
-#ifndef PIN_INF_H_
-#define PIN_INF_H_
+/*
+ * Controlling the RGB LED with Acceleration Sensor
+ */
+ 
+#include "application.h"
+#include "MMA7660.h"
+#include "ChainableLED.h"
 
-#include "Arduino.h"
-
-#define TOTAL_PINS_NUM    18
-#define VERSION_BLINK_PIN 7
-
-#define IS_PIN_DIGITAL(p) ( (p) >= 0 && (p) < 18 )
-#define IS_PIN_ANALOG(p)  ( (p) >= 8 && (p) < 16 )
-#define IS_PIN_PWM(p)     ( ( (p) >= 0 && (p) < 5 ) || (p) == 8 || (p) == 9 || ( (p) >= 14 && (p) < 18 ) )
-#define IS_PIN_SERVO(p)   ( (p) == 12 || (p) == 13 )
-
-#define PIN_TO_DIGITAL(p) (p)
-#define PIN_TO_ANALOG(p)  (p)
-#define PIN_TO_PWM(p)     (p)
-#define PIN_TO_SERVO(p)   (p)
-
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
+MMA7660 accelemeter;
+
+#define NUM_LEDS  1
+ChainableLED leds(D4, D5, NUM_LEDS);
+
+// This routine runs only once upon reset
+void setup() {
+  accelemeter.init();                           // initialize the g-sensor
+  leds.setColorRGB(0, 0, 0, 0);                 // turn down the LED
+}
+
+// This routine loops forever
+void loop() {
+  int8_t x, y, z;
+
+  accelemeter.getXYZ(&x,&y,&z);                 // read the g-sensor
+  // convert acc data for LED display
+  x = x - 32;
+  x = abs(x) * 8;
+  y = y - 32;
+  y = abs(y) * 8;
+  z = z - 32;
+  z = abs(z) * 8;
+  leds.setColorRGB(0, x, y, z);                 // write LED data
+  delay(50);
+}

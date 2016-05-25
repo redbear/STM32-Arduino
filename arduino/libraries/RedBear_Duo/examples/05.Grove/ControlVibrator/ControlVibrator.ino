@@ -13,23 +13,33 @@
  * IN THE SOFTWARE.
  */
  
-#ifndef PIN_INF_H_
-#define PIN_INF_H_
+#include "application.h"
 
-#include "Arduino.h"
-
-#define TOTAL_PINS_NUM    18
-#define VERSION_BLINK_PIN 7
-
-#define IS_PIN_DIGITAL(p) ( (p) >= 0 && (p) < 18 )
-#define IS_PIN_ANALOG(p)  ( (p) >= 8 && (p) < 16 )
-#define IS_PIN_PWM(p)     ( ( (p) >= 0 && (p) < 5 ) || (p) == 8 || (p) == 9 || ( (p) >= 14 && (p) < 18 ) )
-#define IS_PIN_SERVO(p)   ( (p) == 12 || (p) == 13 )
-
-#define PIN_TO_DIGITAL(p) (p)
-#define PIN_TO_ANALOG(p)  (p)
-#define PIN_TO_PWM(p)     (p)
-#define PIN_TO_SERVO(p)   (p)
-
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
+
+// name the pins
+#define BUTTONPIN D2
+#define MOTORPIN A4
+
+// This routine runs only once upon reset
+void setup() {
+  pinMode(BUTTONPIN, INPUT);                            
+  pinMode(MOTORPIN, OUTPUT);                          
+}
+
+// This routine loops forever
+void loop() {
+  int val = digitalRead(BUTTONPIN);              // read the hall sensor pin
+
+  if (val == 0)                                  // if magnet detected
+    digitalWrite(MOTORPIN, LOW);                 // let the motor vibrate
+  else
+    digitalWrite(MOTORPIN, HIGH);                // stop it
+    
+  delay(50);
+}
 

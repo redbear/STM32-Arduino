@@ -15,6 +15,11 @@
 
  */
 
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
 
 // your network name also called SSID
 char ssid[] = "Duo";
@@ -28,12 +33,6 @@ char  ReplyBuffer[] = "acknowledged";       // a string to send back
 
 UDP Udp;
 
-#if defined(ARDUINO) 
-SYSTEM_MODE(MANUAL);//do not connect to cloud
-#else
-SYSTEM_MODE(AUTOMATIC);//connect to cloud
-#endif
-
 void printWifiStatus();
 
 void setup() {
@@ -44,10 +43,12 @@ void setup() {
   Serial.print("Attempting to connect to Network named: ");
   // print the network name (SSID);
   Serial.println(ssid); 
+  
   // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
   WiFi.on();
   WiFi.setCredentials(ssid,password);
   WiFi.connect();
+  
   while ( WiFi.connecting()) {
     // print dots while we wait to connect
     Serial.print(".");
@@ -71,11 +72,9 @@ void setup() {
 }
 
 void loop() {
-
   // if there's data available, read a packet
   int packetSize = Udp.parsePacket();
-  if (packetSize)
-  {
+  if (packetSize) {
     Serial.print("Received packet of size ");
     Serial.println(packetSize);
     Serial.print("From ");
@@ -114,7 +113,4 @@ void printWifiStatus() {
   Serial.print(rssi);
   Serial.println(" dBm");
 }
-
-
-
 

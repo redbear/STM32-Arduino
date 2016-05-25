@@ -1,4 +1,20 @@
+/*
+ * Copyright (c) 2016 RedBear
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+ * IN THE SOFTWARE.
+ */
+
 #include "MDNS.h"
+
 /******************************************************
  *                      Macros
  ******************************************************/
@@ -8,14 +24,20 @@ SYSTEM_MODE(MANUAL);//do not connect to cloud
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
-#define DEVICE_ID_ADDR (0x1FFF7A10)
-#define DEVICE_ID_LEN  12
+#define DEVICE_ID_ADDR             (0x1FFF7A10)
+#define DEVICE_ID_LEN              12
 
-// BLE peripheral preferred connection parameters
-#define MIN_CONN_INTERVAL          0x0028 // 50ms. Minimum connection interval = MIN_CONN_INTERVAL * 1.25 ms, where MIN_CONN_INTERVAL ranges from 0x0006 to 0x0C80.
-#define MAX_CONN_INTERVAL          0x0190 // 500ms. Maximum connection interval = MAX_CONN_INTERVAL * 1.25 ms,  where MAX_CONN_INTERVAL ranges from 0x0006 to 0x0C80.
-#define SLAVE_LATENCY              0x0000 // No slave latency. The SLAVE_LATENCY ranges from 0x0000 to 0x03E8.
-#define CONN_SUPERVISION_TIMEOUT   0x03E8 // 10s. Connection supervision timeout = CONN_SUPERVISION_TIMEOUT * 10 ms, where CONN_SUPERVISION_TIMEOUT ranges from 0x000A to 0x0C80.
+/* 
+ * BLE peripheral preferred connection parameters:
+ *     - Minimum connection interval = MIN_CONN_INTERVAL * 1.25 ms, where MIN_CONN_INTERVAL ranges from 0x0006 to 0x0C80
+ *     - Maximum connection interval = MAX_CONN_INTERVAL * 1.25 ms,  where MAX_CONN_INTERVAL ranges from 0x0006 to 0x0C80
+ *     - The SLAVE_LATENCY ranges from 0x0000 to 0x03E8
+ *     - Connection supervision timeout = CONN_SUPERVISION_TIMEOUT * 10 ms, where CONN_SUPERVISION_TIMEOUT ranges from 0x000A to 0x0C80
+ */
+#define MIN_CONN_INTERVAL          0x0028 // 50ms. 
+#define MAX_CONN_INTERVAL          0x0190 // 500ms. 
+#define SLAVE_LATENCY              0x0000 // No slave latency. 
+#define CONN_SUPERVISION_TIMEOUT   0x03E8 // 10s. 
 
 // Learn about appearance: http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.gap.appearance.xml
 #define BLE_PERIPHERAL_APPEARANCE  BLE_APPEARANCE_UNKNOWN
@@ -27,9 +49,11 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 /******************************************************
  *               Variable Definitions
  ******************************************************/
+// User defined services and characteristics UUID
 static uint8_t service1_uuid[16]    = { 0x71,0x3d,0x00,0x00,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e };
 static uint8_t service1_tx_uuid[16] = { 0x71,0x3d,0x00,0x03,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e };
 
+// GAP and GATT characteristics value
 static uint8_t  appearance[2] = { 
   LOW_BYTE(BLE_PERIPHERAL_APPEARANCE), HIGH_BYTE(BLE_PERIPHERAL_APPEARANCE) 
 };
@@ -38,17 +62,6 @@ static uint8_t  change[4] = {
   0x00, 0x00, 0xFF, 0xFF
 };
 
-// BLE connection params
-// Connection interval 
-//  Range: 0x0006 to 0x0C80
-//  Time = N * 1.25 msec
-//  Time Range: 7.5 msec to 4000 msec.
-//Slave latency 
-//  Range: 0x0000 to 0x01F3
-//Connection supervision timeout 
-//  Range: 0x000A to 0x0C80
-//  Time = N * 10 msec
-//  Time Range: 100 msec to 32 seconds
 static uint8_t  conn_param[8] = {
   LOW_BYTE(MIN_CONN_INTERVAL), HIGH_BYTE(MIN_CONN_INTERVAL), 
   LOW_BYTE(MAX_CONN_INTERVAL), HIGH_BYTE(MAX_CONN_INTERVAL), 
@@ -56,14 +69,32 @@ static uint8_t  conn_param[8] = {
   LOW_BYTE(CONN_SUPERVISION_TIMEOUT), HIGH_BYTE(CONN_SUPERVISION_TIMEOUT)
 };
 
-// BLE peripheral advertising parameters
-// Note  advertising_interval_min ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
-//       advertising_interval_max ([0x0020,0x4000], default: 0x0800, unit: 0.625 msec)
-//       advertising_type (enum from 0: BLE_GAP_ADV_TYPE_ADV_IND, BLE_GAP_ADV_TYPE_ADV_DIRECT_IND, BLE_GAP_ADV_TYPE_ADV_SCAN_IND, BLE_GAP_ADV_TYPE_ADV_NONCONN_IND)
-//       own_address_type (enum from 0: BLE_GAP_ADDR_TYPE_PUBLIC, BLE_GAP_ADDR_TYPE_RANDOM)
-//       advertising_channel_map (flags: BLE_GAP_ADV_CHANNEL_MAP_37, BLE_GAP_ADV_CHANNEL_MAP_38, BLE_GAP_ADV_CHANNEL_MAP_39, BLE_GAP_ADV_CHANNEL_MAP_ALL)
-//       filter policies (enum from 0: BLE_GAP_ADV_FP_ANY, BLE_GAP_ADV_FP_FILTER_SCANREQ, BLE_GAP_ADV_FP_FILTER_CONNREQ, BLE_GAP_ADV_FP_FILTER_BOTH)
-// Note  If the advertising_type is set to BLE_GAP_ADV_TYPE_ADV_SCAN_IND or BLE_GAP_ADV_TYPE_ADV_NONCONN_IND,advertising_interval_min and advertising_interval_max shal not be set to less than 0x00A0.
+/* 
+ * BLE peripheral advertising parameters:
+ *     - advertising_interval_min: [0x0020, 0x4000], default: 0x0800, unit: 0.625 msec
+ *     - advertising_interval_max: [0x0020, 0x4000], default: 0x0800, unit: 0.625 msec
+ *     - advertising_type: 
+ *           BLE_GAP_ADV_TYPE_ADV_IND 
+ *           BLE_GAP_ADV_TYPE_ADV_DIRECT_IND 
+ *           BLE_GAP_ADV_TYPE_ADV_SCAN_IND 
+ *           BLE_GAP_ADV_TYPE_ADV_NONCONN_IND
+ *     - own_address_type: 
+ *           BLE_GAP_ADDR_TYPE_PUBLIC 
+ *           BLE_GAP_ADDR_TYPE_RANDOM
+ *     - advertising_channel_map: 
+ *           BLE_GAP_ADV_CHANNEL_MAP_37 
+ *           BLE_GAP_ADV_CHANNEL_MAP_38 
+ *           BLE_GAP_ADV_CHANNEL_MAP_39 
+ *           BLE_GAP_ADV_CHANNEL_MAP_ALL
+ *     - filter policies: 
+ *           BLE_GAP_ADV_FP_ANY 
+ *           BLE_GAP_ADV_FP_FILTER_SCANREQ 
+ *           BLE_GAP_ADV_FP_FILTER_CONNREQ 
+ *           BLE_GAP_ADV_FP_FILTER_BOTH
+ *     
+ * Note:  If the advertising_type is set to BLE_GAP_ADV_TYPE_ADV_SCAN_IND or BLE_GAP_ADV_TYPE_ADV_NONCONN_IND, 
+ *        the advertising_interval_min and advertising_interval_max should not be set to less than 0x00A0.
+ */
 static advParams_t adv_params = {
   .adv_int_min   = 0x0030,
   .adv_int_max   = 0x0030,
@@ -86,12 +117,13 @@ static uint8_t adv_data[] = {
 };
 
 // BLE peripheral scan respond data
-static uint8_t scan_response[]={
+static uint8_t scan_response[] = {
   0x08,
   BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME,
   'B','i','s','c','u','i','t',
 };
 
+// User defined characteristics value
 static uint16_t character1_handle = 0x0000;
 static uint8_t characteristic1_data[CHARACTERISTIC1_MAX_LEN] = { 0x01 };
 
@@ -244,6 +276,7 @@ void setup() {
   while (!WiFi.ready()) {
     delay(1000);
   }
+  
   // Wait IP address to be updated.
   IPAddress localIP = WiFi.localIP();
   while (localIP[0] == 0) {
@@ -262,9 +295,11 @@ void setup() {
   mdns_init();
 
   //ble.debugLogger(true);
+
+  // Initialize ble_stack.
   ble.init(); // Must be called before other BLE functions invoked.
 
-  // Register BLE callbacks
+  // Register BLE callback functions
   ble.onConnectedCallback(deviceConnectedCallback);
   ble.onDisconnectedCallback(deviceDisconnectedCallback);
   ble.onDataWriteCallback(gattWriteCallback);
@@ -285,6 +320,7 @@ void setup() {
 
   // Set BLE advertising parameters
   ble.setAdvertisementParams(&adv_params);
+  
   // Set BLE advertising and scan respond data
   ble.setAdvertisementData(sizeof(adv_data), adv_data);
   ble.setScanResponseData(sizeof(scan_response), scan_response);

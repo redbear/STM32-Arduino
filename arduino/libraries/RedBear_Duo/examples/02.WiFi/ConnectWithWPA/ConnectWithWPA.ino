@@ -19,18 +19,16 @@
  by Jackson Lv
  */
  
- 
-
-// your network name also called SSID
-char ssid[] = "Duo";
-// your network password (key)
-char password[] = "password";
-
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
+
+// your network name also called SSID
+char ssid[] = "Duo";
+// your network password (key)
+char password[] = "password";
 
 void printWifiData();
 void printCurrentNet();
@@ -59,12 +57,10 @@ void setup() {
   Serial.println("Waiting for an ip address");
   
   IPAddress localIP = WiFi.localIP();
-
-  while (localIP[0] == 0)
-  {
-      localIP = WiFi.localIP();
-      Serial.println("waiting for an IP address");
-      delay(1000);
+  while (localIP[0] == 0) {
+    localIP = WiFi.localIP();
+    Serial.println("waiting for an IP address");
+    delay(1000);
   }
 
   Serial.println("\nIP Address obtained");
@@ -72,7 +68,6 @@ void setup() {
   // you're connected now, so print out the status  
   printCurrentNet();
   printWifiData();
-
 }
 
 void loop() {
@@ -103,14 +98,12 @@ void printWifiData() {
   Serial.print(mac[1], HEX);
   Serial.print(":");
   Serial.println(mac[0], HEX);
-
 }
 
 void printCurrentNet() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
-
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();

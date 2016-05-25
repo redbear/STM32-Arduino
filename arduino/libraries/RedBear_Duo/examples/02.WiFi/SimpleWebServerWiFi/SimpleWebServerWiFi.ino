@@ -26,18 +26,16 @@
  by Jackson Lv
  */
 
-// your network name also called SSID
-char ssid[] = "Duo";
-// your network password
-char password[] = "password";
-
-
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
+// your network name also called SSID
+char ssid[] = "Duo";
+// your network password
+char password[] = "password";
 
 TCPServer server = TCPServer(80);
 
@@ -70,12 +68,10 @@ void setup() {
   Serial.println("Waiting for an ip address");
   
   IPAddress localIP = WiFi.localIP();
-
-  while (localIP[0] == 0)
-  {
-      localIP = WiFi.localIP();
-      Serial.println("waiting for an IP address");
-      delay(1000);
+  while (localIP[0] == 0) {
+    localIP = WiFi.localIP();
+    Serial.println("waiting for an IP address");
+    delay(1000);
   }
 
   Serial.println("\nIP Address obtained");
@@ -100,7 +96,6 @@ void loop() {
         char c = client.read();             // read a byte, then
         Serial.write(c);                    // print it out the serial monitor
         if (c == '\n') {                    // if the byte is a newline character
-
           // if the current line is blank, you got two newline characters in a row.
           // that's the end of the client HTTP request, so send a response:
           if (strlen(buffer) == 0) {

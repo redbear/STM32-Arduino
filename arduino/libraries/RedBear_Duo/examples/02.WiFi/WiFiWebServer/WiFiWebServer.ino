@@ -20,6 +20,12 @@
 
  */
 
+#if defined(ARDUINO) 
+SYSTEM_MODE(MANUAL);//do not connect to cloud
+#else
+SYSTEM_MODE(AUTOMATIC);//connect to cloud
+#endif
+
 // your network name also called SSID
 char ssid[] = "Duo";
 // your network password
@@ -28,12 +34,6 @@ char password[] = "password";
 int keyIndex = 0;
 
 TCPServer server(80);
-
-#if defined(ARDUINO) 
-SYSTEM_MODE(MANUAL);//do not connect to cloud
-#else
-SYSTEM_MODE(AUTOMATIC);//connect to cloud
-#endif
 
 #define BLUE_LED    7
 
@@ -47,10 +47,12 @@ void setup() {
   Serial.print("Attempting to connect to Network named: ");
   // print the network name (SSID);
   Serial.println(ssid); 
+  
   // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
   WiFi.on();
   WiFi.setCredentials(ssid,password);
   WiFi.connect();
+  
   while (WiFi.connecting()) {
     // print dots while we wait to connect
     Serial.print(".");
@@ -61,12 +63,10 @@ void setup() {
   Serial.println("Waiting for an ip address");
   
   IPAddress localIP = WiFi.localIP();
-
-  while (localIP[0] == 0)
-  {
-      localIP = WiFi.localIP();
-      Serial.println("waiting for an IP address");
-      delay(1000);
+  while (localIP[0] == 0) {
+    localIP = WiFi.localIP();
+    Serial.println("waiting for an IP address");
+    delay(1000);
   }
 
   // you're connected now, so print out the status  
@@ -75,7 +75,6 @@ void setup() {
   Serial.println("Starting webserver on port 80");
   server.begin();                           // start the web server on port 80
   Serial.println("Webserver started!");
-
 }
 
 
@@ -132,7 +131,6 @@ void loop() {
     Serial.println("client disonnected");
   }
 }
-
 
 void printWifiStatus() {
   // print the SSID of the network you're attached to:

@@ -13,7 +13,6 @@
  by Jackson Lv
  */
 
-
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
@@ -23,7 +22,6 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 void printEncryptionType(int thisType);
 void printMacAddress();
 void listNetworks();
-
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -71,8 +69,7 @@ void listNetworks() {
   Serial.println("** Scan Networks **");
   WiFiAccessPoint aps[20];
   int found = WiFi.scan(aps, 20);
-  if (found <= 0)
-  {
+  if (found <= 0) {
     Serial.println("Couldn't get a wifi connection");
     while (true);
   }
@@ -81,7 +78,7 @@ void listNetworks() {
   Serial.print("number of available networks:");
   Serial.println(found);
 
-  for (int i=0; i<found; i++) {
+  for (int i = 0; i < found; i++) {
     WiFiAccessPoint& ap = aps[i];
     Serial.print("SSID: ");
     Serial.println(ap.ssid);
@@ -97,18 +94,19 @@ void listNetworks() {
 void printEncryptionType(int thisType) {
   // read the encryption type and print out the name:
   switch (thisType) {
-  case UNSEC:
-    Serial.println("UNSEC");
-    break;
-  case WEP:
-    Serial.println("WEP");
-    break;
-  case WPA:
-    Serial.println("WPA");
-    break;
-  case WPA2:
-    Serial.println("WPA2");
-    break;
+    case UNSEC:
+      Serial.println("UNSEC");
+      break;
+    case WEP:
+      Serial.println("WEP");
+      break;
+    case WPA:
+      Serial.println("WPA");
+      break;
+    case WPA2:
+      Serial.println("WPA2");
+      break;
+    default: break;
   }
 }
 

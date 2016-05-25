@@ -21,16 +21,16 @@
 
  */
 
-// your network name also called SSID
-char ssid[] = "Duo";
-// your network password
-char password[] = "password";
-
 #if defined(ARDUINO) 
 SYSTEM_MODE(MANUAL);//do not connect to cloud
 #else
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
+
+// your network name also called SSID
+char ssid[] = "Duo";
+// your network password
+char password[] = "password";
 
 unsigned int localPort = 2390;      // local port to listen for UDP packets
 
@@ -46,8 +46,7 @@ UDP Udp;
 unsigned long sendNTPpacket(IPAddress& address);
 void printWifiStatus();
 
-void setup()
-{
+void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
 
@@ -56,9 +55,11 @@ void setup()
   // print the network name (SSID);
   Serial.println(ssid); 
   // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+  
   WiFi.on();
   WiFi.setCredentials(ssid, password);
   WiFi.connect();
+  
   while (WiFi.connecting()) {
     // print dots while we wait to connect
     Serial.print(".");
@@ -69,12 +70,10 @@ void setup()
   Serial.println("Waiting for an ip address");
   
   IPAddress localIP = WiFi.localIP();
-
-  while (localIP[0] == 0)
-  {
-      localIP = WiFi.localIP();
-      Serial.println("waiting for an IP address");
-      delay(1000);
+  while (localIP[0] == 0) {
+    localIP = WiFi.localIP();
+    Serial.println("waiting for an IP address");
+    delay(1000);
   }
 
   Serial.println("\nIP Address obtained");
@@ -86,12 +85,11 @@ void setup()
   Udp.begin(localPort);
 }
 
-void loop()
-{
+void loop() {
   sendNTPpacket(timeServer); // send an NTP packet to a time server
   // wait to see if a reply is available
   delay(1000);
-  if ( Udp.parsePacket() ) {
+  if (Udp.parsePacket()) {
     Serial.println("packet received");
     // We've received a packet, read the data from it
     Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
@@ -116,7 +114,6 @@ void loop()
     // print Unix time:
     Serial.println(epoch);
 
-
     // print the hour, minute and second:
     Serial.print("The UTC time is ");       // UTC is the time at Greenwich Meridian (GMT)
     Serial.print((epoch  % 86400L) / 3600); // print the hour (86400 equals secs per day)
@@ -138,8 +135,7 @@ void loop()
 }
 
 // send an NTP request to the time server at the given address
-unsigned long sendNTPpacket(IPAddress& address)
-{
+unsigned long sendNTPpacket(IPAddress& address) {
   //Serial.println("1");
   // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
@@ -168,7 +164,6 @@ unsigned long sendNTPpacket(IPAddress& address)
   //Serial.println("6");
 }
 
-
 void printWifiStatus() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
@@ -185,13 +180,4 @@ void printWifiStatus() {
   Serial.print(rssi);
   Serial.println(" dBm");
 }
-
-
-
-
-
-
-
-
-
 
