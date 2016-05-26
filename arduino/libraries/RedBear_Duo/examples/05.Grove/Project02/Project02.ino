@@ -13,6 +13,10 @@
  * IN THE SOFTWARE.
  */
 
+/*
+ * Project - 02: Temperature Alarm
+ */
+
 #include <math.h>
 #include "TM1637.h"
 

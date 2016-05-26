@@ -329,7 +329,11 @@ void pin_status_back_handle(btstack_timer_source_t *ts) {
 }
 
 int gattWriteCallback(uint16_t value_handle, uint8_t *buf, uint16_t size) {
-  uint16_t index;
+  byte len;
+  byte pin;
+  byte mode;
+  byte value;
+  byte buf_tx[5];
     
   if (character1_handle == value_handle) {
     memcpy(characteristic1_data, buf, size);
@@ -342,23 +346,29 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buf, uint16_t size) {
     //Process the data
     switch (buf[0]) {
       case 'V': //query protocol version
-        byte buf_tx[] = {'V', 0x00, 0x00, 0x01};
+        buf_tx[0] = 'V';
+        buf_tx[1] = 0x00;
+        buf_tx[2] = 0x00;
+        buf_tx[3] = 0x01;
         memcpy(characteristic2_data, buf_tx, 4);
         ble.sendNotify(character2_handle, characteristic2_data, 4);   
         break;      
       case 'C': // query board total pin count
-        byte buf_tx[2] = {'C', TOTAL_PINS_NUM};
+        buf_tx[0] = 'C';
+        buf_tx[1] = TOTAL_PINS_NUM;
         memcpy(characteristic2_data, buf_tx, 2);
         ble.sendNotify(character2_handle, characteristic2_data, 2);   
         break;                  
       case 'M': // query pin mode
-        byte buf_tx[] = {'M', buf[1], pins_mode[ buf[2] ]};
+        buf_tx[0] = 'M';
+        buf_tx[1] = buf[1];
+        buf_tx[2] = pins_mode[ buf[2] ];
         memcpy(characteristic2_data, buf_tx, 3);
         ble.sendNotify(character2_handle, characteristic2_data, 3);  
         break;                  
       case 'S': // query pin mode
-        byte pin = buf[1];
-        byte mode = buf[2];
+        pin = buf[1];
+        mode = buf[2];
         if (IS_PIN_SERVO(pin) && mode != SERVO && servos[PIN_TO_SERVO(pin)].attached()) 
           servos[PIN_TO_SERVO(pin)].detach();
         /* ToDo: check the mode is in its capability or not */
@@ -410,25 +420,25 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buf, uint16_t size) {
         }
         break;                  
       case 'G': // query pin data
-        byte pin = buf[1];
+        pin = buf[1];
         reportPinDigitalData(pin);
         break;              
       case 'T': // set pin digital state
-        byte pin = buf[1];
-        byte state = buf[2];
-        digitalWrite(duo_pin[pin], state);
+        pin = buf[1];
+        value = buf[2];
+        digitalWrite(duo_pin[pin], value);
         reportPinDigitalData(pin);
         break;              
       case 'N': // set PWM
-        byte pin = buf[1];
-        byte value = buf[2];
+        pin = buf[1];
+        value = buf[2];
         analogWrite(duo_pin[PIN_TO_PWM(pin)], value);
         pins_pwm[pin] = value;
         reportPinPWMData(pin);
         break;                  
       case 'O': // set Servo
-        byte pin = buf[1];
-        byte value = buf[2];
+        pin = buf[1];
+        value = buf[2];
         if (IS_PIN_SERVO(pin))
           servos[PIN_TO_SERVO(pin)].write(value);
         pins_servo[pin] = value;
@@ -442,11 +452,11 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buf, uint16_t size) {
         ble.addTimer(&pin_status_back);
         break;
       case 'P': // query pin capability
-        byte pin = buf[1];
+        pin = buf[1];
         reportPinCapability(pin);  
         break;
       case 'Z':
-        byte len = buf[1];
+        len = buf[1];
         Serial.println("->");
         Serial.print("Received: ");
         Serial.print(len);

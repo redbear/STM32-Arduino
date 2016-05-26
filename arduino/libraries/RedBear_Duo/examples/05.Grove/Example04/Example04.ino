@@ -12,6 +12,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
+
+/*
+ * Example - 04: Start a vibrator
+ */
  
 #include "application.h"
 
@@ -22,25 +26,24 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
 // name the pins
-#define LIGHTPIN   A0
-#define BUZZERPIN  D1
+#define BUTTONPIN D2
+#define MOTORPIN A4
 
 // This routine runs only once upon reset
 void setup() {
-  pinMode(BUZZERPIN, OUTPUT);                   // set user key pin as input
-  Serial.begin(9600);
+  pinMode(BUTTONPIN, INPUT);                            
+  pinMode(MOTORPIN, OUTPUT);                          
 }
 
 // This routine loops forever
 void loop() {
-  int analogValue = analogRead(LIGHTPIN);       // read light sensor pin
-  Serial.print("light strength: ");
-  Serial.println(analogValue);
-  if (analogValue > 1000)                       // if it is bright enough
-    digitalWrite(BUZZERPIN, HIGH);              // let the buzzer chirp
+  int val = digitalRead(BUTTONPIN);              // read the hall sensor pin
+
+  if (val == 0)                                  // if magnet detected
+    digitalWrite(MOTORPIN, LOW);                 // let the motor vibrate
   else
-    digitalWrite(BUZZERPIN, LOW);               // stop it
+    digitalWrite(MOTORPIN, HIGH);                // stop it
     
-  delay(500);
+  delay(50);
 }
 
