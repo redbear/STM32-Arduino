@@ -2,7 +2,7 @@
 
 ## Current Version
 
-0.2.4-rc.3
+0.2.4
 
 
 
