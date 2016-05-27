@@ -21,10 +21,6 @@ SYSTEM_MODE(MANUAL);//do not connect to cloud
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
-// Modified the following for your AP/Router.
-#define AP "Duo"
-#define PIN "passport"
-
 #define MAX_BLE_REPORT  20
 
 static btstack_timer_source_t scan_timer;
@@ -69,7 +65,7 @@ void mdns_init() {
 }
 
 void reportCallback(advertisementReport_t *report) {
-  static uint8_t same_flag=1;
+  static uint8_t same_flag = 1;
     
   for (int i = 0; i < ble_report_count; i++) {
 //    Serial.println("i: ");
@@ -119,7 +115,7 @@ void reportCallback(advertisementReport_t *report) {
   Serial.print("The ADV data: ");
   advdatalen_temp[ble_report_count] = report->advDataLen;
   memcpy(advdata_temp[ble_report_count], report->advData, advdatalen_temp[ble_report_count]);
-  for (uint8_t index=0; index < advdatalen_temp[ble_report_count]; index++) {
+  for (uint8_t index = 0; index < advdatalen_temp[ble_report_count]; index++) {
     Serial.print(advdata_temp[ble_report_count][index], HEX);
     Serial.print(" ");
   }
@@ -128,8 +124,6 @@ void reportCallback(advertisementReport_t *report) {
         
   ble_report_count++;
 }
-
-
 
 static void  scan_timer_intrp(btstack_timer_source_t *ts) {
   scan_flag = !scan_flag;
@@ -154,6 +148,7 @@ static void  scan_timer_intrp(btstack_timer_source_t *ts) {
   ble.setTimer(ts, 10000);
   ble.addTimer(ts);
 }
+
 static void  client_timer_intrp(btstack_timer_source_t *ts) {
   if (scan_flag == 0) {
     // listen for incoming clients
@@ -242,7 +237,7 @@ void setup() {
     
   Serial.begin(115200);
   delay(5000);
-  Serial.println("BLE scan wep demo.");
+  Serial.println("BLE scan web demo.");
   
   WiFi.on();
   WiFi.connect();
