@@ -2,16 +2,33 @@
 
 ## Current Version
 
+v0.2.9
+
+* For the Duo firmware v0.2.4
+* Add licence in examples
+* Format the examples in Arduino code convention
+* Replace obscure HEX code with BLE macro definitions in examples
+* Fix the issue that compilation failed if there is space in referenced path
+ 
+## Version History
+
+v0.2.8
+
+* For the Duo firmware v0.2.4-rc2
+* Add BLE\_Central\_Multi\_Peripheral example
+* Add Eddystone example
+* Support updating Factory Reset Firmware via Burn Bootloader (Native USB only)
+* Update other examples
+* Burn Bootloader via RBLink will also burn user part (a blink application)
+
 v0.2.7
 
-* For the Duo firmware v0.2.3
+* For the Duo firmware v0.2.4-rc1
 * Support burn bootloader and system firmwares using the RBLink USB port
 * Support burn sketch using the RBLink USB port
 * Bug fixes to the examples
 * BLE Controller, Chat, SimpleControls now work with the RedBear BLE Controller iOS and Android Apps
 * Note: if connecting to the PC USB using the RBLink USB port, use `Serial1` instead of `Serial` (for USB) for serial debugging. 
- 
-## Version History
 
 v0.2.6
 
