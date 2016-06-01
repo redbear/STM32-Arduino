@@ -26,7 +26,7 @@ SYSTEM_MODE(AUTOMATIC);//connect to cloud
  
 /* Modify the bellowing definitions for your AP/Router.*/
 // #define SSID     "YOUR_ROUTER_SSID"
-// #define PASSWROD "YOUR_ROUTER_PASSWORD"
+// #define PASSWORD "YOUR_ROUTER_PASSWORD"
 
 #define MAX_CLIENT_NUM   3
 
@@ -40,7 +40,7 @@ void setup() {
   delay(5000);
     
   WiFi.on();
-  WiFi.setCredentials(SSID, PASSWROD, WPA2);
+  WiFi.setCredentials(SSID, PASSWORD, WPA2);
   WiFi.connect();
   
   Serial.println("Waiting for an IP address...\n");
