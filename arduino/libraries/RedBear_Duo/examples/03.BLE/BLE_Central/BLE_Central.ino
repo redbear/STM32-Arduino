@@ -22,6 +22,27 @@ SYSTEM_MODE(MANUAL);//do not connect to cloud
 SYSTEM_MODE(AUTOMATIC);//connect to cloud
 #endif
 
+/* 
+ * BLE scan parameters:
+ *     - BLE_SCAN_TYPE     
+ *           0x00: Passive scanning, no scan request packets shall be sent.(default)
+ *           0x01: Active scanning, scan request packets may be sent.
+ *           0x02 - 0xFF: Reserved for future use.
+ *     - BLE_SCAN_INTERVAL: This is defined as the time interval from when the Controller started its last LE scan until it begins the subsequent LE scan.
+ *           Range: 0x0004 to 0x4000
+ *           Default: 0x0010 (10 ms)
+ *           Time = N * 0.625 msec
+ *           Time Range: 2.5 msec to 10.24 seconds
+ *     - BLE_SCAN_WINDOW: The duration of the LE scan. The scan window shall be less than or equal to the scan interval.
+ *           Range: 0x0004 to 0x4000
+ *           Default: 0x0010 (10 ms)
+ *           Time = N * 0.625 msec
+ *           Time Range: 2.5 msec to 10240 msec
+ */
+#define BLE_SCAN_TYPE        0x00   // Passive scanning
+#define BLE_SCAN_INTERVAL    0x0060 // 60 ms
+#define BLE_SCAN_WINDOW      0x0030 // 30 ms
+
 /******************************************************
  *                      Type Define
  ******************************************************/
@@ -45,13 +66,13 @@ typedef struct {
 static uint16_t connected_id = 0xFFFF;
 
 Device_t device;
-uint8_t  chars_index=0;
-uint8_t  desc_index=0;
+uint8_t  chars_index = 0;
+uint8_t  desc_index = 0;
 
 // The service uuid to be discovered.
-static uint8_t service1_uuid[16] ={0x71,0x3d,0x00,0x00,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e};
+static uint8_t service1_uuid[16] = { 0x71,0x3d,0x00,0x00,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e };
 
-static uint8_t gatt_notify_flag=0;
+static uint8_t gatt_notify_flag = 0;
 
 /******************************************************
  *               Function Definitions
@@ -69,7 +90,7 @@ static uint8_t gatt_notify_flag=0;
  *         1 Not find.
  */
 uint32_t ble_advdata_decode(uint8_t type, uint8_t advdata_len, uint8_t *p_advdata, uint8_t *len, uint8_t *p_field_data) {
-  uint8_t index=0;
+  uint8_t index = 0;
   uint8_t field_length, field_type;
 
   while (index < advdata_len) {
@@ -154,7 +175,7 @@ void reportCallback(advertisementReport_t *report) {
  * @retval None
  */
 void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
-  switch (status){
+  switch (status) {
     case BLE_STATUS_OK:
       Serial.println("Device connected!");
       // Connect to remote device, start to discover service.
@@ -473,7 +494,8 @@ void setup() {
   ble.onGattNotifyUpdateCallback(gattNotifyUpdateCallback);
 
   // Set scan parameters.
-  ble.setScanParams(0, 0x0030, 0x0030);
+  ble.setScanParams(BLE_SCAN_TYPE, BLE_SCAN_INTERVAL, BLE_SCAN_WINDOW);
+  
   // Start scanning.
   ble.startScanning();
   Serial.println("Start scanning ");
