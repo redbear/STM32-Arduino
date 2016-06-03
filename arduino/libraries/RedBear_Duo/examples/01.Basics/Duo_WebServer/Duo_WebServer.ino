@@ -28,9 +28,7 @@
  * However the user can invoke this method to make the mode explicit.
  * Learn more about system modes: https://docs.particle.io/reference/firmware/photon/#system-modes .
  */
-#if defined(ARDUINO) 
-SYSTEM_MODE(SEMI_AUTOMATIC); 
-#endif
+SYSTEM_MODE(AUTOMATIC); 
 
 #define DEVICE_ID_ADDR             (0x1FFF7A10)
 #define DEVICE_ID_LEN              12
