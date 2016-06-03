@@ -18,16 +18,23 @@
  * Creat by duerrfk
  * 
  * Motify by Jackson_Lv 2016.5
- * 
  */
 
 #include <AES.h>
 #include"eddystone.h"
 
+/*
+ * SYSTEM_MODE:
+ *     - AUTOMATIC: Automatically try to connect to Wi-Fi and the Particle Cloud and handle the cloud messages.
+ *     - SEMI_AUTOMATIC: Manually connect to Wi-Fi and the Particle Cloud, but automatically handle the cloud messages.
+ *     - MANUAL: Manually connect to Wi-Fi and the Particle Cloud and handle the cloud messages.
+ *     
+ * SYSTEM_MODE(AUTOMATIC) does not need to be called, because it is the default state. 
+ * However the user can invoke this method to make the mode explicit.
+ * Learn more about system modes: https://docs.particle.io/reference/firmware/photon/#system-modes .
+ */
 #if defined(ARDUINO) 
-SYSTEM_MODE(MANUAL);//do not connect to cloud
-#else
-SYSTEM_MODE(AUTOMATIC);//connect to cloud
+SYSTEM_MODE(SEMI_AUTOMATIC); 
 #endif
 
 /* 
