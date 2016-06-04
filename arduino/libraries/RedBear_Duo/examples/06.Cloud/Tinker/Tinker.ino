@@ -19,11 +19,12 @@
  */
 
 /*
- * Tinker your Duo via Particle Cloud, e.g.:
- *   1. curl https://api.particle.io/v1/devices/<YOUR_DEVICE_ID>/digitalwrite -d access_token=YOUR_ACCESS_TOKEN -d "args=D0 HIGH" -k
- *   2. curl https://api.particle.io/v1/devices/<YOUR_DEVICE_ID>/digitalread -d access_token=YOUR_ACCESS_TOKEN -d "args=D1" -k
- *   3. curl https://api.particle.io/v1/devices/<YOUR_DEVICE_ID>/analogwrite -d access_token=YOUR_ACCESS_TOKEN -d "args=D0 127" -k
- *   4. curl https://api.particle.io/v1/devices/<YOUR_DEVICE_ID>/analogread -d access_token=YOUR_ACCESS_TOKEN -d "args=A0" -k
+ * Assume that your Duo's device ID is: 112233445566778899aabbcc and your access token is 12345678901234567890.
+ * Tinker your Duo through Particle Cloud, e.g.:
+ *   1. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/digitalwrite -d access_token=12345678901234567890 -d "args=D0 HIGH" -k
+ *   2. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/digitalread -d access_token=12345678901234567890 -d "args=D1" -k
+ *   3. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/analogwrite -d access_token=12345678901234567890 -d "args=D0 127" -k
+ *   4. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/analogread -d access_token=12345678901234567890 -d "args=A0" -k
  * Your access token can be found on Particle Build: https://build.particle.io, After you login in, check it under the "Settings" tag.
  */
 
@@ -48,6 +49,9 @@ int tinkerAnalogWrite(String command);
 
 /* This function is called once at start up ----------------------------------*/
 void setup() {
+  Serial.begin(115200);
+  Serial.println("Tinker application started.");
+  
   //Register all the Tinker functions
   Particle.function("digitalread", tinkerDigitalRead);
   Particle.function("digitalwrite", tinkerDigitalWrite);
