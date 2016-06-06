@@ -14,11 +14,16 @@
  */ 
 
 /*
- * Assume that your Duo's device ID is: 112233445566778899aabbcc and your access token is 12345678901234567890.
- * Then get the variable value from Particle Cloud, e.g.:
- *   1. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/analog?access_token=12345678901234567890" -k
- *   2. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/counter?access_token=12345678901234567890" -k
- *   3. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/greet?access_token=12345678901234567890" -k
+ * As long as your Duo is connecting to the Particle Cloud, it can expose a variable through the Particle Cloud 
+ * so that you can get its value wherever you can access the internet.
+ * 
+ * Get the variable value from Particle Cloud using curl:
+ *     curl "https://api.particle.io/v1/devices/{YOUR_DEVICE_ID}/{VARIABLE_NAME}?access_token={YOUR_ACCESS_TOKEN}" -k
+ * E.g.(Assume that your Duo's device ID is: 112233445566778899aabbcc and your access token is 12345678901234567890):
+ *     1. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/analog?access_token=12345678901234567890" -k
+ *     2. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/counter?access_token=12345678901234567890" -k
+ *     3. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/greet?access_token=12345678901234567890" -k
+ *     
  * Your access token can be found on Particle Build: https://build.particle.io, After you login in, check it under the "Settings" tag.
  */
 

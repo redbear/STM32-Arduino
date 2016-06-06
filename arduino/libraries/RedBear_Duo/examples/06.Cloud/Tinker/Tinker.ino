@@ -18,13 +18,17 @@
  * Modified by Guohui @2016/6/4
  */
 
-/*
- * Assume that your Duo's device ID is: 112233445566778899aabbcc and your access token is 12345678901234567890.
- * Tinker your Duo through Particle Cloud, e.g.:
- *   1. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/digitalwrite -d access_token=12345678901234567890 -d "args=D0 HIGH" -k
- *   2. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/digitalread -d access_token=12345678901234567890 -d "args=D1" -k
- *   3. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/analogwrite -d access_token=12345678901234567890 -d "args=D0 127" -k
- *   4. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/analogread -d access_token=12345678901234567890 -d "args=A0" -k
+/* For the Duo that is running this sketch, as long as it is connecting to the Particle Cloud, 
+ * You can tinker it wherever you can access the internet.
+ * 
+ * Tinker your Duo using curl:
+ *     curl https://api.particle.io/v1/devices/{YOUR_DEVICE_ID}/{FUNCTION_NAME} -d access_token={YOUR_ACCESS_TOKEN} -d "args={ARGUMENTS}" -k
+ * E.g.(Assume that your Duo's device ID is: 112233445566778899aabbcc and your access token is 12345678901234567890):
+ *     1. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/digitalwrite -d access_token=12345678901234567890 -d "args=D0 HIGH" -k
+ *     2. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/digitalread -d access_token=12345678901234567890 -d "args=D1" -k
+ *     3. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/analogwrite -d access_token=12345678901234567890 -d "args=D0 127" -k
+ *     4. curl https://api.particle.io/v1/devices/112233445566778899aabbcc/analogread -d access_token=12345678901234567890 -d "args=A0" -k
+ *   
  * Your access token can be found on Particle Build: https://build.particle.io, After you login in, check it under the "Settings" tag.
  */
 
