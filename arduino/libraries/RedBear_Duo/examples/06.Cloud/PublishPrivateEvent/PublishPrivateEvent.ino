@@ -25,6 +25,9 @@
  *     1. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/events/human-detected -k
  *     2. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/events/my-temperature -k
  *     
+ * A subscription works like a prefix filter. If you subscribe to "foo", you will receive any event whose name begins 
+ * with "foo", including "foo", "fool", "foobar", and "food/indian/sweet-curry-beans".
+ *     
  * Your access token can be found on Particle Build: https://build.particle.io, After you login in, check it under the "Settings" tag.
  * Learn more about publishing public events: https://docs.particle.io/reference/firmware/photon/#particle-publish-
  */
