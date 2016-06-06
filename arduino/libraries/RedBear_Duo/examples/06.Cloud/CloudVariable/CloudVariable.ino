@@ -25,6 +25,7 @@
  *     3. curl "https://api.particle.io/v1/devices/112233445566778899aabbcc/greet?access_token=12345678901234567890" -k
  *     
  * Your access token can be found on Particle Build: https://build.particle.io, After you login in, check it under the "Settings" tag.
+ * Learn more about cloud variable: https://docs.particle.io/reference/firmware/photon/#particle-variable-
  */
 
  /*
