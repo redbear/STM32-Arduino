@@ -11,7 +11,7 @@ The RBLink provides interfaces for Seeed Studio Grove System modules.
 
 You do not really need the RBLink if you are not going to develop firmware using Broadcom's WICED SDK.
 
-Note: unless you want to contribute to the Duo board support package, you do need to touch the folder 'arduino' because you will use the Arduino Boards Manager to add it to the Arduino IDE. 
+Note: unless you want to contribute to the Duo board support package, you do not need to touch the folder 'arduino' because you will use the Arduino Boards Manager to add it to the Arduino IDE. 
 
 ![image](docs/images/RBDuo_Pinout.jpg)
 
