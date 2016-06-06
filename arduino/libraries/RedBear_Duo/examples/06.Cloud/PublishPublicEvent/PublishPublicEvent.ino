@@ -29,6 +29,8 @@
  * Maybe someone else is publishing their public temperature event, you can also subscribe it even if your Duo is not online:
  *     4. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/events/temperature -k
  *     
+ * You can also check the events on Particle Dashboard: https://dashboard.particle.io/user/logs
+ *     
  * A subscription works like a prefix filter. If you subscribe to "foo", you will receive any event whose name begins 
  * with "foo", including "foo", "fool", "foobar", and "food/indian/sweet-curry-beans".
  *     
