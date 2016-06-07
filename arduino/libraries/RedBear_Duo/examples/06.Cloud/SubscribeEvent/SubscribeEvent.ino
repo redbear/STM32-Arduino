@@ -52,13 +52,13 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Application started.");
 
-  if(!Particle.subscribe("temperature", allTemperEvtHandler)) {
+  if (!Particle.subscribe("temperature", allTemperEvtHandler)) {
     Serial.println("Subscribe to event 'temperature' failed.");
   }
   Serial.println("Subscribe to event 'temperature' successfully.");
 
   // You can listen to events published only by your own devices by adding a MY_DEVICES constant.
-  if(!Particle.subscribe("humidity", myHumidityEvtHandler, MY_DEVICES)) {
+  if (!Particle.subscribe("humidity", myHumidityEvtHandler, MY_DEVICES)) {
     Serial.println("Subscribe to event 'humidity' failed.");
   }
   Serial.println("Subscribe to event 'humidity' successfully.");

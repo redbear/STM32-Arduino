@@ -13,12 +13,6 @@
  * IN THE SOFTWARE.
  */ 
 
-/*
- * Removes all subscription handlers previously registered with Particle.subscribe().
- * 
- * Learn more about subscribing events: https://docs.particle.io/reference/firmware/photon/#particle-unsubscribe-
- */
-
  /*
  * SYSTEM_MODE:
  *     - AUTOMATIC: Automatically try to connect to Wi-Fi and the Particle Cloud and handle the cloud messages.
@@ -31,47 +25,74 @@
  */
 SYSTEM_MODE(AUTOMATIC); // Connect to Particle Cloud
 
-int temper_event_cnt = 0;
-int button = D0;
-bool subscribed = false;
+#define MAX_BUF_LEN    255 // Data in an event to be published to Particle Cloud limits to 255 bytes;
 
-void allTemperEvtHandler(const char *event, const char *data);
+int button = D0;
+uint8_t buf[MAX_BUF_LEN]; 
+uint8_t buf_len = 0;
+
+void btnEvtHandler(const char *event, const char *data);
+void serialEvtHandler(const char *event, const char *data);
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Application started.");
+  Serial.println("Application started!");
 
   pinMode(button, INPUT_PULLUP);
+
+  if(!Particle.subscribe("button-pressed", btnEvtHandler)) {
+    Serial.println("Subscribe to event 'button-pressed' failed.");
+  }
+  Serial.println("Subscribe to event 'button-pressed' successfully.");
+
+  if(!Particle.subscribe("serial-event", serialEvtHandler)) {
+    Serial.println("Subscribe to event 'serial-event' failed.");
+  }
+  Serial.println("Subscribe to event 'serial-event' successfully.");
 }
 
 void loop() {
-  if (digitalRead(button) == LOW) {
+  if(digitalRead(button) == LOW) {
     delay(50); // Debounce
-    if (digitalRead(button) == LOW) {
-      if (subscribed) {
-        Serial.println("Unsubscribe all events.");
-        Particle.unsubscribe();
-        subscribed = false;
+    if(digitalRead(button) == LOW) {
+      if (!Particle.publish("button-pressed", "LOW")) {
+        Serial.println("Publish 'button-pressed' event failed.");
       }
-      else {
-        if (Particle.subscribe("temperature", allTemperEvtHandler)) {
-          Serial.println("Subscribe to event 'temperature' successfully.");
-          subscribed = true;
-          temper_event_cnt = 0;
-        }
-        else {
-          Serial.println("Subscribe to event 'temperature' failed.");
-        }
+      Serial.println("Publish 'button-pressed' event successfully.");
+      
+      while(digitalRead(button) == LOW); // Wait to release.
+      
+      if (!Particle.publish("button-pressed", "HIGH")) {
+        Serial.println("Publish 'button-pressed' event failed.");
       }
-      while (digitalRead(button) == LOW); // Wait to release
+      Serial.println("Publish 'button-pressed' event successfully.");
     }
+  }
+
+  if(Serial.available()) {
+    while(Serial.available()) {
+      buf[buf_len++] = Serial.read();
+      if(buf_len >= (MAX_BUF_LEN-1)) break;
+    }
+    buf[buf_len] = '\0';
+    if (!Particle.publish("serial-event", (const char *)buf)) {
+      Serial.println("serial-event' event failed.");
+    }
+    Serial.println("Publish 'serial-event' event successfully.");
+    buf_len = 0;
   }
 }
 
-void allTemperEvtHandler(const char *event, const char *data) {
-  temper_event_cnt++;
-  Serial.print(temper_event_cnt);
-  Serial.print(" ");
+void btnEvtHandler(const char *event, const char *data) {
+  Serial.print(event);
+  Serial.print(", data: ");
+  if (data)
+    Serial.println(data);
+  else
+    Serial.println("NULL");
+}
+
+void serialEvtHandler(const char *event, const char *data) {
   Serial.print(event);
   Serial.print(", data: ");
   if (data)

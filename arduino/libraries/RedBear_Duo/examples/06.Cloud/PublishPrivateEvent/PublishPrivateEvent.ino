@@ -61,7 +61,7 @@ void setup() {
 
 void loop() {
   // Publish an event with data, with user specified TTL.
-  if(digitalRead(PIR) == HIGH && quiet) {
+  if (digitalRead(PIR) == HIGH && quiet) {
     if (!Particle.publish("human-detected", NULL, 60, PRIVATE)) {
       Serial.println("Publish 'human-detected' event failed.");
     }
@@ -69,9 +69,9 @@ void loop() {
     quiet = false;
   }
 
-  if(digitalRead(PIR) == LOW) quiet = true;
+  if (digitalRead(PIR) == LOW) quiet = true;
 
-  if((millis() - ms) >= 5000) {
+  if ((millis() - ms) >= 5000) {
     ms = millis();
     // In order to publish a private event, you must pass all four parameters.
     if (!Particle.publish("my-temperature", "600 F", 60, PRIVATE)) { 

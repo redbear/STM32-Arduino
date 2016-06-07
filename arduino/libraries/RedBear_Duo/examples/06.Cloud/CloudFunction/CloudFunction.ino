@@ -52,10 +52,10 @@ void setup() {
   digitalWrite(relay, LOW);
   
   //Register all cloud functions
-  if(!Particle.function("echo", echoText)) {
+  if (!Particle.function("echo", echoText)) {
     Serial.println("Function 'echo' register failed.");
   }
-  if(!Particle.function("relay", controlRelay)) {
+  if (!Particle.function("relay", controlRelay)) {
     Serial.println("Function 'relay' register failed.");
   }
 }
@@ -73,13 +73,13 @@ int echoText(String text) {
 int controlRelay(String command) {
   bool value = 0;
   
-  if(command.substring(0,2) == "ON") value = 1;
-  else if(command.substring(0,3) == "OFF") value = 0;
+  if (command.substring(0,2) == "ON") value = 1;
+  else if (command.substring(0,3) == "OFF") value = 0;
   else return -1;
 
   digitalWrite(relay, value);
   Serial.print("Relay state: ");
-  if(value == 1)
+  if (value == 1)
     Serial.println("ON");
   else
     Serial.println("OFF");

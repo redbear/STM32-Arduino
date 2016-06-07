@@ -83,7 +83,7 @@ int tinkerDigitalRead(String pin) {
   //Sanity check to see if the pin numbers are within limits
   if (pinNumber < 0 || pinNumber > 7) return -1;
 
-  if(pin.startsWith("D")) {
+  if (pin.startsWith("D")) {
     pinMode(pinNumber, INPUT_PULLDOWN);
     return digitalRead(pinNumber);
   }
@@ -109,16 +109,16 @@ int tinkerDigitalWrite(String command) {
   //Sanity check to see if the pin numbers are within limits
   if (pinNumber < 0 || pinNumber > 7) return -1;
 
-  if(command.substring(3,7) == "HIGH") value = 1;
+  if (command.substring(3,7) == "HIGH") value = 1;
   else if(command.substring(3,6) == "LOW") value = 0;
   else return -2;
 
-  if(command.startsWith("D")) {
+  if (command.startsWith("D")) {
     pinMode(pinNumber, OUTPUT);
     digitalWrite(pinNumber, value);
     return 1;
   }
-  else if(command.startsWith("A")) {
+  else if (command.startsWith("A")) {
     pinMode(pinNumber+10, OUTPUT);
     digitalWrite(pinNumber+10, value);
     return 1;
@@ -141,7 +141,7 @@ int tinkerAnalogRead(String pin) {
   //Sanity check to see if the pin numbers are within limits
   if (pinNumber < 0 || pinNumber > 7) return -1;
 
-  if(pin.startsWith("D")) {
+  if (pin.startsWith("D")) {
     return -3;
   }
   else if (pin.startsWith("A")) {
@@ -160,12 +160,12 @@ int tinkerAnalogRead(String pin) {
 int tinkerAnalogWrite(String command) {
   String value = command.substring(3);
 
-  if(command.substring(0,2) == "TX") {
+  if (command.substring(0,2) == "TX") {
     pinMode(TX, OUTPUT);
     analogWrite(TX, value.toInt());
     return 1;
   }
-  else if(command.substring(0,2) == "RX") {
+  else if (command.substring(0,2) == "RX") {
     pinMode(RX, OUTPUT);
     analogWrite(RX, value.toInt());
     return 1;
@@ -177,22 +177,22 @@ int tinkerAnalogWrite(String command) {
   //Sanity check to see if the pin numbers are within limits
   if (pinNumber < 0 || pinNumber > 7) return -1;
 
-  if(command.startsWith("D")) {
+  if (command.startsWith("D")) {
     pinMode(pinNumber, OUTPUT);
     analogWrite(pinNumber, value.toInt());
     return 1;
   }
-  else if(command.startsWith("A")) {
+  else if (command.startsWith("A")) {
     pinMode(pinNumber+10, OUTPUT);
     analogWrite(pinNumber+10, value.toInt());
     return 1;
   }
-  else if(command.substring(0,2) == "TX") {
+  else if (command.substring(0,2) == "TX") {
     pinMode(TX, OUTPUT);
     analogWrite(TX, value.toInt());
     return 1;
   }
-  else if(command.substring(0,2) == "RX") {
+  else if (command.substring(0,2) == "RX") {
     pinMode(RX, OUTPUT);
     analogWrite(RX, value.toInt());
     return 1;

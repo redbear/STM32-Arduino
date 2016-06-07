@@ -71,18 +71,18 @@ void setup() {
 
 void loop() {
   // Publish an event with data, with user specified TTL.
-  if(digitalRead(button) == LOW) {
+  if (digitalRead(button) == LOW) {
     delay(50); // Debounce
-    if(digitalRead(button) == LOW) {
+    if (digitalRead(button) == LOW) {
       if (!Particle.publish("button-pressed", "LOW", 21600)) {
         Serial.println("Publish 'button-pressed' event failed.");
       }
       Serial.println("Publish 'button-pressed' event successfully.");
-      while(digitalRead(button) == LOW); // Wait to release.
+      while (digitalRead(button) == LOW); // Wait to release.
     }
   }
 
-  if((millis() - ms) >= 5000) {
+  if ((millis() - ms) >= 5000) {
     ms = millis();
     // Publish an event with data, with default TTL 60 seconds.
     if (!Particle.publish("periodic-event", "5 seconds period event")) { 
