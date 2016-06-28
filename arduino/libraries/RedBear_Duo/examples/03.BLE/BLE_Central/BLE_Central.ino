@@ -160,7 +160,7 @@ void reportCallback(advertisementReport_t *report) {
       device.addr_type = report->peerAddrType;
       memcpy(device.addr, report->peerAddr, 6);
 
-      ble.connect(report->peerAddr, BD_ADDR_TYPE_LE_RANDOM);
+      ble.connect(report->peerAddr, report->peerAddrType);
     }
   }
   else if (0x00 == ble_advdata_decode(0x09, report->advDataLen, report->advData, &len, adv_name)) {
