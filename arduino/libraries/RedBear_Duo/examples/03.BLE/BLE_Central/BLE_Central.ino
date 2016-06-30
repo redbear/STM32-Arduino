@@ -382,7 +382,7 @@ void gattReadCallback(BLEStatus_t status, uint16_t con_handle, uint16_t value_ha
  * @retval None
  */
 void gattWrittenCallback(BLEStatus_t status, uint16_t con_handle) {
-  if (BLE_STATUS_DONE) {
+  if (status == BLE_STATUS_DONE) {
     Serial.println(" ");
     Serial.println("Write characteristic done");
     ble.readDescriptorValue(device.connected_handle, device.service.chars[0].descriptor[0].handle);
