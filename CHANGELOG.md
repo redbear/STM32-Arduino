@@ -1,8 +1,6 @@
 # Duo: Arduino Board Package Change-log
 ---
 
-* [Arduino Board Package Installation Guide](arduino_board_package_installation_guide.md)
-
 
 ## Current Version
 
