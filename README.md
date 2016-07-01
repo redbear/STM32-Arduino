@@ -25,6 +25,8 @@ For users only want to playing with the boards need not to clone or download thi
 
 To get started with the boards supported in this board package on Arduino IDE, Please follow the [Getting Started](https://github.com/redbear/Duo/blob/master/docs/getting_started_with_arduino_ide.md) guide.
 
+Other documentations and resources for the RedBear Duo can be found [here](https://github.com/redbear/Duo).
+
 ## License
 
 Copyright (c) 2016 Red Bear
