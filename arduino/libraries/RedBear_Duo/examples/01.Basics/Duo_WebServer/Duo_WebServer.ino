@@ -30,9 +30,6 @@
  */
 SYSTEM_MODE(AUTOMATIC); 
 
-#define DEVICE_ID_ADDR             (0x1FFF7A10)
-#define DEVICE_ID_LEN              12
-
 /* 
  * BLE peripheral preferred connection parameters:
  *     - Minimum connection interval = MIN_CONN_INTERVAL * 1.25 ms, where MIN_CONN_INTERVAL ranges from 0x0006 to 0x0C80
@@ -258,20 +255,9 @@ void setup() {
   }
   Serial.println("\n");
 
-  uint8_t dev_id[DEVICE_ID_LEN];
-  memcpy(dev_id, (char*)DEVICE_ID_ADDR, DEVICE_ID_LEN);
-
-  Serial.print("Device ID: ");
-  for (uint8_t i = 0; i < DEVICE_ID_LEN; i++) {
-    uint8_t c;
-    c = (dev_id[i] >> 4) + 48;
-    if (c > 57) c += 39;
-    Serial.write(c);
-    c = (dev_id[i] & 0x0F) + 48;
-    if (c > 57) c += 39;
-    Serial.write(c);
-  }
-  Serial.println("\n");
+  String deviceID = System.deviceID();
+  Serial.print("Your Duo's device ID: ");
+  Serial.println(deviceID);
     
   Serial.println("Note: If your Duo hasn't stored a valid WiFi profile, it will enter the listening mode for provisioning first.\n");
 
