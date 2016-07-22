@@ -4,6 +4,20 @@
 
 ## Current Version
 
+***v0.2.10***
+
+* For the Duo firmware v0.2.4
+* Adds more comments in examples
+* Changes the default system mode to `SEMI_AUTOMATIC` if using Arduino IDE
+* Adds examples for demonstrating the cloud functions
+* Adds examples for demonstrating external SPI flash usage
+* Fixes the issue that BLE central connects to peer device failed
+* Fixes the tool chain issue if another 3rd party board which also depends on the arm-none-eabi-gcc is installed
+* Re-sorts the examples and rename some of them to meet the name convention
+
+
+## Version History
+
 ***v0.2.9***
 
 * For the Duo firmware v0.2.4
@@ -11,9 +25,6 @@
 * Format the examples in Arduino code convention
 * Replace obscure HEX code with BLE macro definitions in examples
 * Fix the issue that compilation failed if there is space in referenced path
- 
-
-## Version History
 
 ***v0.2.8***
 
