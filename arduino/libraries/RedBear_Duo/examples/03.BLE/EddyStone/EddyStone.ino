@@ -144,7 +144,7 @@ static uint8_t url_adv_data[] = {
   0xAA,0xFE,
   EDDYSTONE_FRAME_TYPE_URL,
   (uint8_t)EDDYSTONE_TXPWR,
-  http_www_dot, EDDYSTONE_ENCODED_URL
+  eddystone_url_scheme, EDDYSTONE_ENCODED_URL
 };
 
 // Eddystone EID advertising data
