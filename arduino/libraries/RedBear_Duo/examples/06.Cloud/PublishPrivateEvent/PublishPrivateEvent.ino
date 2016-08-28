@@ -20,10 +20,10 @@
  * the private events published by your Duo, wherever your Duo is, as long as it is connecting to the Particle Cloud.
  * 
  * Subscribe private events using curl:
- *     curl -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" https://api.particle.io/v1/events/{EVENT_NAME} -k
+ *     curl -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" https://api.particle.io/v1/devices/events/{EVENT_NAME} -k
  * E.g.(assume that your access token is 12345678901234567890):
- *     1. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/events/human-detected -k
- *     2. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/events/my-temperature -k
+ *     1. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/devices/events/human-detected -k
+ *     2. curl -H "Authorization: Bearer 12345678901234567890" https://api.particle.io/v1/devices/events/my-temperature -k
  *     
  * You can also check the events on Particle Dashboard: https://dashboard.particle.io/user/logs
  *     
@@ -54,7 +54,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Application started!");
 
-  pinMode(PIR, INPUT);
+  pinMode(PIR, INPUT_PULLUP);
 
   ms = millis();
 }
@@ -62,14 +62,21 @@ void setup() {
 void loop() {
   // Publish an event with data, with user specified TTL.
   if (digitalRead(PIR) == HIGH && quiet) {
-    if (!Particle.publish("human-detected", NULL, 60, PRIVATE)) {
-      Serial.println("Publish 'human-detected' event failed.");
+    delay(50); // Debounce
+    if (digitalRead(PIR) == HIGH) {
+      if (!Particle.publish("human-detected", NULL, 60, PRIVATE)) {
+        Serial.println("Publish 'human-detected' event failed.");
+      }
+      Serial.println("Publish 'human-detected' event successfully.");
+      quiet = false;
     }
-    Serial.println("Publish 'human-detected' event successfully.");
-    quiet = false;
   }
 
-  if (digitalRead(PIR) == LOW) quiet = true;
+  if (digitalRead(PIR) == LOW) {
+    delay(50); // Debounce
+    if (digitalRead(PIR) == LOW)
+      quiet = true;
+  }
 
   if ((millis() - ms) >= 5000) {
     ms = millis();
