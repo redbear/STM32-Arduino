@@ -16,7 +16,9 @@
 #ifndef PIN_INF_H_
 #define PIN_INF_H_
 
+#if defined(ARDUINO) 
 #include "Arduino.h"
+#endif
 
 #define TOTAL_PINS_NUM    18
 #define VERSION_BLINK_PIN 7
