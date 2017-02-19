@@ -119,7 +119,12 @@ uint32_t ble_advdata_decode(uint8_t type, uint8_t advdata_len, uint8_t *p_advdat
  *
  * @param[in]  *report
  *
- * @retval None
+ * Advertising Event Type:
+ *     - (0x00)BLE_GAP_ADV_TYPE_ADV_IND          : Connectable undirected.
+ *     - (0x01)BLE_GAP_ADV_TYPE_ADV_DIRECT_IND   : Connectable directed.
+ *     - (0x02)BLE_GAP_ADV_TYPE_ADV_SCAN_IND     : Scannable undirected.
+ *     - (0x03)BLE_GAP_ADV_TYPE_ADV_NONCONN_IND  : Non connectable undirected.
+ *     - (0x04)BLE_GAP_ADV_TYPE_SCAN_RSP         : Scan response.
  */
 void reportCallback(advertisementReport_t *report) {
   uint8_t index;
@@ -139,7 +144,12 @@ void reportCallback(advertisementReport_t *report) {
   Serial.print("The rssi: ");
   Serial.println(report->rssi, DEC);
 
-  Serial.print("The ADV data: ");
+  if (report->advEventType == BLE_GAP_ADV_TYPE_SCAN_RSP) {
+    Serial.print("The scan response data: ");
+  }
+  else {
+    Serial.print("The advertising data: ");
+  }
   for (index = 0; index < report->advDataLen; index++) {
     Serial.print(report->advData[index], HEX);
     Serial.print(" ");
