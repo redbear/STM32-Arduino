@@ -1,4 +1,4 @@
-Current Firmware Version: v0.2.4
+Current Firmware Version: v0.3.0
 
 
 

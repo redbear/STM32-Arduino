@@ -6,7 +6,7 @@
  */
 system_part1_module_ram_end = 0x20000300;
 
-INCLUDE "part1_vtor_module.ld"
+INCLUDE "../../shared/stm32f2xx/part1_vtor_module.ld"
 
 /**
  * The dyanmic libraries exported by this module.
