@@ -18,8 +18,21 @@
  Modified 1 Dec 2015
  by Jackson Lv
  This code is in the public domain.
-
  */
+
+/* 
+ * Defaultly disabled. More details: https://docs.particle.io/reference/firmware/photon/#system-thread 
+ */
+//SYSTEM_THREAD(ENABLED);
+
+/*
+ * Defaultly disabled. If BLE setup is enabled, when the Duo is in the Listening Mode, it will de-initialize and re-initialize the BT stack.
+ * Then it broadcasts as a BLE peripheral, which enables you to set up the Duo via BLE using the RedBear Duo App or customized
+ * App by following the BLE setup protocol: https://github.com/redbear/Duo/blob/master/docs/listening_mode_setup_protocol.md#ble-peripheral 
+ * 
+ * NOTE: If enabled and upon/after the Duo enters/leaves the Listening Mode, the BLE functionality in your application will not work properly.
+ */
+//BLE_SETUP(ENABLED);
 
 /*
  * SYSTEM_MODE:
@@ -51,7 +64,7 @@ byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing pack
 // A UDP instance to let us send and receive packets over UDP
 UDP Udp;
 
-unsigned long sendNTPpacket(IPAddress& address);
+void sendNTPpacket(IPAddress& address);
 void printWifiStatus();
 
 void setup() {
@@ -143,7 +156,7 @@ void loop() {
 }
 
 // send an NTP request to the time server at the given address
-unsigned long sendNTPpacket(IPAddress& address) {
+void sendNTPpacket(IPAddress& address) {
   //Serial.println("1");
   // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE);

@@ -174,13 +174,13 @@ void nano_discoverDescriptorResult(uint8_t num, gatt_client_characteristic_descr
 uint8_t nano_startNotify(uint8_t num) {
   if (num >= NANO_NUM) return 0xFF;
   //Start notify.
-  return ble.writeClientCharsConfigDescritpor(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
+  return ble.writeClientCharsConfigDescriptor(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
 }
 
 uint8_t nano_stopNotify(uint8_t num) {
   if (num >= NANO_NUM) return 0xFF;
   // Close notify.
-  return ble.writeClientCharsConfigDescritpor(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NONE);
+  return ble.writeClientCharsConfigDescriptor(nano[num].connect_handle, &nano[num].rbl_service.status_chars.chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NONE);
 }
 
 uint8_t nano_write(uint8_t num, uint8_t *buf, uint8_t len) { 
