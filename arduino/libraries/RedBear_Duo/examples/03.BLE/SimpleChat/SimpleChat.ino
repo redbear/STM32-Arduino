@@ -20,6 +20,20 @@
 /******************************************************
  *                      Macros
  ******************************************************/
+/* 
+ * Defaultly disabled. More details: https://docs.particle.io/reference/firmware/photon/#system-thread 
+ */
+//SYSTEM_THREAD(ENABLED);
+
+/*
+ * Defaultly disabled. If BLE setup is enabled, when the Duo is in the Listening Mode, it will de-initialize and re-initialize the BT stack.
+ * Then it broadcasts as a BLE peripheral, which enables you to set up the Duo via BLE using the RedBear Duo App or customized
+ * App by following the BLE setup protocol: https://github.com/redbear/Duo/blob/master/docs/listening_mode_setup_protocol.md#ble-peripheral 
+ * 
+ * NOTE: If enabled and upon/after the Duo enters/leaves the Listening Mode, the BLE functionality in your application will not work properly.
+ */
+//BLE_SETUP(ENABLED);
+
 /*
  * SYSTEM_MODE:
  *     - AUTOMATIC: Automatically try to connect to Wi-Fi and the Particle Cloud and handle the cloud messages.
@@ -131,7 +145,6 @@ static uint8_t adv_data[] = {
 
 static uint16_t character1_handle = 0x0000;
 static uint16_t character2_handle = 0x0000;
-static uint16_t character3_handle = 0x0000;
 
 static uint8_t characteristic1_data[CHARACTERISTIC1_MAX_LEN] = { 0x01 };
 static uint8_t characteristic2_data[CHARACTERISTIC2_MAX_LEN] = { 0x00 };
@@ -139,7 +152,6 @@ static uint8_t characteristic2_data[CHARACTERISTIC2_MAX_LEN] = { 0x00 };
 static btstack_timer_source_t characteristic2;
 
 char rx_buf[TXRX_BUF_LEN];
-static uint8_t rx_buf_num;
 static uint8_t rx_state = 0;
 
 /******************************************************

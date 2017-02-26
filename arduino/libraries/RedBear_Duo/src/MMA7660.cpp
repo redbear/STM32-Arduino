@@ -91,7 +91,7 @@ Wire.requestFrom(MMA7660_ADDR,3);
 while(Wire.available()) {
 if(count < 3) {
 val[count] = Wire.read(); 
-if (0x40 & val[count] == 0x40) { // alert bit is set, data is garbage and we have to start over.
+if ((0x40 & val[count]) == 0x40) { // alert bit is set, data is garbage and we have to start over.
 error = true;
 break;
 }

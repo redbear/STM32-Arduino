@@ -16,6 +16,20 @@
 /******************************************************
  *                      Macros Define
  ******************************************************/
+/* 
+ * Defaultly disabled. More details: https://docs.particle.io/reference/firmware/photon/#system-thread 
+ */
+//SYSTEM_THREAD(ENABLED);
+
+/*
+ * Defaultly disabled. If BLE setup is enabled, when the Duo is in the Listening Mode, it will de-initialize and re-initialize the BT stack.
+ * Then it broadcasts as a BLE peripheral, which enables you to set up the Duo via BLE using the RedBear Duo App or customized
+ * App by following the BLE setup protocol: https://github.com/redbear/Duo/blob/master/docs/listening_mode_setup_protocol.md#ble-peripheral 
+ * 
+ * NOTE: If enabled and upon/after the Duo enters/leaves the Listening Mode, the BLE functionality in your application will not work properly.
+ */
+//BLE_SETUP(ENABLED);
+
 /*
  * SYSTEM_MODE:
  *     - AUTOMATIC: Automatically try to connect to Wi-Fi and the Particle Cloud and handle the cloud messages.
@@ -428,7 +442,7 @@ void gattReadDescriptorCallback(BLEStatus_t status, uint16_t con_handle, uint16_
   }
   else if (status == BLE_STATUS_DONE) {
     // Enable notify.
-    ble.writeClientCharsConfigDescritpor(device.connected_handle, &device.service.chars[0].chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
+    ble.writeClientCharsConfigDescriptor(device.connected_handle, &device.service.chars[0].chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
   }
 }
 
@@ -445,7 +459,7 @@ void gattWriteCCCDCallback(BLEStatus_t status, uint16_t con_handle) {
     Serial.println("gattWriteCCCDCallback done");
     if (gatt_notify_flag == 0) { 
       gatt_notify_flag = 1;
-      ble.writeClientCharsConfigDescritpor(device.connected_handle, &device.service.chars[1].chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
+      ble.writeClientCharsConfigDescriptor(device.connected_handle, &device.service.chars[1].chars, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION);
     }
     else if (gatt_notify_flag == 1) {
       gatt_notify_flag = 2;

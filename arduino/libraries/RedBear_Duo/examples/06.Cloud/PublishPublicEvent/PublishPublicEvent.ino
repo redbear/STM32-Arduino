@@ -38,6 +38,20 @@
  * Learn more about publishing public events: https://docs.particle.io/reference/firmware/photon/#particle-publish-
  */
 
+/* 
+ * Defaultly disabled. More details: https://docs.particle.io/reference/firmware/photon/#system-thread 
+ */
+//SYSTEM_THREAD(ENABLED);
+
+/*
+ * Defaultly disabled. If BLE setup is enabled, when the Duo is in the Listening Mode, it will de-initialize and re-initialize the BT stack.
+ * Then it broadcasts as a BLE peripheral, which enables you to set up the Duo via BLE using the RedBear Duo App or customized
+ * App by following the BLE setup protocol: https://github.com/redbear/Duo/blob/master/docs/listening_mode_setup_protocol.md#ble-peripheral 
+ * 
+ * NOTE: If enabled and upon/after the Duo enters/leaves the Listening Mode, the BLE functionality in your application will not work properly.
+ */
+//BLE_SETUP(ENABLED);
+
  /*
  * SYSTEM_MODE:
  *     - AUTOMATIC: Automatically try to connect to Wi-Fi and the Particle Cloud and handle the cloud messages.
