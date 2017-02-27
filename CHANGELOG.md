@@ -4,6 +4,22 @@
 
 ## Current Version
 
+***v0.3.1***
+
+* For the Duo firmware v0.3.1
+* Be compatible with Arduino API (see: [https://github.com/redbear/firmware/blob/duo/wiring/inc/spark_wiring_arduino.h](https://github.com/redbear/firmware/blob/duo/wiring/inc/spark_wiring_arduino.h))
+* Fixes the issue that it won't apply the new uploaded application.
+
+
+## Version History
+
+***v0.3.0***
+
+* For the Duo firmware v0.3.0
+* Re-organize the file structure
+* Update examples
+* Support optionally enabling BLE functionality for setup when the Duo is in the Listening mode
+
 ***v0.2.10***
 
 * For the Duo firmware v0.2.4
@@ -14,9 +30,6 @@
 * Fixes the issue that BLE central connects to peer device failed
 * Fixes the tool chain issue if another 3rd party board which also depends on the arm-none-eabi-gcc is installed
 * Re-sorts the examples and rename some of them to meet the name convention
-
-
-## Version History
 
 ***v0.2.9***
 

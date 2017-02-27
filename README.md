@@ -18,7 +18,6 @@ Other documentations and resources for the RedBear Duo can be found [here](https
 * `arduino/cores/`: pre-compiled wiring libraries and other core files
 * `arduino/firmwares/`: Duo board system firmware images
 * `arduino/libraries/`: built-in examples for the Duo board
-* `arduino/system/`: ARM CMSIS files
 * `arduino/tools/`: utils for building and uploading sketch
 * `arduino/variants/`: linker scripts and Open OCD scripts for the Duo board
 * `arduino/boards.txt`: boards information
