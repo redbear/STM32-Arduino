@@ -19,7 +19,7 @@ recipe.s.o.pattern                   = "{tools.arm_none_eabi_gcc.path}{tools.arm
 ###### Compile c files
 tools.arm_none_eabi_gcc.c.defines    = 
 tools.arm_none_eabi_gcc.c.includes   = 
-tools.arm_none_eabi_gcc.c.cflags     = 
+tools.arm_none_eabi_gcc.c.cflags     = -c -g3 -gdwarf-2 -Os -mcpu=cortex-m3 -mthumb -w -std=gnu99 -fno-common -fmessage-length=0 -Wall -fno-exceptions -fno-builtin-malloc -fno-builtin-free -fno-builtin-realloc -ffunction-sections -fdata-sections -fomit-frame-pointer -nostdlib --param max-inline-insns-single=500 -fno-exceptions -fno-rtti
 tools.arm_none_eabi_gcc.c.conlyflags = 
 recipe.c.o.pattern                   = "{tools.arm_none_eabi_gcc.path}{tools.arm_none_eabi_gcc.gcc}" -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} {tools.arm_none_eabi_gcc.c.defines} {includes} {tools.arm_none_eabi_gcc.c.includes} {tools.arm_none_eabi_gcc.c.cflags} {tools.arm_none_eabi_gcc.c.conlyflags} -c -o "{object_file}" "{source_file}"
 
