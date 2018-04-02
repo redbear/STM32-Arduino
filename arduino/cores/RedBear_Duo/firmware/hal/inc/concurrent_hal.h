@@ -42,8 +42,11 @@ extern "C" {
  */
 #include "concurrent_hal_impl.h"
 
-
+#ifdef __cplusplus
 const os_thread_t OS_THREAD_INVALID_HANDLE = NULL;
+#else
+#define OS_THREAD_INVALID_HANDLE ((os_thread_t)NULL)
+#endif
 
 /**
  * The return type from a thread function.
@@ -108,6 +111,13 @@ bool os_thread_is_current_within_stack();
 os_result_t os_thread_join(os_thread_t thread);
 
 /**
+ * Terminate thread.
+ * @param thread    The thread to terminate, or NULL to terminate current thread.
+ * @return 0 if the thread has successfully terminated. non-zero in case of an error.
+ */
+os_result_t os_thread_exit(os_thread_t thread);
+
+/**
  * Cleans up resources used by a terminated thread.
  * @param thread    The thread to clean up.
  * @return 0 on success.
@@ -120,7 +130,6 @@ os_result_t os_thread_cleanup(os_thread_t thread);
  * @return
  */
 os_result_t os_thread_yield(void);
-
 
 /**
  * Delays the current task until a specified time to set up periodic tasks
@@ -143,7 +152,11 @@ void os_condition_variable_wait(condition_variable_t var, void* lock);
 void os_condition_variable_notify_one(condition_variable_t var);
 void os_condition_variable_notify_all(condition_variable_t var);
 
+#ifdef __cplusplus
 const system_tick_t CONCURRENT_WAIT_FOREVER = (system_tick_t)-1;
+#else
+#define CONCURRENT_WAIT_FOREVER ((system_tick_t)-1)
+#endif
 
 int os_queue_create(os_queue_t* queue, size_t item_size, size_t item_count, void* reserved);
 /**
@@ -183,8 +196,15 @@ int os_semaphore_destroy(os_semaphore_t semaphore);
 int os_semaphore_take(os_semaphore_t semaphore, system_tick_t timeout, bool reserved);
 int os_semaphore_give(os_semaphore_t semaphore, bool reserved);
 
-#define _GLIBCXX_HAS_GTHREADS
+#ifndef _GLIBCXX_HAS_GTHREADS
+# define _GLIBCXX_HAS_GTHREADS
+#endif // _GLIBCXX_HAS_GTHREADS
+
+#ifdef __cplusplus
+#if PLATFORM_ID!=3
 #include <bits/gthr.h>
+#endif
+#endif
 
 /**
  * Enables/disables pre-emptive context switching

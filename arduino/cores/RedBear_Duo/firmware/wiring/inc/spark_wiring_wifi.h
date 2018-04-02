@@ -34,18 +34,39 @@
 #include "wlan_hal.h"
 #include "system_network.h"
 #include "inet_hal.h"
+#include "spark_wiring_wifi_credentials.h"
 #include <string.h>
+#include "spark_wiring_signal.h"
+
+class WiFiSignal : public particle::Signal {
+public:
+    // In order to be compatible with CellularSignal
+    int rssi = 2;
+    int qual = 0;
+
+    WiFiSignal() {}
+    WiFiSignal(const wlan_connected_info_t& inf);
+    virtual ~WiFiSignal() {};
+
+    operator int8_t() const;
+
+    bool fromConnectedInfo(const wlan_connected_info_t& sig);
+
+    virtual hal_net_access_tech_t getAccessTechnology() const;
+    virtual float getStrength() const;
+    virtual float getStrengthValue() const;
+    virtual float getQuality() const;
+    virtual float getQualityValue() const;
+
+    // virtual size_t printTo(Print& p) const;
+
+private:
+    wlan_connected_info_t inf_ = {0};
+};
 
 class IPAddress;
 
 namespace spark {
-
-enum SecurityType {
-    UNSEC = WLAN_SEC_UNSEC,
-    WEP = WLAN_SEC_WEP,
-    WPA = WLAN_SEC_WPA,
-    WPA2 = WLAN_SEC_WPA2
-};
 
 class WiFiClass : public NetworkClass
 {
@@ -104,7 +125,7 @@ public:
         return (const char *) wifi_config()->uaSSID;
     }
 
-    int8_t RSSI();
+    WiFiSignal RSSI();
     uint32_t ping(IPAddress remoteIP) {
         return ping(remoteIP, 5);
     }
@@ -118,7 +139,7 @@ public:
     }
 
     void disconnect(void) {
-        network_disconnect(*this, 0, NULL);
+        network_disconnect(*this, NETWORK_DISCONNECT_REASON_USER, NULL);
     }
 
     bool connecting(void) {
@@ -153,19 +174,19 @@ public:
         return network_listening(*this, 0, NULL);
     }
 
-    void setCredentials(const char *ssid) {
-        setCredentials(ssid, NULL, UNSEC);
+    bool setCredentials(const char *ssid) {
+        return setCredentials(ssid, NULL, UNSEC);
     }
 
-    void setCredentials(const char *ssid, const char *password) {
-        setCredentials(ssid, password, WPA2);
+    bool setCredentials(const char *ssid, const char *password) {
+        return setCredentials(ssid, password, WPA2);
     }
 
-    void setCredentials(const char *ssid, const char *password, unsigned long security, unsigned long cipher=WLAN_CIPHER_NOT_SET) {
-        setCredentials(ssid, strlen(ssid), password, strlen(password), security, cipher);
+    bool setCredentials(const char *ssid, const char *password, unsigned long security, unsigned long cipher=WLAN_CIPHER_NOT_SET) {
+        return setCredentials(ssid, ssid ? strlen(ssid) : 0, password, password ? strlen(password) : 0, security, cipher);
     }
 
-    void setCredentials(const char *ssid, unsigned int ssidLen, const char *password,
+    bool setCredentials(const char *ssid, unsigned int ssidLen, const char *password,
             unsigned int passwordLen, unsigned long security=WLAN_SEC_UNSEC, unsigned long cipher=WLAN_CIPHER_NOT_SET) {
 
         WLanCredentials creds;
@@ -177,6 +198,18 @@ public:
         creds.password_len = passwordLen;
         creds.security = WLanSecurityType(security);
         creds.cipher = WLanSecurityCipher(cipher);
+        return (network_set_credentials(*this, 0, &creds, NULL) == 0);
+    }
+
+    void setCredentials(const char* ssid, WiFiCredentials credentials) {
+        WLanCredentials creds = credentials.getHalCredentials();
+        creds.ssid = ssid;
+        creds.ssid_len = ssid ? strlen(ssid) : 0;
+        network_set_credentials(*this, 0, &creds, NULL);
+    }
+
+    void setCredentials(WiFiCredentials credentials) {
+        WLanCredentials creds = credentials.getHalCredentials();
         network_set_credentials(*this, 0, &creds, NULL);
     }
 
@@ -192,10 +225,14 @@ public:
         return wlan_select_antenna(antenna);
     }
 
+    WLanSelectAntenna_TypeDef getAntenna() {
+        return wlan_get_antenna(nullptr);
+    }
+
     IPAddress resolve(const char* name)
     {
-        HAL_IPAddress ip;
-        return (inet_gethostbyname(name, strlen(name), &ip, *this, NULL)<0) ?
+        HAL_IPAddress ip = {0};
+        return (inet_gethostbyname(name, strlen(name), &ip, *this, NULL) != 0) ?
                 IPAddress(uint32_t(0)) : IPAddress(ip);
     }
 
@@ -227,6 +264,24 @@ public:
     }
 
     int getCredentials(WiFiAccessPoint* results, size_t result_count);
+
+    String hostname()
+    {
+        const size_t maxHostname = 64;
+        char buf[maxHostname] = {0};
+        network_get_hostname(*this, 0, buf, maxHostname, nullptr);
+        return String(buf);
+    }
+
+    int setHostname(const String& hostname)
+    {
+        return setHostname(hostname.c_str());
+    }
+
+    int setHostname(const char* hostname)
+    {
+        return network_set_hostname(*this, 0, hostname, nullptr);
+    }
 };
 
 extern WiFiClass WiFi;

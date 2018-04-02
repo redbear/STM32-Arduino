@@ -25,6 +25,7 @@
 #include "messages.h"
 
 #include "completion_handler.h"
+#include "communication_diagnostic.h"
 
 namespace particle
 {
@@ -43,13 +44,7 @@ public:
 
 	inline bool is_system(const char* event_name)
 	{
-		// if there were a strncmpi this would be easier!
-		char prefix[6];
-		if (!*event_name || strlen(event_name) < 5)
-			return false;
-		memcpy(prefix, event_name, 5);
-		prefix[5] = '\0';
-		return !strcasecmp(prefix, "spark");
+		return !strncmp(event_name, "spark", 5);
 	}
 
 	bool is_rate_limited(bool is_system_event, system_tick_t millis)
@@ -98,8 +93,10 @@ public:
 	{
 		bool is_system_event = is_system(event_name);
 		bool rate_limited = is_rate_limited(is_system_event, time);
-		if (rate_limited)
+		if (rate_limited) {
+			g_rateLimitedEventsCounter++;
 			return BANDWIDTH_EXCEEDED;
+		}
 
 		Message message;
 		channel.create(message);

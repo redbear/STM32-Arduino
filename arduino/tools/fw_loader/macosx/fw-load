@@ -16,6 +16,10 @@ $1 -d 2b04:d058 -a 0 -s 0x08040000 -D $2/duo-system-part2-v0.3.1.bin
 
 $1 -d 2b04:d058 -a 0 -s 0x080C0000 -D $2/duo-user-part.bin
 
-# Update Factory Reset Part and exit DFU mode
+# Update Factory Reset Part
 
-$1 -d 2b04:d058 -a 2 -s 0x140000:leave -D $2/duo-factory-reset.bin
+$1 -d 2b04:d058 -a 2 -s 0x140000 -D $2/duo-factory-reset.bin
+
+# Update Wi-Fi firmware and exit DFU mode
+
+$1 -d 2b04:d058 -a 2 -s 0x180000:leave -D $2/duo-wifi-r2.bin

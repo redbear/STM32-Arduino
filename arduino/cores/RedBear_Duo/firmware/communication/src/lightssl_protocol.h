@@ -20,7 +20,8 @@
 #pragma once
 
 #include "protocol_selector.h"
-#if HAL_PLATFORM_CLOUD_TCP
+
+#if HAL_PLATFORM_CLOUD_TCP && PARTICLE_PROTOCOL
 
 #include <string.h>
 #include "protocol_defs.h"
@@ -64,19 +65,21 @@ public:
         initialize_ping(15000,10000);
 	}
 
-	size_t build_hello(Message& message, bool ota_updated) override
+	size_t build_hello(Message& message, uint8_t flags) override
 	{
 		product_details_t deets;
 		deets.size = sizeof(deets);
 		get_product_details(deets);
 
 		size_t len = Messages::hello(message.buf(), 0,
-				ota_updated, PLATFORM_ID, deets.product_id,
+				flags, PLATFORM_ID, deets.product_id,
 				deets.product_version, false, nullptr, 0);
 		return len;
 	}
 
-	virtual void command(ProtocolCommands::Enum command, uint32_t data) override;
+	virtual int command(ProtocolCommands::Enum command, uint32_t data) override;
+
+	int wait_confirmable(uint32_t timeout=5000);
 
 };
 
@@ -84,4 +87,4 @@ public:
 
 }}
 
-#endif
+#endif // HAL_PLATFORM_CLOUD_TCP && PARTICLE_PROTOCOL

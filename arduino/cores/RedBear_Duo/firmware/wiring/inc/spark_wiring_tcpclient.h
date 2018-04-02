@@ -32,48 +32,67 @@
 #include "spark_wiring_print.h"
 #include "socket_hal.h"
 
-#define TCPCLIENT_BUF_MAX_SIZE	128
+#include <memory>
+
+#define TCPCLIENT_BUF_MAX_SIZE  128
 
 class TCPClient : public Client {
 
 public:
-	TCPClient();
-	TCPClient(sock_handle_t sock);
-        virtual ~TCPClient() {};
+    TCPClient();
+    TCPClient(sock_handle_t sock);
+    virtual ~TCPClient() {};
 
-        uint8_t status();
-	virtual int connect(IPAddress ip, uint16_t port, network_interface_t=0);
-	virtual int connect(const char *host, uint16_t port, network_interface_t=0);
-	virtual size_t write(uint8_t);
-	virtual size_t write(const uint8_t *buffer, size_t size);
-	virtual int available();
-	virtual int read();
-	virtual int read(uint8_t *buffer, size_t size);
-	virtual int peek();
-	virtual void flush();
-        void flush_buffer();
-	virtual void stop();
-	virtual uint8_t connected();
-	virtual operator bool();
+    uint8_t status();
+    virtual int connect(IPAddress ip, uint16_t port, network_interface_t=0);
+    virtual int connect(const char *host, uint16_t port, network_interface_t=0);
+    virtual size_t write(uint8_t);
+    virtual size_t write(const uint8_t *buffer, size_t size);
+    virtual size_t write(uint8_t, system_tick_t timeout);
+    virtual size_t write(const uint8_t *buffer, size_t size, system_tick_t timeout);
+    virtual int available();
+    virtual int read();
+    virtual int read(uint8_t *buffer, size_t size);
+    virtual int peek();
+    virtual void flush();
+    void flush_buffer();
+    virtual void stop();
+    virtual uint8_t connected();
+    virtual operator bool();
 
-        virtual IPAddress remoteIP();
+    virtual IPAddress remoteIP();
 
-	friend class TCPServer;
+    friend class TCPServer;
 
-	using Print::write;
+    using Print::write;
 
 protected:
-        inline sock_handle_t sock_handle() { return _sock; }
+    inline sock_handle_t sock_handle() { return d_->sock; }
 
 private:
-	static uint16_t _srcport;
-	sock_handle_t _sock;
-	uint8_t _buffer[TCPCLIENT_BUF_MAX_SIZE];
-	uint16_t _offset;
-	uint16_t _total;
-        IPAddress _remoteIP;
-	inline int bufferCount();
+    struct Data {
+        sock_handle_t sock;
+        uint8_t buffer[TCPCLIENT_BUF_MAX_SIZE];
+        uint16_t offset;
+        uint16_t total;
+        IPAddress remoteIP;
 
+        explicit Data(sock_handle_t sock) :
+                sock(sock),
+                offset(0),
+                total(0) {
+        }
+
+        ~Data() {
+            if (socket_handle_valid(sock)) {
+                socket_close(sock);
+            }
+        }
+    };
+
+    std::shared_ptr<Data> d_;
+
+    inline int bufferCount();
 };
 
 #endif

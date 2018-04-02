@@ -50,10 +50,6 @@ extern uint32_t lastEvent;
 #define SET_LAST_EVENT(x) do {lastEvent = (x);} while(0)
 #define GET_LAST_EVENT(x) do { x = lastEvent; lastEvent = 0;} while(0)
 #define DUMP_STATE() do { \
-    DEBUG("\r\nWLAN_MANUAL_CONNECT=%d\r\nWLAN_DELETE_PROFILES=%d\r\nWLAN_SMART_CONFIG_START=%d\r\nWLAN_SMART_CONFIG_STOP=%d", \
-          WLAN_MANUAL_CONNECT,WLAN_DELETE_PROFILES,WLAN_SMART_CONFIG_START, WLAN_SMART_CONFIG_STOP); \
-    DEBUG("\r\nWLAN_SMART_CONFIG_FINISHED=%d\r\nWLAN_SERIAL_CONFIG_DONE=%d\r\nWLAN_CONNECTED=%d\r\nWLAN_DHCP=%d\r\nWLAN_CAN_SHUTDOWN=%d", \
-          WLAN_SMART_CONFIG_FINISHED,WLAN_SERIAL_CONFIG_DONE,WLAN_CONNECTED,WLAN_DHCP,WLAN_CAN_SHUTDOWN); \
     DEBUG("\r\nSPARK_WLAN_RESET=%d\r\nSPARK_WLAN_SLEEP=%d\r\nSPARK_WLAN_STARTED=%d\r\nSPARK_CLOUD_CONNECT=%d", \
            SPARK_WLAN_RESET,SPARK_WLAN_SLEEP,SPARK_WLAN_STARTED,SPARK_CLOUD_CONNECT); \
     DEBUG("\r\nSPARK_CLOUD_SOCKETED=%d\r\nSPARK_CLOUD_CONNECTED=%d\r\nSPARK_FLASH_UPDATE=%d\r\n", \
@@ -68,9 +64,16 @@ extern uint32_t lastEvent;
 #define ON_EVENT_DELTA()
 #endif
 
+/**
+ * Describes the antenna selection to be used with the primary radio for devices with multiple antennae.
+ */
 typedef enum
 {
-  ANT_INTERNAL = 0, ANT_EXTERNAL = 1, ANT_AUTO = 3
+  ANT_INTERNAL = 0,
+  ANT_EXTERNAL = 1,
+  ANT_AUTO = 3,
+  // Error
+  ANT_NONE = 0xff
 } WLanSelectAntenna_TypeDef;
 
 typedef int wlan_result_t;
@@ -90,42 +93,83 @@ STATIC_ASSERT(WLanConfigSize, sizeof(WLanConfig)==WLanConfig_Size_V2);
 
 
 /**
- * Connect start the wireless connection.
+ * Begin establishing the wireless connection. This is provided as a convenience for platforms to do any steps required
+ * prior to connected to a configured AP.  wlan_connect_finalize() will be called to finalize the connection.
+ *
  */
 wlan_result_t  wlan_connect_init();
 
 /**
- * Finalize the connection by connecting to stored profiles.
+ * Finalize the connection by connecting to an AP previously stored with wlan_set_credentials().
+ * The notification handlers HAL_NET_notify_connected, HAL_NET_notify_disconnected must be set up to receive
+ * asynchronous events from the wifi hardware when a connection to an AP is established and lost respectively.
  */
 wlan_result_t  wlan_connect_finalize();
 
-
+/**
+ * Determines if a request has been made to reset the wifi credentials. On platforms that use the Particle bootloader,
+ * this is done by issuing a "full reset" command.
+ */
 bool wlan_reset_credentials_store_required();
+
+/**
+ * Removes all stored AP credentials by calling wlan_clear_credentials() and clears the wlan_reset_credentials_store_required() flag.
+ */
 wlan_result_t  wlan_reset_credentials_store();
 
+/**
+ * This function exists primarily as a throwback to early system firmware.
+ * It is called between wlan_connect_init() and wlan_connect_finalize()
+ * and gives the platform an opportunity to set any network timeouts required.
+ * This will most likely be phased out since it is subsumed by the wlan_connect_init() function.
+ */
 void Set_NetApp_Timeout();
-void Clear_NetApp_Dhcp();
 
+/**
+ * Brings down the primary networking interface, while maintaining power to the WiFi hardware.
+ * All open sockets are closed and when the operation is complete, the HAL_NET_notify_disconnected() function is called,
+ * either directly, as a result of bringing down the connection.
+ */
 wlan_result_t wlan_disconnect_now();
 
 /**
- * Enable wifi without connecting.
+ * Enable the wifi hardware without connecting.
  */
 wlan_result_t wlan_activate();
 
 /**
- * Disable wifi.
+ * Disable wifi. The wifi hardware should be powered down to save power.
+ * This may be called when the AP is still connected, so implementations should call wlan_disconnect_now() to take down
+ * the network first, before shutting off the wifi hardware.
  */
 wlan_result_t wlan_deactivate();
 
 
 
 /**
+ * Determines the strength of the signal of the connected AP.
+ *
  * @return <0 for a valid signal strength, in db.
  *         0 for rssi not found (caller could retry)
  *         >0 for an error
  */
 int wlan_connected_rssi();
+
+typedef struct {
+    uint16_t size;
+    uint16_t version;
+
+    int32_t rssi;
+    // In % mapped to [0, 65535]
+    int32_t strength;
+
+    int32_t snr;
+    int32_t noise;
+    // In % mapped to [0, 65535]
+    int32_t quality;
+} wlan_connected_info_t;
+
+int wlan_connected_info(void* reserved, wlan_connected_info_t* inf, void* reserved1);
 
 int wlan_clear_credentials();
 int wlan_has_credentials();
@@ -136,12 +180,16 @@ int wlan_has_credentials();
 #undef WLAN_SEC_WEP
 #undef WLAN_SEC_WPA
 #undef WLAN_SEC_WPA2
+#undef WLAN_SEC_WPA_ENTERPRISE
+#undef WLAN_SEC_WPA2_ENTERPRISE
 #endif
 typedef enum {
     WLAN_SEC_UNSEC = 0,
     WLAN_SEC_WEP,
     WLAN_SEC_WPA,
     WLAN_SEC_WPA2,
+    WLAN_SEC_WPA_ENTERPRISE,
+    WLAN_SEC_WPA2_ENTERPRISE,
     WLAN_SEC_NOT_SET = 0xFF
 } WLanSecurityType;
 
@@ -153,6 +201,29 @@ typedef enum {
     WLAN_CIPHER_AES_TKIP = 3   // OR of AES and TKIP
 } WLanSecurityCipher;
 
+typedef enum {
+    WLAN_EAP_TYPE_NONE         = 0,
+    WLAN_EAP_TYPE_IDENTITY     = 1   /* RFC 3748 */,
+    WLAN_EAP_TYPE_NOTIFICATION = 2   /* RFC 3748 */,
+    WLAN_EAP_TYPE_NAK          = 3   /* Response only, RFC 3748 */,
+    WLAN_EAP_TYPE_MD5          = 4,  /* RFC 3748 */
+    WLAN_EAP_TYPE_OTP          = 5   /* RFC 3748 */,
+    WLAN_EAP_TYPE_GTC          = 6,  /* RFC 3748 */
+    WLAN_EAP_TYPE_TLS          = 13  /* RFC 2716 */,
+    WLAN_EAP_TYPE_LEAP         = 17  /* Cisco proprietary */,
+    WLAN_EAP_TYPE_SIM          = 18  /* draft-haverinen-pppext-eap-sim-12.txt */,
+    WLAN_EAP_TYPE_TTLS         = 21  /* draft-ietf-pppext-eap-ttls-02.txt */,
+    WLAN_EAP_TYPE_AKA          = 23  /* draft-arkko-pppext-eap-aka-12.txt */,
+    WLAN_EAP_TYPE_PEAP         = 25  /* draft-josefsson-pppext-eap-tls-eap-06.txt */,
+    WLAN_EAP_TYPE_MSCHAPV2     = 26  /* draft-kamath-pppext-eap-mschapv2-00.txt */,
+    WLAN_EAP_TYPE_TLV          = 33  /* draft-josefsson-pppext-eap-tls-eap-07.txt */,
+    WLAN_EAP_TYPE_FAST         = 43  /* draft-cam-winget-eap-fast-00.txt */,
+    WLAN_EAP_TYPE_PAX          = 46, /* draft-clancy-eap-pax-04.txt */
+    WLAN_EAP_TYPE_EXPANDED_NAK = 253 /* RFC 3748 */,
+    WLAN_EAP_TYPE_WPS          = 254 /* Wireless Simple Config */,
+    WLAN_EAP_TYPE_PSK          = 255 /* EXPERIMENTAL - type not yet allocated draft-bersani-eap-psk-09 */
+} WLanEapType;
+
 typedef struct {
     unsigned size;           // the size of this structure. allows older clients to work with newer HAL.
     const char* ssid;
@@ -163,31 +234,67 @@ typedef struct {
     WLanSecurityCipher cipher;
     unsigned channel;
     unsigned flags;
+    // v2
+    uint8_t version;
+    // Additional parameters used with WLAN_SEC_WPA_ENTERPRISE or WLAN_SEC_WPA2_ENTERPRISE
+    // EAP type
+    WLanEapType eap_type;
+    // EAP inner identity
+    const char* inner_identity;
+    uint16_t inner_identity_len;
+    // EAP outer identity
+    const char* outer_identity;
+    uint16_t outer_identity_len;
+    // Private key (PEM or DER)
+    const uint8_t* private_key;
+    uint16_t private_key_len;
+    // Client certificate (PEM or DER)
+    const uint8_t* client_certificate;
+    uint16_t client_certificate_len;
+    // CA certificate (PEM or DER)
+    const uint8_t* ca_certificate;
+    uint16_t ca_certificate_len;
 } WLanCredentials;
+
+#define WLAN_CREDENTIALS_VERSION_3        (3)
+#define WLAN_CREDENTIALS_CURRENT_VERSION  (WLAN_CREDENTIALS_VERSION_3)
 
 #define WLAN_SET_CREDENTIALS_FLAGS_DRY_RUN  (1<<0)
 
 #define WLAN_SET_CREDENTIALS_UNKNOWN_SECURITY_TYPE (-1)
 #define WLAN_SET_CREDENTIALS_CIPHER_REQUIRED (-2)
+#define WLAN_INVALID_SSID_LENGTH (-3)
+#define WLAN_INVALID_KEY_LENGTH (-4)
 
 /**
- *
- * @param credentials
+ * Adds credentials for an AP that this device will connect to. The credentials are stored persistently.
+ * If the storage for WiFi credentials is full, these credentials
+ * should take precedence can replace previously set credentials, typically the oldest.
+ * @param credentials	The credentials to store persistently.
  * @return 0 on success.
+ *
+ * Note that if the device is already connected to an AP, that connection remains, even if the credentials for that AP were removed.
  */
 int wlan_set_credentials(WLanCredentials* credentials);
 
 /**
- * Initialize smart config mode.
+ * Initialize smart config/SoftAP mode. This is used to put the device in setup mode so that it can pair with the mobile
+ * app to be provided with credentials.
  */
 void wlan_smart_config_init();
-void wlan_smart_config_cleanup();
-
-void wlan_set_error_count(uint32_t error_count);
-
 
 /**
- * Finalize after profiles established.
+ * This is invoked after setup is done.
+ */
+void wlan_smart_config_cleanup();
+
+/**
+ * This is obsolete and is not used.
+ */
+void wlan_set_error_count(uint32_t error_count);
+
+/**
+ * Finalize and exit setup mode after profiles established.
  * @return true the wifi profiles were changed
  */
 bool wlan_smart_config_finalize();
@@ -202,10 +309,14 @@ void wlan_fetch_ipconfig(WLanConfig* config);
  */
 void wlan_setup();
 
-void welan_set_error_count();
-
+/**
+ *
+ */
 void SPARK_WLAN_SmartConfigProcess();
 
+/**
+ *
+ */
 void HAL_WLAN_notify_simple_config_done();
 
 
@@ -213,6 +324,8 @@ void HAL_WLAN_notify_simple_config_done();
  * Select the Wi-Fi antenna.
  */
 int wlan_select_antenna(WLanSelectAntenna_TypeDef antenna);
+
+WLanSelectAntenna_TypeDef wlan_get_antenna(void* reserved);
 
 /**
  * Cancel a previous call to any blocking wifi connect method.
@@ -230,6 +343,8 @@ typedef enum {
  */
 void wlan_set_ipaddress_source(IPAddressSource source, bool persist, void* reserved);
 
+IPAddressSource wlan_get_ipaddress_source(void* reserved);
+
 /**
  * Sets the IP Addresses to use when the device is in static IP mode.
  * @param device
@@ -242,6 +357,8 @@ void wlan_set_ipaddress_source(IPAddressSource source, bool persist, void* reser
 void wlan_set_ipaddress(const HAL_IPAddress* device, const HAL_IPAddress* netmask,
         const HAL_IPAddress* gateway, const HAL_IPAddress* dns1, const HAL_IPAddress* dns2, void* reserved);
 
+
+int wlan_get_ipaddress(IPConfig* conf, void* reserved);
 
 
 typedef struct WiFiAccessPoint {
@@ -287,6 +404,14 @@ int wlan_get_credentials(wlan_scan_result_t callback, void* callback_data);
  * @return true if wi-fi powersave clock is enabled, false if disabled.
  */
 bool isWiFiPowersaveClockDisabled(void);
+
+/**
+ * Disables and then enables WLAN connectivity
+ */
+int wlan_restart(void* reserved);
+
+int wlan_set_hostname(const char* hostname, void* reserved);
+int wlan_get_hostname(char* buf, size_t buf_size, void* reserved);
 
 #ifdef	__cplusplus
 }

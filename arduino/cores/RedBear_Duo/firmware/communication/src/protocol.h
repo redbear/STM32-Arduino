@@ -117,7 +117,7 @@ class Protocol
 	/**
 	 * Completion handlers for messages with confirmable delivery.
 	 */
-	CompletionHandlerMap<message_id_t> ack_handlers;
+	system_tick_t last_ack_handlers_update;
 
 	/**
 	 * The token ID for the next request made.
@@ -152,6 +152,10 @@ public:
 
 
 protected:
+	/**
+	 * Completion handlers for messages with confirmable delivery.
+	 */
+	CompletionHandlerMap<message_id_t> ack_handlers;
 
 
 	void set_protocol_flags(int flags)
@@ -180,7 +184,7 @@ protected:
 	 */
 	ProtocolError hello_response();
 
-	virtual size_t build_hello(Message& message, bool was_ota_upgrade_successful)=0;
+	virtual size_t build_hello(Message& message, uint8_t flags)=0;
 
 	/**
 	 * Send a Ping message over the channel.
@@ -273,6 +277,7 @@ public:
 			product_id(PRODUCT_ID),
 			product_firmware_version(PRODUCT_FIRMWARE_VERSION),
 			publisher(this),
+			last_ack_handlers_update(0),
 			initialized(false)
 	{
 	}
@@ -299,7 +304,7 @@ public:
 
 	void add_ack_handler(message_id_t msg_id, CompletionHandler handler, unsigned timeout)
 	{
-		ack_handlers.add(msg_id, std::move(handler), timeout);
+		ack_handlers.addHandler(msg_id, std::move(handler), timeout);
 	}
 
 	/**
@@ -455,7 +460,7 @@ public:
 
 	system_tick_t millis() { return callbacks.millis(); }
 
-	virtual void command(ProtocolCommands::Enum command, uint32_t data)=0;
+	virtual int command(ProtocolCommands::Enum command, uint32_t data)=0;
 
 };
 

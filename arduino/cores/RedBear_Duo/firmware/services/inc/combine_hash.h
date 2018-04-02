@@ -1,6 +1,5 @@
 /*
- ******************************************************************************
- *  Copyright (c) 2015 Particle Industries, Inc.  All rights reserved.
+ * Copyright (c) 2017 Particle Industries, Inc.  All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -14,20 +13,19 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************
  */
 
-#include <stdint.h>
+#pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <functional>
 
-const void* dct_read_app_data (uint32_t offset);
-int dct_write_app_data(const void* data, uint32_t offset, uint32_t size);
-void dcd_migrate_data();
+namespace particle {
 
-#ifdef __cplusplus
+template<typename T>
+inline void combineHash(size_t& seed, const T& value) {
+    // The implementation is based on boost::hash_combine()
+    std::hash<T> hash;
+    seed ^= hash(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
-#endif
 
+} // namespace particle

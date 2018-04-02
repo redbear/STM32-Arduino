@@ -74,7 +74,10 @@ void HAL_I2C_Flush_Data(HAL_I2C_Interface i2c, void* reserved);
 bool HAL_I2C_Is_Enabled(HAL_I2C_Interface i2c, void* reserved);
 void HAL_I2C_Set_Callback_On_Receive(HAL_I2C_Interface i2c, void (*function)(int), void* reserved);
 void HAL_I2C_Set_Callback_On_Request(HAL_I2C_Interface i2c, void (*function)(void), void* reserved);
+uint8_t HAL_I2C_Reset(HAL_I2C_Interface i2c, uint32_t reserved, void* reserve1);
 
+int32_t HAL_I2C_Acquire(HAL_I2C_Interface i2c, void* reserved);
+int32_t HAL_I2C_Release(HAL_I2C_Interface i2c, void* reserved);
 
 void HAL_I2C_Set_Speed_v1(uint32_t speed);
 void HAL_I2C_Enable_DMA_Mode_v1(bool enable);
