@@ -4,14 +4,18 @@
 
 ## Current Version
 
+***v0.3.2***
+
+* For the Duo firmware v0.3.2
+
+
+## Version History
+
 ***v0.3.1***
 
 * For the Duo firmware v0.3.1
 * Be compatible with Arduino API (see: [https://github.com/redbear/firmware/blob/duo/wiring/inc/spark_wiring_arduino.h](https://github.com/redbear/firmware/blob/duo/wiring/inc/spark_wiring_arduino.h))
 * Fixes the issue that it won't apply the new uploaded application.
-
-
-## Version History
 
 ***v0.3.0***
 
