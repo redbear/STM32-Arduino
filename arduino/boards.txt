@@ -42,7 +42,7 @@ RedBear_Duo.build.variant=RedBear_Duo
 RedBear_Duo.build.openocdscript=openocd_scripts/redbear_duo.cfg
 
 RedBear_Duo.bootloader.tool=openocd
-RedBear_Duo.bootloader.bootloader_file=bootloader-r6.bin
+RedBear_Duo.bootloader.bootloader_file=duo-bootloader-r6.bin
 RedBear_Duo.bootloader.bootloader_loc=0x8000000
 RedBear_Duo.bootloader.system_part1_file=duo-system-part1-v0.3.2.bin
 RedBear_Duo.bootloader.system_part1_loc=0x8020000
