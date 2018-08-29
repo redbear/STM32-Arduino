@@ -4,12 +4,18 @@
 
 ## Current Version
 
-***v0.3.2***
+***v0.3.3***
 
-* For the Duo firmware v0.3.2
+* For the Duo firmware v0.3.3
+* Fixes the issue that ble.sendNotify doesn't work
+* Fixes the issue that when fetches the firmware version in the Listening mode it returns incorrect version number
 
 
 ## Version History
+
+***v0.3.2***
+
+* For the Duo firmware v0.3.2
 
 ***v0.3.1***
 
