@@ -6,11 +6,11 @@
 
 # Update System-Part1
 
-$1 -d 2b04:d058 -a 0 -s 0x08020000 -D $2/duo-system-part1-v0.3.1.bin
+$1 -d 2b04:d058 -a 0 -s 0x08020000 -D $2/duo-system-part1-v0.3.3.bin
 
 # Update System-Part2
 
-$1 -d 2b04:d058 -a 0 -s 0x08040000 -D $2/duo-system-part2-v0.3.1.bin
+$1 -d 2b04:d058 -a 0 -s 0x08040000 -D $2/duo-system-part2-v0.3.3.bin
 
 # Update User-Part
 
